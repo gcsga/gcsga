@@ -10,12 +10,12 @@ class WeaponReach extends WeaponField<AbstractWeaponTemplate, WeaponReachSchema>
 			min: new fields.NumberField<number, number, true, false, true>({
 				required: true,
 				nullable: false,
-				initial: 0,
+				initial: 1,
 			}),
 			max: new fields.NumberField<number, number, true, false, true>({
 				required: true,
 				nullable: false,
-				initial: 0,
+				initial: 1,
 			}),
 			closeCombat: new fields.BooleanField<boolean>({ required: true, nullable: false, initial: false }),
 			changeRequiresReady: new fields.BooleanField<boolean>({ required: true, nullable: false, initial: false }),

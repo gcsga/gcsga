@@ -52,7 +52,7 @@ class WeaponMeleeData extends ItemDataModel.mixin(
 		const blockTooltip = addBuffer("", buffer)
 
 		buffer.clear()
-		const damage = this.damage.resolve(this, buffer)
+		const damage = this.damage.resolvedValue(buffer)
 		const damageTooltip = addBuffer("", buffer)
 
 		buffer.clear()
@@ -67,16 +67,37 @@ class WeaponMeleeData extends ItemDataModel.mixin(
 			name: new CellData({
 				primary: this.processedName,
 				secondary: this.processedNotes,
+				classList: ["item-name"],
 			}),
 			usage: new CellData({
 				primary: this.usageWithReplacements,
+				classList: ["item-usage"],
 			}),
-			level: new CellData({ primary: level, tooltip: levelTooltip }),
-			damage: new CellData({ primary: damage.toString(), tooltip: damageTooltip }),
-			parry: new CellData({ primary: parry.toString(), tooltip: parryTooltip }),
-			block: new CellData({ primary: block.toString(), tooltip: blockTooltip }),
-			reach: new CellData({ primary: reach.toString(), tooltip: reachTooltip }),
-			strength: new CellData({ primary: strength.toString(), tooltip: strengthTooltip }),
+			level: new CellData({ primary: level, tooltip: levelTooltip, classList: ["item-skill-level"] }),
+			damage: new CellData({
+				primary: damage.toString(),
+				tooltip: damageTooltip,
+
+				classList: ["item-damage"],
+			}),
+			parry: new CellData({
+				primary: parry.toString(),
+				tooltip: parryTooltip,
+
+				classList: ["item-parry"],
+			}),
+			block: new CellData({ primary: block.toString(), tooltip: blockTooltip, classList: ["item-block"] }),
+			reach: new CellData({
+				primary: reach.toString(),
+				tooltip: reachTooltip,
+
+				classList: ["item-reach"],
+			}),
+			strength: new CellData({
+				primary: strength.toString(),
+				tooltip: strengthTooltip,
+				classList: ["item-strength"],
+			}),
 		}
 
 		return data

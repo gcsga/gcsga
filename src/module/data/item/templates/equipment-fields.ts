@@ -185,19 +185,6 @@ class EquipmentFieldsTemplate extends ItemDataModel.mixin(
 
 	override get cellData(): Record<string, CellData> {
 		let dim = this.quantity === 0
-		// let c = this.parent
-		// while (c.container !== null) {
-		// 	if (c.container instanceof Promise) {
-		// 		;(async () => {
-		// 			const container = await c.container
-		// 			if (container !== null) c = container
-		// 		})()
-		// 	} else {
-		// 		c = c.container
-		// 	}
-		// 	if (!c.hasTemplate(ItemTemplateType.EquipmentFields)) break
-		// 	dim = c.system.quantity === 0
-		// }
 		const weightUnits = SheetSettings.for(this.actor).default_weight_units
 
 		return {

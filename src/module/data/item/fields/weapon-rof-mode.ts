@@ -10,7 +10,7 @@ class WeaponROFMode extends WeaponField<AbstractWeaponTemplate, WeaponROFModeSch
 			shotsPerAttack: new fields.NumberField<number, number, true, false, true>({
 				required: true,
 				nullable: false,
-				initial: 0,
+				initial: 1,
 			}),
 			secondaryProjectiles: new fields.NumberField<number, number, true, false, true>({
 				required: true,

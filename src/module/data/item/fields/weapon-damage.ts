@@ -11,7 +11,7 @@ class WeaponDamage extends WeaponField<AbstractWeaponTemplate, WeaponDamageSchem
 	static override defineSchema(): WeaponDamageSchema {
 		const fields = foundry.data.fields
 		return {
-			type: new fields.StringField({ required: true, nullable: false, initial: "" }),
+			type: new fields.StringField({ required: true, nullable: false, initial: "cr" }),
 			st: new fields.StringField({
 				required: true,
 				nullable: false,
@@ -24,11 +24,11 @@ class WeaponDamage extends WeaponField<AbstractWeaponTemplate, WeaponDamageSchem
 			// base: new fields.EmbeddedDataField(DiceGURPS),
 			// base: new fields.EmbeddedDataField(DiceGURPS),
 			base: new DiceField(),
-			armor_divisor: new fields.NumberField({ required: true, nullable: false, initial: 0 }),
+			armor_divisor: new fields.NumberField({ required: true, nullable: false, initial: 1 }),
 			// fragmentation: new fields.SchemaField(DiceGURPS.defineSchema()),
 			// fragmentation: new fields.EmbeddedDataField(DiceGURPS),
 			fragmentation: new DiceField(),
-			fragmentation_armor_divisor: new fields.NumberField({ required: true, nullable: false, initial: 0 }),
+			fragmentation_armor_divisor: new fields.NumberField({ required: true, nullable: false, initial: 1 }),
 			fragmentation_type: new fields.StringField({ required: true, nullable: false, initial: "" }),
 			modifier_per_die: new fields.NumberField({ required: true, nullable: false, initial: 0 }),
 		}
@@ -38,7 +38,7 @@ class WeaponDamage extends WeaponField<AbstractWeaponTemplate, WeaponDamageSchem
 		const buffer = new StringBuilder()
 		if (this.st !== stdmg.Option.None) {
 			if (this.leveled) buffer.push(stdmg.Option.toStringLeveled(this.st))
-			else buffer.push(stdmg.Option.toString(this.st))
+			else buffer.push(game.i18n.localize(stdmg.Option.toString(this.st)))
 		}
 		let convertMods = false
 		if (this.parent !== null) convertMods = SheetSettings.for(this.parent.actor).use_modifying_dice_plus_adds
@@ -56,12 +56,12 @@ class WeaponDamage extends WeaponField<AbstractWeaponTemplate, WeaponDamageSchem
 		}
 		if (this.modifier_per_die !== 0) {
 			if (buffer.length !== 0) buffer.push(" ")
+			buffer.push(
+				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Weapon.ModifierPerDie, {
+					value: this.modifier_per_die.signedString(),
+				}),
+			)
 		}
-		buffer.push(
-			LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Weapon.ModifierPerDie, {
-				value: this.modifier_per_die.signedString(),
-			}),
-		)
 		const t = this.type.trim()
 		if (t !== "") {
 			buffer.push(" ", t)

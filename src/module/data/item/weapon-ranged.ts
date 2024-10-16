@@ -54,7 +54,7 @@ class WeaponRangedData extends ItemDataModel.mixin(
 		const levelTooltip = addBuffer("", buffer)
 
 		buffer.clear()
-		const damage = this.damage.resolve(this, buffer)
+		const damage = this.damage.resolvedValue(buffer)
 		const damageTooltip = addBuffer("", buffer)
 
 		buffer.clear()
@@ -89,20 +89,42 @@ class WeaponRangedData extends ItemDataModel.mixin(
 			name: new CellData({
 				primary: this.processedName,
 				secondary: this.processedNotes,
+				classList: ["item-name"],
 			}),
 			usage: new CellData({
 				primary: this.usageWithReplacements,
+				classList: ["item-usage"],
 			}),
-			level: new CellData({ primary: level, tooltip: levelTooltip }),
-			damage: new CellData({ primary: damage.toString(), tooltip: damageTooltip }),
-			accuracy: new CellData({ primary: accuracy.toString(), tooltip: accuracyTooltip }),
+			level: new CellData({ primary: level, tooltip: levelTooltip, classList: ["item-skill-level"] }),
+			damage: new CellData({ primary: damage.toString(), tooltip: damageTooltip, classList: ["item-damage"] }),
+			accuracy: new CellData({
+				primary: accuracy.toString(),
+				tooltip: accuracyTooltip,
+				classList: ["item-accuracy"],
+			}),
 			// TODO: revise
-			range: new CellData({ primary: range.toString(true), tooltip: rangeTooltip }),
-			rateOfFire: new CellData({ primary: rateOfFire.toString(), tooltip: rateOfFireTooltip }),
-			shots: new CellData({ primary: shots.toString(), tooltip: shotsTooltip }),
-			bulk: new CellData({ primary: bulk.toString(), tooltip: bulkTooltip }),
-			recoil: new CellData({ primary: recoil.toString(), tooltip: recoilTooltip }),
-			strength: new CellData({ primary: strength.toString(), tooltip: strengthTooltip }),
+			range: new CellData({ primary: range.toString(true), tooltip: rangeTooltip, classList: ["item-range"] }),
+			rateOfFire: new CellData({
+				primary: rateOfFire.toString(),
+				tooltip: rateOfFireTooltip,
+				classList: ["item-rof"],
+			}),
+			shots: new CellData({ primary: shots.toString(), tooltip: shotsTooltip, classList: ["item-shots"] }),
+			bulk: new CellData({
+				primary: bulk.toString(),
+				tooltip: bulkTooltip,
+				classList: ["item-bulk"],
+			}),
+			recoil: new CellData({
+				primary: recoil.toString(),
+				tooltip: recoilTooltip,
+				classList: ["item-recoil"],
+			}),
+			strength: new CellData({
+				primary: strength.toString(),
+				tooltip: strengthTooltip,
+				classList: ["item-strength"],
+			}),
 		}
 
 		return data

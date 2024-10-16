@@ -7,22 +7,30 @@
 	data-uuid="{{item.uuid}}"
 	draggable="true"
 >
-	<div class="item-row">{{#each item.cellData as |cell key|}} {{cell.element}} {{/each}}</div>
+	<div class="item-row">
+		<!-- Cell Data -->
+		{{#each item.system.cellData as |cell key|}} {{cell.element}} {{/each}}
+		<!-- Buttons -->
+		<div class="item-detail item-controls">
+			{{#each item.system.sheetButtons as |button index|}} {{button.element}}{{/each}}
+		</div>
+	</div>
 </li>
 {{/inline}}
 
-<div class="inventory-list">
+<div class="items-section" data-types="weaponRanged">
 	<div class="items-header">
 		<i class="fa-solid fa-checkmark"></i>
-		<div class="item-header">Ranged Weapon Usage</div>
-		<div class="item-header">SL</div>
-		<div class="item-header">Acc</div>
-		<div class="item-header">Damage</div>
-		<div class="item-header">RoF</div>
-		<div class="item-header">Shots</div>
-		<div class="item-header">Bulk</div>
-		<div class="item-header">Recoil</div>
-		<div class="item-header">ST</div>
+		<div class="item-header item-name">Ranged Weapon Usage</div>
+		<div class="item-header item-skill-level">SL</div>
+		<div class="item-header item-accuracy">Acc</div>
+		<div class="item-header item-damage">Damage</div>
+		<div class="item-header item-rof">RoF</div>
+		<div class="item-header item-shots">Shots</div>
+		<div class="item-header item-bulk">Bulk</div>
+		<div class="item-header item-recoil">Recoil</div>
+		<div class="item-header item-strength">ST</div>
+		<div class="item-header item-controls"></div>
 	</div>
 	<ul class="item-list">
 		{{#each system.itemTypes.weaponRanged}} {{> item item=this}} {{/each}}

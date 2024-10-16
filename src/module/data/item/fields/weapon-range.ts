@@ -139,6 +139,10 @@ class WeaponRange extends WeaponField<AbstractWeaponTemplate, WeaponRangeSchema>
 		return new WeaponRange(result)
 	}
 
+	override tooltip(_w: AbstractWeaponTemplate): string {
+		return ""
+	}
+
 	static override cleanData(
 		source?: object | undefined,
 		options?: Record<string, unknown> | undefined,

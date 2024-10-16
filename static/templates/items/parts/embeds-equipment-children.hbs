@@ -1,0 +1,36 @@
+{{#* inline "item"}}
+<li
+	class="item"
+	data-item-name="{{item.name}}"
+	data-item-id="{{item.id}}"
+	data-item-sort="{{item.sort}}"
+	data-uuid="{{item.uuid}}"
+	draggable="true"
+>
+	<div class="item-row">
+		<!-- Cell Data -->
+		{{#each item.system.cellData as |cell key|}} {{cell.element}} {{/each}}
+		<!-- Buttons -->
+		<div class="item-detail item-controls">
+			{{#each item.system.sheetButtons as |button index|}} {{button.element}}{{/each}}
+		</div>
+	</div>
+</li>
+{{/inline}}
+
+<div class="items-section" data-types="weaponMelee">
+	<div class="items-header">
+		<div class="item-header">Name</div>
+		<div class="item-header">Name</div>
+		<div class="item-header">Name</div>
+		<div class="item-header">Name</div>
+		<div class="item-header">Name</div>
+		<div class="item-header">Name</div>
+		<div class="item-header">Name</div>
+		<div class="item-header">Name</div>
+		<div class="item-header">Name</div>
+	</div>
+	<ul class="item-list">
+		{{#each system.itemTypes.weaponMelee}} {{> item item=this}} {{/each}}
+	</ul>
+</div>

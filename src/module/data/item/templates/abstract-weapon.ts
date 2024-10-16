@@ -291,6 +291,14 @@ class AbstractWeaponTemplate extends ItemDataModel<AbstractWeaponTemplateSchema>
 		}
 	}
 
+	get nameableReplacements(): Map<string, string> {
+		const container = this.parent.container
+		if (!(container instanceof Promise)) {
+			if (container?.hasTemplate(ItemTemplateType.Replacement)) return container.system.nameableReplacements
+		}
+		return new Map<string, string>()
+	}
+
 	/** Replacements */
 	get usageWithReplacements(): string {
 		if (!this.hasTemplate(ItemTemplateType.BasicInformation)) return ""
@@ -305,7 +313,6 @@ class AbstractWeaponTemplate extends ItemDataModel<AbstractWeaponTemplateSchema>
 
 interface AbstractWeaponTemplate extends ModelPropsFromSchema<AbstractWeaponTemplateSchema> {
 	constructor: typeof AbstractWeaponTemplate
-	nameableReplacements: Map<string, string>
 	notes: string
 	tags: string[]
 	defaults: SkillDefault[]

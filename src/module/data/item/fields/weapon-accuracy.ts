@@ -76,6 +76,10 @@ class WeaponAccuracy extends WeaponField<AbstractWeaponTemplate, WeaponAccuracyS
 		return new WeaponAccuracy(result)
 	}
 
+	override tooltip(_w: AbstractWeaponTemplate): string {
+		return ""
+	}
+
 	static override cleanData(
 		source?: object | undefined,
 		options?: Record<string, unknown> | undefined,
