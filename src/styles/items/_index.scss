@@ -75,7 +75,6 @@
 				&::placeholder {
 					color: transparent;
 				}
-				// color: transparent;
 			}
 		}
 
@@ -96,6 +95,7 @@
 }
 
 .gurps.item.sheet.minimized {
+	min-width: unset;
 	> header.window-header {
 		// Make Window Icon and Title visible in minimized sheet
 		h1.window-title,

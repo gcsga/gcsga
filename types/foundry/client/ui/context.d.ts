@@ -100,6 +100,8 @@ declare global {
 		name: string
 		/** A string containing an HTML icon element for the menu item */
 		icon: string
+		/** Group to separate the item into. Items with the same group are displayed together. */
+		group?: string
 		/**
 		 * The function to call when the menu item is clicked. Receives the HTML element
 		 * of the entry that this context menu is for.

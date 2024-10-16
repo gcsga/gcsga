@@ -53,13 +53,16 @@ class ItemDataModel<TSchema extends ItemDataSchema = ItemDataSchema> extends Sys
 	/* -------------------------------------------- */
 
 	get sheetButtons(): SheetButton[] {
-		return []
-	}
-
-	/* -------------------------------------------- */
-
-	get contextMenuItmes(): ContextMenuEntry[] {
-		return []
+		return [
+			new SheetButton(
+				{
+					classList: ["fa-solid", "fa-ellipsis-vertical"],
+					action: "openItemContextMenu",
+					permission: foundry.CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER,
+				},
+				{ parent: this },
+			),
+		]
 	}
 
 	/* -------------------------------------------- */
