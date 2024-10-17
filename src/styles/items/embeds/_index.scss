@@ -111,6 +111,15 @@ section[data-tab="embeds"] {
 		&.item-rof {
 			width: 3rem;
 		}
+
+		&.item-quantity,
+		&.item-legality-class,
+		&.item-cost,
+		&.item-cost-extended,
+		&.item-weight,
+		&.item-weight-extended {
+			width: 2rem;
+		}
 	}
 
 	.item-detail {

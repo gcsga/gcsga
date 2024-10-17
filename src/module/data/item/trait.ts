@@ -52,7 +52,7 @@ class TraitData extends ItemDataModel.mixin(
 
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
 		context.detailsParts = ["gurps.details-trait", "gurps.details-prereqs", "gurps.details-features"]
-		context.embedsParts = ["gurps.embeds-weapons-melee", "gurps.embeds-weapons-ranged"]
+		context.embedsParts = ["gurps.embeds-weapon-melee", "gurps.embeds-weapon-ranged"]
 	}
 
 	static override defineSchema(): TraitSchema {

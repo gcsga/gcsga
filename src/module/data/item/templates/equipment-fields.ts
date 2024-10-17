@@ -193,12 +193,15 @@ class EquipmentFieldsTemplate extends ItemDataModel.mixin(
 				checked: this.equipped,
 				alignment: align.Option.Middle,
 				dim,
+				classList: ["item-equipped"],
+				condition: this.parent.isOwned,
 			}),
 			quantity: new CellData({
 				type: cell.Type.Text,
 				primary: this.quantity.toLocaleString(),
 				alignment: align.Option.End,
 				dim,
+				classList: ["item-quantity"],
 			}),
 			name: new CellData({
 				type: cell.Type.Text,
@@ -206,69 +209,71 @@ class EquipmentFieldsTemplate extends ItemDataModel.mixin(
 				secondary: this.secondaryText(display.Option.isInline),
 				alignment: align.Option.Start,
 				dim,
+				classList: ["item-name"],
 			}),
 			uses: new CellData({
 				type: cell.Type.Text,
 				primary: this.max_uses > 0 ? this.uses?.toString() : "",
 				alignment: align.Option.End,
 				dim,
+				classList: ["item-uses"],
 			}),
 			TL: new CellData({
 				type: cell.Type.Text,
 				primary: this.tech_level,
 				alignment: align.Option.End,
 				dim,
+				classList: ["item-tech-level"],
 			}),
 			LC: new CellData({
 				type: cell.Type.Text,
 				primary: this.legality_class,
 				alignment: align.Option.End,
 				dim,
+				classList: ["item-legality-class"],
 			}),
 			cost: new CellData({
 				type: cell.Type.Text,
 				primary: this.adjustedValue().toLocaleString(),
 				alignment: align.Option.End,
 				dim,
+				classList: ["item-cost"],
 			}),
 			extendedCost: new CellData({
 				type: cell.Type.Text,
 				primary: this.extendedValue().toLocaleString(),
 				alignment: align.Option.End,
 				dim,
+				classList: ["item-cost-extended"],
 			}),
 			weight: new CellData({
 				type: cell.Type.Text,
 				primary: this.adjustedWeight(false, weightUnits).toLocaleString(),
 				alignment: align.Option.End,
 				dim,
+				classList: ["item-weight"],
 			}),
 			extendedWeight: new CellData({
 				type: cell.Type.Text,
 				primary: this.extendedWeight(false, weightUnits).toLocaleString(),
 				alignment: align.Option.End,
 				dim,
-			}),
-			tags: new CellData({
-				type: cell.Type.Text,
-				primary: this.hasTemplate(ItemTemplateType.BasicInformation) ? this.combinedTags : "",
-				alignment: align.Option.Start,
-				dim,
-			}),
-			reference: new CellData({
-				type: cell.Type.PageRef,
-				primary: this.hasTemplate(ItemTemplateType.BasicInformation) ? this.reference : "",
-				secondary: this.hasTemplate(ItemTemplateType.BasicInformation)
-					? this.reference_highlight === ""
-						? this.nameWithReplacements
-						: this.reference_highlight
-					: "",
-				dim,
+				classList: ["item-weight-extended"],
 			}),
 		}
 	}
 
-	async adjustedValue(): Promise<number> {
+	adjustedValue(): MaybePromise<number> {
+		if (this.parent?.pack) return this.#adjustedValue()
+
+		return valueAdjustedForModifiers(
+			this.parent as ItemInst<ItemType.Equipment | ItemType.EquipmentContainer>,
+			this.value,
+			this.allModifiers as Collection<ItemInst<ItemType.EquipmentModifier>>,
+		)
+	}
+
+	async #adjustedValue(): Promise<number> {
 		return valueAdjustedForModifiers(
 			this.parent as ItemInst<ItemType.Equipment | ItemType.EquipmentContainer>,
 			this.value,
@@ -276,7 +281,7 @@ class EquipmentFieldsTemplate extends ItemDataModel.mixin(
 		)
 	}
 
-	async extendedValue(): Promise<number> {
+	extendedValue(): MaybePromise<number> {
 		return this.adjustedValue()
 	}
 

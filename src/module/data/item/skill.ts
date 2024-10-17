@@ -66,7 +66,7 @@ class SkillData extends ItemDataModel.mixin(
 			"gurps.details-features",
 			"gurps.details-defaults",
 		]
-		context.embedsParts = ["gurps.embeds-weapons-melee", "gurps.embeds-weapons-ranged"]
+		context.embedsParts = ["gurps.embeds-weapon-melee", "gurps.embeds-weapon-ranged"]
 	}
 
 	static override defineSchema(): SkillSchema {

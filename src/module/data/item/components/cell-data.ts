@@ -43,14 +43,17 @@ class CellData extends foundry.abstract.DataModel<SystemDataModel, CellDataSchem
 				new fields.StringField({ required: true, nullable: false, blank: false }),
 				{ required: true, nullable: false, initial: [] },
 			),
+			// Condition which determines whether the cell should be displayed
+			condition: new fields.BooleanField({ required: true, nullable: false, initial: true }),
 		}
 	}
 
 	get element(): Handlebars.SafeString {
-		return new Handlebars.SafeString(this.toFormElement().outerHTML)
+		return new Handlebars.SafeString(this.toFormElement()?.outerHTML ?? "")
 	}
 
-	toFormElement(): HTMLElement {
+	toFormElement(): HTMLElement | null {
+		if (!this.condition) return null
 		const element = document.createElement(this._getElementType())
 		this._getFormValuesForType(element)
 		element.style.setProperty("align-self", this._getAlignment())
@@ -125,6 +128,7 @@ type CellDataSchema = {
 		false,
 		true
 	>
+	condition: fields.BooleanField<boolean, boolean, true, false, true>
 }
 
 export { CellData }

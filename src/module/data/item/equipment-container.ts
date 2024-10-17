@@ -14,10 +14,10 @@ class EquipmentContainerData extends EquipmentFieldsTemplate {
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
 		context.detailsParts = ["gurps.details-equipment", "gurps.details-prereqs", "gurps.details-features"]
 		context.embedsParts = [
-			"gurps.embeds-equipment-children",
-			"gurps.embeds-equipment-modifiers",
-			"gurps.embeds-weapons-melee",
-			"gurps.embeds-weapons-ranged",
+			"gurps.embeds-equipment-modifier",
+			"gurps.embeds-weapon-melee",
+			"gurps.embeds-weapon-ranged",
+			"gurps.embeds-equipment",
 		]
 	}
 

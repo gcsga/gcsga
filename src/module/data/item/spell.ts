@@ -10,7 +10,7 @@ class SpellData extends SpellTemplate {
 
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
 		context.detailsParts = ["gurps.details-spell", "gurps.details-prereqs"]
-		context.embedsParts = ["gurps.embeds-weapons-melee", "gurps.embeds-weapons-ranged"]
+		context.embedsParts = ["gurps.embeds-weapon-melee", "gurps.embeds-weapon-ranged"]
 	}
 
 	static override defineSchema(): SpellSchema {

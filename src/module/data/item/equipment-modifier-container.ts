@@ -16,7 +16,7 @@ class EquipmentModifierContainerData extends ItemDataModel.mixin(
 
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
 		context.detailsParts = ["gurps.details-container"]
-		context.embedsParts = ["gurps.embeds-children"]
+		context.embedsParts = ["gurps.embeds-equipment-modifier"]
 	}
 
 	static override defineSchema(): EquipmentModifierContainerSchema {
