@@ -1,5 +1,3 @@
-import { equalFold } from "@module/data/item/components/string-criteria.ts"
-
 export namespace tmcost {
 	export enum Type {
 		Percentage = "percentage",
@@ -10,18 +8,6 @@ export namespace tmcost {
 	export namespace Type {
 		export function toString(T: Type): string {
 			return `GURPS.Enum.tmcost.${T}.Name`
-		}
-
-		export function ensureValid(T: Type): Type {
-			if (Types.includes(T)) return T
-			return Types[0]
-		}
-
-		export function extractType(s: string): Type {
-			for (const one of Types) {
-				if (equalFold(one, s)) return one
-			}
-			return Types[0]
 		}
 	}
 

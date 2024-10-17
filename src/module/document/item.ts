@@ -201,6 +201,10 @@ class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extend
 	 * Type safe way of verifying if an Item contains a template
 	 */
 	hasTemplate<T extends ItemTemplateType>(template: T): this is { system: ItemDataTemplates[T] } {
+		if (this.system.constructor !== ItemDataModel) {
+			const prototype = this.system.constructor.prototype.constructor
+			return [prototype, ...prototype._schemaTemplates].some(t => t.name === template)
+		}
 		return this.system.constructor._schemaTemplates.some(t => t.name === template)
 	}
 

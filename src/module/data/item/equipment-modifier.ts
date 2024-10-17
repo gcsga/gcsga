@@ -1,4 +1,4 @@
-import { StringBuilder, align, cell, display, emcost, emweight } from "@util"
+import { StringBuilder, Weight, align, cell, display, emcost, emweight } from "@util"
 import { ItemDataModel } from "./abstract.ts"
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { FeatureTemplate, FeatureTemplateSchema } from "./templates/features.ts"
@@ -48,8 +48,8 @@ class EquipmentModifierData extends ItemDataModel.mixin(
 				initial: "",
 				label: "GURPS.Item.EquipmentModifier.FIELDS.TechLevel.Name",
 			}),
-			cost: new fields.StringField({ required: true, nullable: false, initial: "0" }),
-			weight: new fields.StringField({ required: true, nullable: false, initial: "0" }),
+			cost: new fields.StringField({ required: true, nullable: false, blank: false, initial: "0" }),
+			weight: new fields.StringField({ required: true, nullable: false, blank: false, initial: "0" }),
 		}) as EquipmentModifierSchema
 	}
 
@@ -76,7 +76,7 @@ class EquipmentModifierData extends ItemDataModel.mixin(
 			cost: new CellData({
 				type: cell.Type.Text,
 				primary: this.costDescription,
-				classList: ["item-cost-adjustment"],
+				classList: ["item-value-adjustment"],
 			}),
 			weight: new CellData({
 				type: cell.Type.Text,
@@ -84,6 +84,23 @@ class EquipmentModifierData extends ItemDataModel.mixin(
 				classList: ["item-weight-adjustment"],
 			}),
 		}
+	}
+
+	static override cleanData(
+		source?: Partial<SourceFromSchema<EquipmentModifierSchema>> & Record<string, unknown>,
+		options?: Record<string, unknown>,
+	): SourceFromSchema<EquipmentModifierSchema> {
+		console.log(source, options)
+		if (source) {
+			if (source.cost_type) {
+				source.cost = emcost.Type.format(source.cost_type, source.cost ?? "0")
+			}
+			if (source.weight_type) {
+				source.weight = emweight.Type.format(source.weight_type, source.weight ?? "0", Weight.Unit.Pound)
+			}
+		}
+
+		return super.cleanData(source, options) as SourceFromSchema<EquipmentModifierSchema>
 	}
 
 	// Returns the formatted name for display

@@ -33,6 +33,10 @@ class ItemDataModel<TSchema extends ItemDataSchema = ItemDataSchema> extends Sys
 	 * Type safe way of verifying if an Item contains a template
 	 */
 	hasTemplate<T extends ItemTemplateType>(template: T): this is ItemDataTemplates[T] {
+		if (this.constructor !== ItemDataModel) {
+			const prototype = this.constructor.prototype.constructor
+			return [prototype, ...prototype._schemaTemplates].some(t => t.name === template)
+		}
 		return this.constructor._schemaTemplates.some(t => t.name === template)
 	}
 

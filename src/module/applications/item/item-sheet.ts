@@ -13,6 +13,8 @@ import { generateId } from "@util/misc.ts"
 import { ActiveEffectGURPS } from "@module/document/active-effect.ts"
 import { ContextMenuGURPS } from "../context-menu.ts"
 import { MaybePromise } from "@module/data/types.ts"
+import { Weight } from "@util/weight.ts"
+import { SheetSettings } from "@module/data/sheet-settings.ts"
 
 const { api, sheets } = foundry.applications
 
@@ -304,7 +306,7 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 	/* -------------------------------------------- */
 
 	_getTabs(): Record<string, Partial<ApplicationTab>> {
-		return this._markTabs({
+		let tabs: Record<string, Partial<ApplicationTab>> = {
 			description: {
 				id: "description",
 				group: "primary",
@@ -329,7 +331,11 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 				icon: "",
 				label: "GURPS.Sheets.Item.Tabs.Replacements",
 			},
-		})
+		}
+		if (!this.item.hasTemplate(ItemTemplateType.Replacement)) delete tabs.replacements
+		if (!this.item.hasTemplate(ItemTemplateType.Container)) delete tabs.embeds
+
+		return this._markTabs(tabs)
 	}
 
 	/* -------------------------------------------- */
@@ -650,6 +656,10 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 				case ItemType.Technique:
 					this._prepareSkillPartContext(context)
 					break
+				case ItemType.Equipment:
+				case ItemType.EquipmentContainer:
+					this._prepareEquipmentPartContext(context)
+					break
 				case ItemType.Note:
 				case ItemType.NoteContainer:
 					this._prepareNoteContext(context)
@@ -665,6 +675,18 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		if (!this.item.hasTemplate(ItemTemplateType.AbstractSkill)) return context
 		if (this.item.system.level.level === Number.MIN_SAFE_INTEGER) context.levelField = "-"
 		else context.levelField = `${this.item.system.levelAsString}/${this.item.system.relativeLevel}`
+		return context
+	}
+
+	/* -------------------------------------------- */
+
+	protected async _prepareEquipmentPartContext(context: Record<string, any>): Promise<object> {
+		console.log("_prepareEquipmentPartContext")
+		if (!this.item.hasTemplate(ItemTemplateType.EquipmentFields)) return context
+		context.extendedValue = this.item.system.extendedValue
+		context.extendedWeight = Weight.format(
+			await this.item.system.extendedWeight(false, SheetSettings.for(this.item.actor).default_weight_units),
+		)
 		return context
 	}
 

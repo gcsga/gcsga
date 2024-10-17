@@ -180,8 +180,8 @@
 					"LegalityClass": { "Name": "Legality Class" },
 					"Quantity": { "Name": "Quantity" },
 					"Equipped": { "Name": "Equipped" },
-					"Value": { "Name": "Value" },
-					"Weight": { "Name": "Weight" },
+					"Value": { "Name": "Value", "Extended": "Extended" },
+					"Weight": { "Name": "Weight", "Extended": "Extended" },
 					"Uses": { "Name": "Uses" },
 					"MaxUses": { "Name": "Maximum uses" },
 					"RatedStrength": { "Name": "Rated ST" },
@@ -367,7 +367,7 @@
 					"Enabled": { "Name": "Enabled" },
 					"TechLevel": { "Name": "Tech Level" },
 					"CostModifier": { "Name": "Cost Modifier" },
-					"WeightModifier": { "Name": "Weigh Modifier" },
+					"WeightModifier": { "Name": "Weight Modifier" },
 					"Levels": { "Name": "Levels" },
 					"Total": { "Name": "Total" },
 					"CostIsPerLevel": { "Name": "Per Level" },
@@ -600,6 +600,7 @@
 				"levels_only": { "Name": "to leveled cost only", "Alt": "(levels only)" }
 			},
 			"emcost": {
+				"Example": "Accepted value formats: {value}",
 				"Type": {
 					"to_original_cost": {
 						"Name": "to original cost",
@@ -620,6 +621,7 @@
 				}
 			},
 			"emweight": {
+				"Example": "Accepted value formats: {value}",
 				"Type": {
 					"to_original_weight": {
 						"Name": "to original weight",

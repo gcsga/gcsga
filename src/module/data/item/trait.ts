@@ -1,17 +1,6 @@
 import { type ItemGURPS2 } from "@module/document/item.ts"
 import { Nameable } from "@module/util/index.ts"
-import {
-	ErrorGURPS,
-	StringBuilder,
-	StringComparison,
-	affects,
-	align,
-	cell,
-	display,
-	feature,
-	selfctrl,
-	tmcost,
-} from "@util"
+import { ErrorGURPS, StringBuilder, StringComparison, align, cell, display, feature, selfctrl } from "@util"
 import { ItemDataModel } from "./abstract.ts"
 import { ItemType } from "../constants.ts"
 import { FeatureSet, FeatureTypes } from "../feature/types.ts"
@@ -19,7 +8,7 @@ import { SheetSettings } from "../sheet-settings.ts"
 import { Study } from "../study.ts"
 import { MaybePromise } from "../types.ts"
 import { CellData } from "./components/cell-data.ts"
-import { ItemInst, modifyPoints } from "./helpers.ts"
+import { ItemInst, costAdjustedForModifiers } from "./helpers.ts"
 import {
 	BasicInformationTemplate,
 	BasicInformationTemplateSchema,
@@ -52,7 +41,7 @@ class TraitData extends ItemDataModel.mixin(
 
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
 		context.detailsParts = ["gurps.details-trait", "gurps.details-prereqs", "gurps.details-features"]
-		context.embedsParts = ["gurps.embeds-weapon-melee", "gurps.embeds-weapon-ranged"]
+		context.embedsParts = ["gurps.embeds-weapon-melee", "gurps.embeds-weapon-ranged", "gurps.embeds-trait-modifier"]
 	}
 
 	static override defineSchema(): TraitSchema {
@@ -87,12 +76,16 @@ class TraitData extends ItemDataModel.mixin(
 				label: "GURPS.Item.Trait.FIELDS.PointsPerLevel.Name",
 			}),
 			cr: new fields.NumberField({
+				required: true,
+				nullable: false,
 				choices: selfctrl.RollsChoices(),
 				initial: selfctrl.Roll.NoCR,
-				nullable: false,
 				label: "GURPS.Item.Trait.FIELDS.Cr.Name",
 			}),
 			cr_adj: new fields.StringField({
+				required: true,
+				nullable: false,
+				blank: false,
 				choices: selfctrl.AdjustmentsChoices(),
 				initial: selfctrl.Adjustment.NoCRAdj,
 				label: "GURPS.Item.Trait.FIELDS.CrAdj.Name",
@@ -211,89 +204,17 @@ class TraitData extends ItemDataModel.mixin(
 	}
 
 	/** Returns trait point cost adjusted for enablement and modifiers */
-	get adjustedPoints(): number {
+	get adjustedPoints(): MaybePromise<number> {
 		if (!this.enabled) return 0
-		let basePoints = this.base_points
-		const levels = this.can_level ? (this.levels ?? 0) : 0
-		let pointsPerLevel = this.can_level ? (this.points_per_level ?? 0) : 0
-		let [baseEnh, levelEnh, baseLim, levelLim] = [0, 0, 0, 0]
-		let multiplier = selfctrl.Roll.multiplier(this.cr)
-		// TODO: see if this works
-		for (const mod of this.allModifiers as Collection<ItemInst<ItemType.TraitModifier>>) {
-			mod.system.trait = this.parent as any
-			const modifier = mod.system.costModifier
+		if (this.parent.pack) return this.#adjustedPoints()
+		return costAdjustedForModifiers(
+			this.parent as ItemInst<ItemType.Trait>,
+			this.allModifiers as Collection<ItemInst<ItemType.TraitModifier>>,
+		)
+	}
 
-			switch (mod.system.cost_type) {
-				case tmcost.Type.Percentage: {
-					switch (mod.system.affects) {
-						case affects.Option.Total:
-							if (modifier < 0) {
-								baseLim += modifier
-								levelLim += modifier
-							} else {
-								baseEnh += modifier
-								levelEnh += modifier
-							}
-							break
-						case affects.Option.BaseOnly:
-							if (modifier < 0) {
-								baseLim += modifier
-							} else {
-								baseEnh += modifier
-							}
-							break
-						case affects.Option.LevelsOnly:
-							if (modifier < 0) {
-								levelLim += modifier
-							} else {
-								levelEnh += modifier
-							}
-							break
-					}
-					break
-				}
-				case tmcost.Type.Points:
-					if (mod.system.affects === affects.Option.LevelsOnly) {
-						if (this.can_level) pointsPerLevel += modifier
-						else basePoints += modifier
-					}
-					break
-				case tmcost.Type.Multiplier:
-					multiplier *= modifier
-					break
-			}
-		}
-		let modifiedBasePoints = basePoints
-		const leveledPoints = pointsPerLevel * levels
-		if (baseEnh !== 0 || baseLim !== 0 || levelEnh !== 0 || levelLim !== 0) {
-			if (SheetSettings.for(this.parent.actor).use_multiplicative_modifiers) {
-				if (baseEnh === levelEnh && baseLim === levelLim) {
-					modifiedBasePoints = modifyPoints(
-						modifyPoints(modifiedBasePoints + leveledPoints, baseEnh),
-						Math.max(-80, baseLim),
-					)
-				} else {
-					modifiedBasePoints =
-						modifyPoints(modifyPoints(modifiedBasePoints, baseEnh), Math.max(-80, baseLim)) +
-						modifyPoints(modifyPoints(leveledPoints, levelEnh), Math.max(-80, levelLim))
-				}
-			} else {
-				const baseMod = Math.max(-80, baseEnh + baseLim)
-				const levelMod = Math.max(-80, levelEnh, levelLim)
-				if (baseMod === levelMod) {
-					modifiedBasePoints = modifyPoints(modifiedBasePoints + leveledPoints, baseMod)
-				} else {
-					modifiedBasePoints =
-						modifyPoints(modifiedBasePoints, baseMod) + modifyPoints(leveledPoints, levelMod)
-				}
-			}
-		} else {
-			modifiedBasePoints += leveledPoints
-		}
-
-		return this.round_down
-			? Math.floor(modifiedBasePoints * multiplier)
-			: Math.ceil(modifiedBasePoints * multiplier)
+	async #adjustedPoints(): Promise<number> {
+		return costAdjustedForModifiers(this.parent as ItemInst<ItemType.Trait>, await this.allModifiers)
 	}
 
 	get processedName(): string {

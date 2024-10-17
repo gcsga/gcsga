@@ -5,11 +5,14 @@ import {
 	StringBuilder,
 	TooltipGURPS,
 	Weight,
+	affects,
 	difficulty,
 	display,
 	emcost,
 	emweight,
 	feature,
+	selfctrl,
+	tmcost,
 } from "@util"
 import { ActorType, ItemType, gid } from "../constants.ts"
 import { AttributeDifficulty } from "./components/attribute-difficulty.ts"
@@ -120,6 +123,91 @@ function calculateTechniqueLevel(
 		relativeLevel,
 		tooltip: tooltip.toString(),
 	}
+}
+
+function costAdjustedForModifiers(
+	trait: ItemInst<ItemType.Trait>,
+	modifiers: Collection<ItemInst<ItemType.TraitModifier>>,
+): number {
+	let basePoints = trait.system.base_points
+	const levels = trait.system.can_level ? (trait.system.levels ?? 0) : 0
+	let pointsPerLevel = trait.system.can_level ? (trait.system.points_per_level ?? 0) : 0
+	let [baseEnh, levelEnh, baseLim, levelLim] = [0, 0, 0, 0]
+	let multiplier = selfctrl.Roll.multiplier(trait.system.cr)
+
+	for (const mod of modifiers) {
+		mod.system.trait = trait as any
+		const modifier = mod.system.costModifier
+
+		switch (mod.system.cost_type) {
+			case tmcost.Type.Percentage: {
+				switch (mod.system.affects) {
+					case affects.Option.Total:
+						if (modifier < 0) {
+							baseLim += modifier
+							levelLim += modifier
+						} else {
+							baseEnh += modifier
+							levelEnh += modifier
+						}
+						break
+					case affects.Option.BaseOnly:
+						if (modifier < 0) {
+							baseLim += modifier
+						} else {
+							baseEnh += modifier
+						}
+						break
+					case affects.Option.LevelsOnly:
+						if (modifier < 0) {
+							levelLim += modifier
+						} else {
+							levelEnh += modifier
+						}
+						break
+				}
+				break
+			}
+			case tmcost.Type.Points:
+				if (mod.system.affects === affects.Option.LevelsOnly) {
+					if (trait.system.can_level) pointsPerLevel += modifier
+				} else basePoints += modifier
+				break
+			case tmcost.Type.Multiplier:
+				multiplier *= modifier
+				break
+		}
+	}
+	let modifiedBasePoints = basePoints
+	const leveledPoints = pointsPerLevel * levels
+	if (baseEnh !== 0 || baseLim !== 0 || levelEnh !== 0 || levelLim !== 0) {
+		if (SheetSettings.for(trait.system.parent.actor).use_multiplicative_modifiers) {
+			if (baseEnh === levelEnh && baseLim === levelLim) {
+				modifiedBasePoints = modifyPoints(
+					modifyPoints(modifiedBasePoints + leveledPoints, baseEnh),
+					Math.max(-80, baseLim),
+				)
+			} else {
+				modifiedBasePoints =
+					modifyPoints(modifyPoints(modifiedBasePoints, baseEnh), Math.max(-80, baseLim)) +
+					modifyPoints(modifyPoints(leveledPoints, levelEnh), Math.max(-80, levelLim))
+			}
+		} else {
+			const baseMod = Math.max(-80, baseEnh + baseLim)
+			const levelMod = Math.max(-80, levelEnh, levelLim)
+			if (baseMod === levelMod) {
+				modifiedBasePoints = modifyPoints(modifiedBasePoints + leveledPoints, baseMod)
+			} else {
+				modifiedBasePoints = modifyPoints(modifiedBasePoints, baseMod) + modifyPoints(leveledPoints, levelMod)
+			}
+		}
+	} else {
+		modifiedBasePoints += leveledPoints
+	}
+
+	return trait.system.round_down
+		? Math.floor(modifiedBasePoints * multiplier)
+		: Math.ceil(modifiedBasePoints * multiplier)
 }
 
 function valueAdjustedForModifiers(
@@ -245,6 +333,7 @@ function processNonCFStep(
 	let cost = value
 
 	for (const mod of modifiers) {
+		if (!mod.system.enabled) continue
 		mod.system.equipment = equipment
 		if (mod.system.cost_type === costType) {
 			const t = emcost.Type.fromString(costType, mod.system.cost)
@@ -276,6 +365,7 @@ function processMultiplyAddWeightStep(
 ): number {
 	let sum = 0
 	for (const mod of modifiers) {
+		if (!mod.system.enabled) continue
 		mod.system.equipment = equipment
 		if (mod.system.weight_type === weightType) {
 			const t = emweight.Type.determineModifierWeightValueTypeFromString(weightType, mod.system.weight)
@@ -341,6 +431,7 @@ export {
 	valueAdjustedForModifiers,
 	weightAdjustedForModifiers,
 	extendedWeightAdjustedForModifiers,
+	costAdjustedForModifiers,
 	formatRelativeSkill,
 }
 export type { SkillLevel, ItemInst, ItemTemplateInst }

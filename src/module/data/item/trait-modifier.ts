@@ -64,31 +64,36 @@ class TraitModifierData extends ItemDataModel.mixin(BasicInformationTemplate, Fe
 		}) as TraitModifierSchema
 	}
 
+	static override cleanData(
+		source?: Partial<SourceFromSchema<TraitModifierSchema>> & Record<string, unknown>,
+		options?: Record<string, unknown>,
+	): SourceFromSchema<TraitModifierSchema> {
+		if (source) {
+			source.levels = source.use_level_from_trait ? null : (source.levels ?? 0)
+		}
+
+		return super.cleanData(source, options) as SourceFromSchema<TraitModifierSchema>
+	}
+
 	override get cellData(): Record<string, CellData> {
 		return {
 			enabled: new CellData({
 				type: cell.Type.Toggle,
 				checked: this.enabled,
 				alignment: align.Option.Middle,
+				classList: ["item-toggle"],
 			}),
 			name: new CellData({
 				type: cell.Type.Text,
 				primary: this.nameWithReplacements,
 				secondary: this.secondaryText(display.Option.isInline),
 				tooltip: this.secondaryText(display.Option.isTooltip),
+				classList: ["item-name"],
 			}),
 			cost: new CellData({
 				type: cell.Type.Text,
 				primary: this.costDescription,
-			}),
-			tags: new CellData({
-				type: cell.Type.Tags,
-				primary: this.combinedTags,
-			}),
-			reference: new CellData({
-				type: cell.Type.PageRef,
-				primary: this.reference,
-				secondary: this.reference_highlight === "" ? this.nameWithReplacements : this.reference_highlight,
+				classList: ["item-cost-adjustment"],
 			}),
 		}
 	}
@@ -129,7 +134,7 @@ class TraitModifierData extends ItemDataModel.mixin(BasicInformationTemplate, Fe
 			if (this.trait === null) return false
 			return this.trait.system.isLeveled
 		}
-		return this.levels > 0
+		return (this.levels ?? 0) > 0
 	}
 
 	get currentLevel(): number {
@@ -147,7 +152,7 @@ class TraitModifierData extends ItemDataModel.mixin(BasicInformationTemplate, Fe
 				multiplier = this.trait.system.currentLevel
 			}
 		} else {
-			multiplier = this.levels
+			multiplier = this.levels ?? 0
 		}
 		if (multiplier <= 0) multiplier = 1
 		return multiplier
@@ -177,16 +182,14 @@ class TraitModifierData extends ItemDataModel.mixin(BasicInformationTemplate, Fe
 			case tmcost.Type.Points:
 				return this.costModifier.signedString()
 			case tmcost.Type.Multiplier:
-				return (
-					game.i18n.localize(tmcost.Type.toString(tmcost.Type.Multiplier)) + this.costModifier.signedString()
-				)
+				return game.i18n.localize(tmcost.Type.toString(tmcost.Type.Multiplier)) + this.costModifier.toString()
 		}
 	}
 
 	// Returns the formatted cost for display
 	get costDescription(): string {
 		let base = this.costWithType
-		const desc = affects.Option.altString(this.affects)
+		const desc = game.i18n.localize(affects.Option.altString(this.affects))
 		if (desc !== "") base += ` ${desc}`
 		return base
 	}
@@ -228,7 +231,7 @@ type TraitModifierSchema = BasicInformationTemplateSchema &
 	FeatureTemplateSchema &
 	ReplacementTemplateSchema & {
 		cost: fields.NumberField<number, number, true, false, true>
-		levels: fields.NumberField<number, number, true, false, true>
+		levels: fields.NumberField<number, number, true, true, true>
 		cost_type: fields.StringField<tmcost.Type>
 		use_level_from_trait: fields.BooleanField<boolean, boolean, true, false, true>
 		affects: fields.StringField<affects.Option>

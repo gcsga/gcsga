@@ -15,7 +15,7 @@
 			{{#each item.system.sheetButtons as |button index|}} {{button.element}}{{/each}}
 		</div>
 	</div>
-	{{#if (eq item.type "equipmentModifierContainer")}}
+	{{#if (eq item.type "traitModifierContainer")}}
 	<ul class="item-list">
 		{{#each item.children}} {{>item item=this}} {{/each}}
 	</ul>
@@ -27,9 +27,7 @@
 	<div class="items-header">
 		<i class="fa-solid fa-check item-header item-toggle"></i>
 		<div class="item-header item-name">Equipment Modifier</div>
-		<div class="item-header item-tech-level">TL</div>
-		<div class="item-header item-value-adjustment">Cost Adjustment</div>
-		<div class="item-header item-weight-adjustment">Weight Adjustment</div>
+		<div class="item-header item-cost-adjustment">Cost Adjustment</div>
 		<div class="item-header item-controls"></div>
 	</div>
 	<ul class="item-list">

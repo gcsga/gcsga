@@ -5,8 +5,21 @@ import { EquipmentFieldsTemplate } from "./templates/equipment-fields.ts"
 import { ItemTemplateType } from "./types.ts"
 import { MaybePromise } from "../types.ts"
 import { ItemInst } from "./helpers.ts"
+import { ItemDataModel } from "./abstract.ts"
+import { BasicInformationTemplate } from "./templates/basic-information.ts"
+import { ContainerTemplate } from "./templates/container.ts"
+import { FeatureTemplate } from "./templates/features.ts"
+import { PrereqTemplate } from "./templates/prereqs.ts"
+import { ReplacementTemplate } from "./templates/replacements.ts"
 
-class EquipmentContainerData extends EquipmentFieldsTemplate {
+class EquipmentContainerData extends ItemDataModel.mixin(
+	BasicInformationTemplate,
+	PrereqTemplate,
+	FeatureTemplate,
+	ContainerTemplate,
+	ReplacementTemplate,
+	EquipmentFieldsTemplate,
+) {
 	static override childTypes = new Set([ItemType.Equipment, ItemType.EquipmentContainer])
 	static override modifierTypes = new Set([ItemType.EquipmentModifier, ItemType.EquipmentModifierContainer])
 	static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
@@ -21,14 +34,60 @@ class EquipmentContainerData extends EquipmentFieldsTemplate {
 		]
 	}
 
-	override async extendedValue(): Promise<number> {
+	override get extendedValue(): MaybePromise<number> {
 		if (this.quantity <= 0) return 0
-		let value = await this.adjustedValue()
+		if (this.parent?.pack) return this.#extendedValue()
+
+		let value = this.adjustedValue as number
 		const children = this.children as Collection<ItemGURPS2>
 		for (const child of children) {
-			if (child.hasTemplate(ItemTemplateType.EquipmentFields)) value += await child.system.extendedValue()
+			if (child.hasTemplate(ItemTemplateType.EquipmentFields)) value += child.system.extendedValue as number
 		}
 		return value * this.quantity
+	}
+
+	async #extendedValue(): Promise<number> {
+		let value = await this.adjustedValue
+		const children = this.children as Collection<ItemGURPS2>
+		for (const child of children) {
+			if (child.hasTemplate(ItemTemplateType.EquipmentFields)) value += await child.system.extendedValue
+		}
+		return value * this.quantity
+	}
+
+	override get allModifiers(): MaybePromise<Collection<ItemInst<ItemType.EquipmentModifier>>> {
+		if (!this.parent) return new Collection()
+		if (this.parent.pack) return this.#allModifiers()
+
+		const allModifiers = new Collection<ItemInst<ItemType.EquipmentModifier>>()
+
+		for (const item of this.contents as Collection<ItemGURPS2>) {
+			if (item.type === ItemType.EquipmentModifier)
+				allModifiers.set(item.id, <ItemInst<ItemType.EquipmentModifier>>item)
+
+			if (item.hasTemplate(ItemTemplateType.Container))
+				for (const contents of <Collection<ItemGURPS2>>item.system.allContents) {
+					if (contents.type === ItemType.EquipmentModifier)
+						allModifiers.set(contents.id, <ItemInst<ItemType.EquipmentModifier>>contents)
+				}
+		}
+		return allModifiers
+	}
+
+	async #allModifiers(): Promise<Collection<ItemInst<ItemType.EquipmentModifier>>> {
+		const allModifiers = new Collection<ItemInst<ItemType.EquipmentModifier>>()
+
+		for (const item of <Collection<ItemGURPS2>>(this as any).contents) {
+			if (item.type === ItemType.EquipmentModifier)
+				allModifiers.set(item.id, <ItemInst<ItemType.EquipmentModifier>>item)
+
+			if (item.hasTemplate(ItemTemplateType.Container))
+				for (const contents of await item.system.allContents) {
+					if (contents.type === ItemType.EquipmentModifier)
+						allModifiers.set(contents.id, <ItemInst<ItemType.EquipmentModifier>>contents)
+				}
+		}
+		return allModifiers
 	}
 
 	/** Features */
@@ -41,7 +100,7 @@ class EquipmentContainerData extends EquipmentFieldsTemplate {
 	}
 
 	/** Nameables */
-	protected override async _fillWithNameableKeysFromEmbeds(
+	protected override async _fillWithNameableKeysFromPrereqs(
 		m: Map<string, string>,
 		existing: Map<string, string>,
 	): Promise<void> {
@@ -59,6 +118,10 @@ class EquipmentContainerData extends EquipmentFieldsTemplate {
 
 interface EquipmentContainerData {
 	get children(): MaybePromise<Collection<ItemInst<ItemType.Equipment | ItemType.EquipmentContainer>>>
+	get modifiers(): MaybePromise<
+		Collection<ItemInst<ItemType.EquipmentModifier | ItemType.EquipmentModifierContainer>>
+	>
+	get weapons(): MaybePromise<Collection<ItemInst<ItemType.WeaponMelee | ItemType.WeaponRanged>>>
 }
 
 export { EquipmentContainerData }

@@ -140,16 +140,17 @@ class TraitContainerData extends ItemDataModel.mixin(
 	}
 
 	/** Returns trait point cost adjusted for enablement and modifiers */
-	get adjustedPoints(): number {
+	get adjustedPoints(): MaybePromise<number> {
+		if (this.parent?.pack) return this.#adjustedPoints()
+
 		let points = 0
 		if (this.container_type === container.Type.AlternativeAbilities) {
 			const values: number[] = []
-			;(this.children as Collection<ItemGURPS2>).forEach(child => {
-				if (!child.isOfType(ItemType.Trait, ItemType.TraitContainer)) return
-				const adjustedPoints = child.system.adjustedPoints
+			for (const child of this.children as Collection<ItemInst<ItemType.Trait | ItemType.TraitContainer>>) {
+				const adjustedPoints = child.system.adjustedPoints as number
 				values.push(adjustedPoints)
 				if (adjustedPoints > points) points = adjustedPoints
-			})
+			}
 			const maximum = points
 			let found = false
 			for (const value of values) {
@@ -160,10 +161,35 @@ class TraitContainerData extends ItemDataModel.mixin(
 				}
 			}
 		} else {
-			;(this.children as Collection<ItemGURPS2>).forEach(child => {
-				if (!child.isOfType(ItemType.Trait, ItemType.TraitContainer)) return
-				points += child.system.adjustedPoints
-			})
+			for (const child of this.children as Collection<ItemInst<ItemType.Trait | ItemType.TraitContainer>>) {
+				points += child.system.adjustedPoints as number
+			}
+		}
+		return points
+	}
+
+	async #adjustedPoints(): Promise<number> {
+		let points = 0
+		if (this.container_type === container.Type.AlternativeAbilities) {
+			const values: number[] = []
+			for (const child of await this.children) {
+				const adjustedPoints = child.system.adjustedPoints as number
+				values.push(adjustedPoints)
+				if (adjustedPoints > points) points = adjustedPoints
+			}
+			const maximum = points
+			let found = false
+			for (const value of values) {
+				if (!found && maximum === value) {
+					found = true
+				} else {
+					points += Math.ceil(calculateModifierPoints(value, 20))
+				}
+			}
+		} else {
+			for (const child of await this.children) {
+				points += await child.system.adjustedPoints
+			}
 		}
 		return points
 	}

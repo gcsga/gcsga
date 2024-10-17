@@ -50,7 +50,7 @@ class EquipmentModifierContainerData extends ItemDataModel.mixin(
 			cost: new CellData({
 				type: cell.Type.Text,
 				primary: "",
-				classList: ["item-cost-adjustment"],
+				classList: ["item-value-adjustment"],
 			}),
 			weight: new CellData({
 				type: cell.Type.Text,

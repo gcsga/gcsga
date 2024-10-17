@@ -28,6 +28,7 @@ export async function preloadHandlebarsTemplates(): Promise<void> {
 		// Item Embeds Partials
 		`systems/${SYSTEM_NAME}/templates/items/parts/embeds-equipment.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/embeds-equipment-modifier.hbs`,
+		`systems/${SYSTEM_NAME}/templates/items/parts/embeds-trait-modifier.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/embeds-weapon-melee.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/embeds-weapon-ranged.hbs`,
 	]

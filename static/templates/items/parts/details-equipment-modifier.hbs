@@ -28,6 +28,10 @@
 				{{localize "GURPS.Item.EquipmentModifier.FIELDS.CostIsPerLevel.Name"}}
 			</label>
 		</div>
+		<p class="hint">
+			{{localize "GURPS.Enum.emcost.Example" value=(localize (concat "GURPS.Enum.emcost.Type." source.cost_type
+			".Alt"))}}
+		</p>
 	</div>
 
 	<!-- Weight -->
@@ -45,6 +49,10 @@
 				{{localize "GURPS.Item.EquipmentModifier.FIELDS.WeightIsPerLevel.Name"}}
 			</label>
 		</div>
+		<p class="hint">
+			{{localize "GURPS.Enum.emweight.Example" value=(localize (concat "GURPS.Enum.emweight.Type."
+			source.weight_type ".Alt"))}}
+		</p>
 	</div>
 
 	<!-- Tags -->

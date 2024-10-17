@@ -27,6 +27,34 @@
 		</div>
 	</div>
 
+	<!-- Value -->
+	<div class="form-group">
+		<label>{{localize "GURPS.Item.Equipment.FIELDS.Value.Name"}}</label>
+		<div class="form-fields">
+			{{formInput fields.value value=source.value}}
+			<!-- Basic -->
+
+			<!-- Label -->
+			<label>{{localize "GURPS.Item.Equipment.FIELDS.Value.Extended"}}</label>
+			<!-- Label Contents -->
+			<input type="text" value="{{extendedValue}}" disabled />
+		</div>
+	</div>
+
+	<!-- Weight -->
+	<div class="form-group">
+		<label>{{localize "GURPS.Item.Equipment.FIELDS.Weight.Name"}}</label>
+		<div class="form-fields">
+			{{formInput fields.weight value=source.weight}}
+			<!-- Basic -->
+
+			<!-- Label -->
+			<label>{{localize "GURPS.Item.Equipment.FIELDS.Weight.Extended"}}</label>
+			<!-- Label Contents -->
+			<input type="text" value="{{extendedWeight}}" disabled />
+		</div>
+	</div>
+
 	<!-- Tags -->
 	{{formField fields.tags value=source.tags localize=true}}
 

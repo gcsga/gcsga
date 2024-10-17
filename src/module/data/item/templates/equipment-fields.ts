@@ -1,9 +1,6 @@
 import { ItemType } from "@module/data/constants.ts"
-import { FeatureSet } from "@module/data/feature/types.ts"
 import { SheetSettings } from "@module/data/sheet-settings.ts"
 import { MaybePromise } from "@module/data/types.ts"
-import { ItemGURPS2 } from "@module/document/item.ts"
-import { Nameable } from "@module/util/nameable.ts"
 import { LocalizeGURPS, StringBuilder, Weight, align, cell, display } from "@util"
 import { ItemDataModel } from "../abstract.ts"
 import { CellData } from "../components/cell-data.ts"
@@ -14,24 +11,14 @@ import {
 	weightAdjustedForModifiers,
 } from "../helpers.ts"
 import { ItemTemplateType } from "../types.ts"
-import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./basic-information.ts"
-import { ContainerTemplate, ContainerTemplateSchema } from "./container.ts"
-import { FeatureTemplate, FeatureTemplateSchema } from "./features.ts"
-import { PrereqTemplate, PrereqTemplateSchema } from "./prereqs.ts"
-import { ReplacementTemplate, ReplacementTemplateSchema } from "./replacements.ts"
 import fields = foundry.data.fields
+import { WeightField } from "../fields/weight-field.ts"
 
-class EquipmentFieldsTemplate extends ItemDataModel.mixin(
-	BasicInformationTemplate,
-	PrereqTemplate,
-	FeatureTemplate,
-	ContainerTemplate,
-	ReplacementTemplate,
-) {
+class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchema> {
 	static override defineSchema(): EquipmentFieldsTemplateSchema {
 		const fields = foundry.data.fields
 
-		return this.mergeSchema(super.defineSchema(), {
+		return {
 			tech_level: new fields.StringField({
 				required: true,
 				nullable: false,
@@ -57,7 +44,7 @@ class EquipmentFieldsTemplate extends ItemDataModel.mixin(
 				nullable: false,
 				integer: true,
 				min: 0,
-				initial: 0,
+				initial: 1,
 				label: "GURPS.Item.Equipment.FIELDS.Quantity.Name",
 			}),
 			level: new fields.NumberField({
@@ -75,12 +62,20 @@ class EquipmentFieldsTemplate extends ItemDataModel.mixin(
 				initial: 0,
 				label: "GURPS.Item.Equipment.FIELDS.Value.Name",
 			}),
-			weight: new fields.StringField({
+			weight: new WeightField({
 				required: true,
 				nullable: false,
 				initial: "0 lb",
+				allowPercent: false,
 				label: "GURPS.Item.Equipment.FIELDS.Weight.Name",
+				hint: "oogly boogly",
 			}),
+			// weight: new fields.StringField({
+			// 	required: true,
+			// 	nullable: false,
+			// 	initial: "0 lb",
+			// 	label: "GURPS.Item.Equipment.FIELDS.Weight.Name",
+			// }),
 			max_uses: new fields.NumberField({
 				required: true,
 				nullable: false,
@@ -110,7 +105,7 @@ class EquipmentFieldsTemplate extends ItemDataModel.mixin(
 				label: "GURPS.Item.Equipment.FIELDS.IgnoreWeightForSkills.Name",
 			}),
 			other: new fields.BooleanField({ required: true, nullable: false, initial: false }),
-		}) as EquipmentFieldsTemplateSchema
+		}
 	}
 
 	// Returns the formatted name for display
@@ -234,14 +229,14 @@ class EquipmentFieldsTemplate extends ItemDataModel.mixin(
 			}),
 			cost: new CellData({
 				type: cell.Type.Text,
-				primary: this.adjustedValue().toLocaleString(),
+				primary: this.adjustedValue.toLocaleString(),
 				alignment: align.Option.End,
 				dim,
 				classList: ["item-cost"],
 			}),
 			extendedCost: new CellData({
 				type: cell.Type.Text,
-				primary: this.extendedValue().toLocaleString(),
+				primary: this.extendedValue.toLocaleString(),
 				alignment: align.Option.End,
 				dim,
 				classList: ["item-cost-extended"],
@@ -263,7 +258,7 @@ class EquipmentFieldsTemplate extends ItemDataModel.mixin(
 		}
 	}
 
-	adjustedValue(): MaybePromise<number> {
+	get adjustedValue(): MaybePromise<number> {
 		if (this.parent?.pack) return this.#adjustedValue()
 
 		return valueAdjustedForModifiers(
@@ -281,8 +276,8 @@ class EquipmentFieldsTemplate extends ItemDataModel.mixin(
 		)
 	}
 
-	extendedValue(): MaybePromise<number> {
-		return this.adjustedValue()
+	get extendedValue(): MaybePromise<number> {
+		return this.adjustedValue
 	}
 
 	adjustedWeight(forSkills: boolean, units: Weight.Unit): MaybePromise<number> {
@@ -324,64 +319,6 @@ class EquipmentFieldsTemplate extends ItemDataModel.mixin(
 		)
 	}
 
-	override get allModifiers(): MaybePromise<Collection<ItemInst<ItemType.EquipmentModifier>>> {
-		if (!this.parent) return new Collection()
-		if (this.parent.pack) return this._allModifiers()
-
-		const allModifiers = new Collection<ItemInst<ItemType.EquipmentModifier>>()
-
-		for (const item of <Collection<ItemGURPS2>>(this as any).contents) {
-			if (item.type === ItemType.EquipmentModifier)
-				allModifiers.set(item.id, <ItemInst<ItemType.EquipmentModifier>>item)
-
-			if (item.hasTemplate(ItemTemplateType.Container))
-				for (const contents of <Collection<ItemGURPS2>>item.system.allContents) {
-					if (contents.type === ItemType.EquipmentModifier)
-						allModifiers.set(contents.id, <ItemInst<ItemType.EquipmentModifier>>contents)
-				}
-		}
-		return allModifiers
-	}
-
-	private async _allModifiers(): Promise<Collection<ItemInst<ItemType.EquipmentModifier>>> {
-		const allModifiers = new Collection<ItemInst<ItemType.EquipmentModifier>>()
-
-		for (const item of <Collection<ItemGURPS2>>(this as any).contents) {
-			if (item.type === ItemType.EquipmentModifier)
-				allModifiers.set(item.id, <ItemInst<ItemType.EquipmentModifier>>item)
-
-			if (item.hasTemplate(ItemTemplateType.Container))
-				for (const contents of await item.system.allContents) {
-					if (contents.type === ItemType.EquipmentModifier)
-						allModifiers.set(contents.id, <ItemInst<ItemType.EquipmentModifier>>contents)
-				}
-		}
-		return allModifiers
-	}
-
-	/** Features */
-	override addFeaturesToSet(featureSet: FeatureSet): void {
-		if (!this.equipped) return
-
-		for (const f of this.features) {
-			this._addFeatureToSet(f, featureSet, 0)
-		}
-	}
-
-	/** Nameables */
-	override fillWithNameableKeys(
-		m: Map<string, string>,
-		existing: Map<string, string> = this.nameableReplacements,
-	): void {
-		super.fillWithNameableKeys(m, existing)
-
-		Nameable.extract(this.notes, m, existing)
-
-		this._fillWithNameableKeysFromPrereqs(m, existing)
-		this._fillWithNameableKeysFromFeatures(m, existing)
-		this._fillWithNameableKeysFromEmbeds(m, existing)
-	}
-
 	protected async _fillWithNameableKeysFromEmbeds(
 		m: Map<string, string>,
 		existing: Map<string, string>,
@@ -399,28 +336,26 @@ class EquipmentFieldsTemplate extends ItemDataModel.mixin(
 }
 
 interface EquipmentFieldsTemplate extends ModelPropsFromSchema<EquipmentFieldsTemplateSchema> {
+	get processedNotes(): string
 	get modifiers(): MaybePromise<
 		Collection<ItemInst<ItemType.EquipmentModifier | ItemType.EquipmentModifierContainer>>
 	>
 	get weapons(): MaybePromise<Collection<ItemInst<ItemType.WeaponMelee | ItemType.WeaponRanged>>>
+	get allModifiers(): MaybePromise<Collection<ItemInst<ItemType.EquipmentModifier>>>
 }
 
-type EquipmentFieldsTemplateSchema = ContainerTemplateSchema &
-	ReplacementTemplateSchema &
-	BasicInformationTemplateSchema &
-	PrereqTemplateSchema &
-	FeatureTemplateSchema & {
-		tech_level: fields.StringField<string, string, true, false, true>
-		legality_class: fields.StringField<string, string, true, false, true>
-		rated_strength: fields.NumberField<number, number, true, false, true>
-		quantity: fields.NumberField<number, number, true, false, true>
-		level: fields.NumberField<number, number, true, false, true>
-		value: fields.NumberField<number, number, true, false, true>
-		weight: fields.StringField<string, string, true, false, true>
-		max_uses: fields.NumberField<number, number, true, false, true>
-		uses: fields.NumberField<number, number, true, true, true>
-		equipped: fields.BooleanField<boolean, boolean, true, false, true>
-		ignore_weight_for_skills: fields.BooleanField<boolean, boolean, true, false, true>
-		other: fields.BooleanField<boolean, boolean, true, false, true>
-	}
+type EquipmentFieldsTemplateSchema = {
+	tech_level: fields.StringField<string, string, true, false, true>
+	legality_class: fields.StringField<string, string, true, false, true>
+	rated_strength: fields.NumberField<number, number, true, false, true>
+	quantity: fields.NumberField<number, number, true, false, true>
+	level: fields.NumberField<number, number, true, false, true>
+	value: fields.NumberField<number, number, true, false, true>
+	weight: WeightField<string, string, true, false, true>
+	max_uses: fields.NumberField<number, number, true, false, true>
+	uses: fields.NumberField<number, number, true, true, true>
+	equipped: fields.BooleanField<boolean, boolean, true, false, true>
+	ignore_weight_for_skills: fields.BooleanField<boolean, boolean, true, false, true>
+	other: fields.BooleanField<boolean, boolean, true, false, true>
+}
 export { EquipmentFieldsTemplate, type EquipmentFieldsTemplateSchema }
