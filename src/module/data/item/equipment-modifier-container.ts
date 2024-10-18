@@ -5,7 +5,7 @@ import { ItemType } from "../constants.ts"
 import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { align, cell, display } from "@util"
-import { CellData } from "./components/cell-data.ts"
+import { CellData, CellDataOptions } from "./components/cell-data.ts"
 
 class EquipmentModifierContainerData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -27,7 +27,7 @@ class EquipmentModifierContainerData extends ItemDataModel.mixin(
 		return this.nameWithReplacements
 	}
 
-	override get cellData(): Record<string, CellData> {
+	override cellData(_options: { hash: CellDataOptions } = { hash: {} }): Record<string, CellData> {
 		return {
 			enabled: new CellData({
 				type: cell.Type.Toggle,

@@ -3,7 +3,7 @@ import { SheetSettings } from "@module/data/sheet-settings.ts"
 import { MaybePromise } from "@module/data/types.ts"
 import { LocalizeGURPS, StringBuilder, Weight, align, cell, display } from "@util"
 import { ItemDataModel } from "../abstract.ts"
-import { CellData } from "../components/cell-data.ts"
+import { CellData, CellDataOptions } from "../components/cell-data.ts"
 import {
 	ItemInst,
 	extendedWeightAdjustedForModifiers,
@@ -178,7 +178,7 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 		return buffer.toString()
 	}
 
-	override get cellData(): Record<string, CellData> {
+	override cellData(_options: { hash: CellDataOptions } = { hash: {} }): Record<string, CellData> {
 		let dim = this.quantity === 0
 		const weightUnits = SheetSettings.for(this.actor).default_weight_units
 

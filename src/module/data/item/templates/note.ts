@@ -1,7 +1,7 @@
 import { ItemDataModel } from "@module/data/item/abstract.ts"
 import fields = foundry.data.fields
 import { EvalEmbeddedRegex, cell, replaceAllStringFunc } from "@util"
-import { CellData } from "../components/cell-data.ts"
+import { CellData, CellDataOptions } from "../components/cell-data.ts"
 
 class NoteTemplate extends ItemDataModel<NoteTemplateSchema> {
 	static override defineSchema(): NoteTemplateSchema {
@@ -13,7 +13,7 @@ class NoteTemplate extends ItemDataModel<NoteTemplateSchema> {
 		}
 	}
 
-	override get cellData(): Record<string, CellData> {
+	override cellData(_options: { hash: CellDataOptions } = { hash: {} }): Record<string, CellData> {
 		return {
 			// TODO: revise
 			text: new CellData({ type: cell.Type.Markdown, primary: this.enrichedText as unknown as string }),

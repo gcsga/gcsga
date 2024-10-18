@@ -18,7 +18,7 @@ import {
 } from "./helpers.ts"
 import { ActorTemplateType } from "../actor/types.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
-import { CellData } from "./components/cell-data.ts"
+import { CellData, CellDataOptions } from "./components/cell-data.ts"
 import { SkillDefault } from "./components/skill-default.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { Study } from "../study.ts"
@@ -117,7 +117,7 @@ class TechniqueData extends ItemDataModel.mixin(
 		}) as TechniqueSchema
 	}
 
-	override get cellData(): Record<string, CellData> {
+	override cellData(_options: { hash: CellDataOptions } = { hash: {} }): Record<string, CellData> {
 		const levelTooltip = () => {
 			const tooltip = new TooltipGURPS()
 			const level = this.level

@@ -5,7 +5,7 @@ import { FeatureTemplate, FeatureTemplateSchema } from "./templates/features.ts"
 import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
 import fields = foundry.data.fields
 import { ItemGURPS2 } from "@module/document/item.ts"
-import { CellData } from "./components/cell-data.ts"
+import { CellData, CellDataOptions } from "./components/cell-data.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { Nameable } from "@module/util/index.ts"
 import { ItemInst } from "./helpers.ts"
@@ -75,7 +75,7 @@ class TraitModifierData extends ItemDataModel.mixin(BasicInformationTemplate, Fe
 		return super.cleanData(source, options) as SourceFromSchema<TraitModifierSchema>
 	}
 
-	override get cellData(): Record<string, CellData> {
+	override cellData(_options: { hash: CellDataOptions } = { hash: {} }): Record<string, CellData> {
 		return {
 			enabled: new CellData({
 				type: cell.Type.Toggle,

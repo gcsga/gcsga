@@ -5,7 +5,7 @@ import { AbstractWeaponTemplate, AbstractWeaponTemplateSchema } from "./template
 import { WeaponParry } from "./fields/weapon-parry.ts"
 import { WeaponReach } from "./fields/weapon-reach.ts"
 import { WeaponBlock } from "./fields/weapon-block.ts"
-import { CellData } from "./components/cell-data.ts"
+import { CellData, CellDataOptions } from "./components/cell-data.ts"
 import { LocalizeGURPS, TooltipGURPS } from "@util"
 import { SkillDefaultTemplate, SkillDefaultTemplateSchema } from "./templates/defaults.ts"
 import { Nameable } from "@module/util/nameable.ts"
@@ -29,7 +29,7 @@ class WeaponMeleeData extends ItemDataModel.mixin(
 		}) as WeaponMeleeSchema
 	}
 
-	override get cellData(): Record<string, CellData> {
+	override cellData(_options: { hash: CellDataOptions } = { hash: {} }): Record<string, CellData> {
 		function addBuffer(tooltip: string, buffer: TooltipGURPS): string {
 			if (tooltip.length !== 0) {
 				tooltip += "\n\n"

@@ -2,7 +2,7 @@ import { ItemType } from "../constants.ts"
 import { type ItemGURPS2 } from "@module/document/item.ts"
 import type { ItemDataInstances, ItemDataTemplates, ItemTemplateType } from "./types.ts"
 import { type ActorGURPS2 } from "@module/document/actor.ts"
-import { type CellData } from "./components/cell-data.ts"
+import { CellDataOptions, type CellData } from "./components/cell-data.ts"
 import { type ItemTemplateInst } from "./helpers.ts"
 import { ErrorGURPS } from "@util/misc.ts"
 import { SystemDataModel, SystemDataModelMetadata } from "../abstract.ts"
@@ -50,7 +50,7 @@ class ItemDataModel<TSchema extends ItemDataSchema = ItemDataSchema> extends Sys
 
 	/* -------------------------------------------- */
 
-	get cellData(): Record<string, CellData> {
+	cellData(_options: { hash: CellDataOptions } = { hash: {} }): Record<string, CellData> {
 		throw ErrorGURPS(`ItemGURPS#cellData must be implemented.`)
 	}
 

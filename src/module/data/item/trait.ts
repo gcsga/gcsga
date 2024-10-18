@@ -7,7 +7,7 @@ import { FeatureSet, FeatureTypes } from "../feature/types.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { Study } from "../study.ts"
 import { MaybePromise } from "../types.ts"
-import { CellData } from "./components/cell-data.ts"
+import { CellData, CellDataOptions } from "./components/cell-data.ts"
 import { ItemInst, costAdjustedForModifiers } from "./helpers.ts"
 import {
 	BasicInformationTemplate,
@@ -114,7 +114,7 @@ class TraitData extends ItemDataModel.mixin(
 		return this.can_level
 	}
 
-	override get cellData(): Record<string, CellData> {
+	override cellData(_options: { hash: CellDataOptions } = { hash: {} }): Record<string, CellData> {
 		return {
 			name: new CellData({
 				type: cell.Type.Text,
@@ -128,15 +128,6 @@ class TraitData extends ItemDataModel.mixin(
 				type: cell.Type.Text,
 				primary: this.adjustedPoints.toString(),
 				alignment: align.Option.End,
-			}),
-			tags: new CellData({
-				type: cell.Type.Tags,
-				primary: this.combinedTags,
-			}),
-			reference: new CellData({
-				type: cell.Type.PageRef,
-				primary: this.reference,
-				secondary: this.reference_highlight === "" ? this.nameWithReplacements : this.reference_highlight,
 			}),
 		}
 	}

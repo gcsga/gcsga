@@ -6,7 +6,7 @@ import { PrereqTemplate, PrereqTemplateSchema } from "./templates/prereqs.ts"
 import { ContainerTemplate, ContainerTemplateSchema } from "./templates/container.ts"
 import { ItemType } from "../constants.ts"
 import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
-import { CellData } from "./components/cell-data.ts"
+import { CellData, CellDataOptions } from "./components/cell-data.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { ItemInst, calculateModifierPoints } from "./helpers.ts"
@@ -28,7 +28,12 @@ class TraitContainerData extends ItemDataModel.mixin(
 
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
 		context.detailsParts = ["gurps.details-trait-container", "gurps.details-prereqs"]
-		context.embedsParts = ["gurps.embeds-weapon-melee", "gurps.embeds-weapon-ranged"]
+		context.embedsParts = [
+			"gurps.embeds-weapon-melee",
+			"gurps.embeds-weapon-ranged",
+			"gurps.embeds-trait-modifier",
+			"gurps.embeds-trait",
+		]
 	}
 
 	static override defineSchema(): TraitContainerSchema {
@@ -88,31 +93,22 @@ class TraitContainerData extends ItemDataModel.mixin(
 		return ancestries
 	}
 
-	override get cellData(): Record<string, CellData> {
-		const cellData: Record<string, CellData> = {}
-		cellData.name = new CellData({
-			type: cell.Type.Text,
-			primary: this.nameWithReplacements,
-			secondary: this.secondaryText(display.Option.isInline),
-			disabled: !this.enabled,
-			unsatisfiedReason: this.unsatisfiedReason,
-			tooltip: this.secondaryText(display.Option.isTooltip),
-		})
-		cellData.points = new CellData({
-			type: cell.Type.Text,
-			primary: this.adjustedPoints.toString(),
-			alignment: align.Option.End,
-		})
-		cellData.tags = new CellData({
-			type: cell.Type.Tags,
-			primary: this.combinedTags,
-		})
-		cellData.reference = new CellData({
-			type: cell.Type.PageRef,
-			primary: this.reference,
-			secondary: this.reference_highlight === "" ? this.nameWithReplacements : this.reference_highlight,
-		})
-		return cellData
+	override cellData(_options: { hash: CellDataOptions } = { hash: {} }): Record<string, CellData> {
+		return {
+			name: new CellData({
+				type: cell.Type.Text,
+				primary: this.nameWithReplacements,
+				secondary: this.secondaryText(display.Option.isInline),
+				disabled: !this.enabled,
+				unsatisfiedReason: this.unsatisfiedReason,
+				tooltip: this.secondaryText(display.Option.isTooltip),
+			}),
+			points: new CellData({
+				type: cell.Type.Text,
+				primary: this.adjustedPoints.toString(),
+				alignment: align.Option.End,
+			}),
+		}
 	}
 
 	get processedName(): string {

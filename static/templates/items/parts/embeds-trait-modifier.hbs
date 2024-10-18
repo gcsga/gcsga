@@ -26,11 +26,21 @@
 <div class="items-section" data-types="{{join system.modifierTypes ','}}">
 	<div class="items-header">
 		<i class="fa-solid fa-check item-header item-toggle"></i>
-		<div class="item-header item-name">Equipment Modifier</div>
+		<div class="item-header item-name">Trait Modifier</div>
 		<div class="item-header item-cost-adjustment">Cost Adjustment</div>
 		<div class="item-header item-controls"></div>
 	</div>
 	<ul class="item-list">
+		<!-- For traits & trait containers -->
+
+		{{#if (or (eq item.type "trait") (eq item.type "traitContainer"))}}
+		<!-- Loop -->
 		{{#each system.modifiers}} {{> item item=this}} {{/each}}
+		<!-- For trait modifier containers -->
+		{{else}}
+		<!-- Loop -->
+		{{#each system.odifiers}} {{> item item=this}} {{/each}}
+		<!-- End -->
+		{{/if}}
 	</ul>
 </div>

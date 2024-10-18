@@ -3,7 +3,6 @@
 ## Current Tasks
 
 - Add embeds tab functionality for easier testing.
-- Equipment Details are missing cost and weight
 
 ## Left To Do
 

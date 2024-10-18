@@ -2,6 +2,10 @@ import { SystemDataModel } from "@module/data/abstract.ts"
 import { cell, align } from "@util"
 import fields = foundry.data.fields
 
+type CellDataOptions = {
+	sheet?: string
+}
+
 class CellData extends foundry.abstract.DataModel<SystemDataModel, CellDataSchema> {
 	static override defineSchema(): CellDataSchema {
 		const fields = foundry.data.fields
@@ -131,4 +135,4 @@ type CellDataSchema = {
 	condition: fields.BooleanField<boolean, boolean, true, false, true>
 }
 
-export { CellData }
+export { CellData, type CellDataOptions }

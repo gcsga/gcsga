@@ -5,7 +5,7 @@ import { ContainerTemplate, ContainerTemplateSchema } from "./templates/containe
 import { ItemType } from "../constants.ts"
 import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
 import { cell, display, StringBuilder } from "@util"
-import { CellData } from "./components/cell-data.ts"
+import { CellData, CellDataOptions } from "./components/cell-data.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { TemplatePicker } from "./fields/template-picker.ts"
 
@@ -24,7 +24,7 @@ class SkillContainerData extends ItemDataModel.mixin(BasicInformationTemplate, C
 		}) as SkillContainerSchema
 	}
 
-	override get cellData(): Record<string, CellData> {
+	override cellData(_options: { hash: CellDataOptions } = { hash: {} }): Record<string, CellData> {
 		return {
 			name: new CellData({
 				type: cell.Type.Text,

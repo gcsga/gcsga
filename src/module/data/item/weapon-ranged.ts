@@ -15,7 +15,7 @@ import { WeaponShots } from "./fields/weapon-shots.ts"
 import { WeaponBulk } from "./fields/weapon-bulk.ts"
 import { WeaponRecoil } from "./fields/weapon-recoil.ts"
 import { LocalizeGURPS, TooltipGURPS } from "@util"
-import { CellData } from "./components/cell-data.ts"
+import { CellData, CellDataOptions } from "./components/cell-data.ts"
 import { Nameable } from "@module/util/nameable.ts"
 
 class WeaponRangedData extends ItemDataModel.mixin(
@@ -39,7 +39,7 @@ class WeaponRangedData extends ItemDataModel.mixin(
 		}) as WeaponRangedSchema
 	}
 
-	override get cellData(): Record<string, CellData> {
+	override cellData(_options: { hash: CellDataOptions } = { hash: {} }): Record<string, CellData> {
 		function addBuffer(tooltip: string, buffer: TooltipGURPS): string {
 			if (tooltip.length !== 0) {
 				tooltip += "\n\n"

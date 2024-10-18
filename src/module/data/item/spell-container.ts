@@ -14,7 +14,7 @@ class SpellContainerData extends ItemDataModel.mixin(BasicInformationTemplate, C
 
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
 		context.detailsParts = ["gurps.details-container"]
-		context.embedsParts = ["gurps.embeds-children"]
+		context.embedsParts = ["gurps.embeds-spell"]
 	}
 
 	static override defineSchema(): SpellContainerSchema {
@@ -24,7 +24,7 @@ class SpellContainerData extends ItemDataModel.mixin(BasicInformationTemplate, C
 		}) as SpellContainerSchema
 	}
 
-	override get cellData(): Record<string, CellData> {
+	override cellData(options:{hash:CellDataOptions}={hash:{}}): Record<string, CellData> {
 		return {
 			name: new CellData({
 				type: cell.Type.Text,

@@ -10,6 +10,7 @@ import { ItemInst } from "./helpers.ts"
 import { FeatureSet } from "../feature/types.ts"
 import { Nameable } from "@module/util/nameable.ts"
 import { CellData } from "./components/index.ts"
+import { CellDataOptions } from "./components/cell-data.ts"
 
 class EquipmentModifierData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -53,7 +54,7 @@ class EquipmentModifierData extends ItemDataModel.mixin(
 		}) as EquipmentModifierSchema
 	}
 
-	override get cellData(): Record<string, CellData> {
+	override cellData(_options: { hash: CellDataOptions } = { hash: {} }): Record<string, CellData> {
 		return {
 			enabled: new CellData({
 				type: cell.Type.Toggle,
