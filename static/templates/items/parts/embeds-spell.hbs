@@ -9,10 +9,10 @@
 >
 	<div class="item-row">
 		<!-- Cell Data -->
-		{{#each item.system.cellData as |cell key|}} {{cell.element}} {{/each}}
+		{{#each item.cells as |cell key|}} {{cell.element}} {{/each}}
 		<!-- Buttons -->
 		<div class="item-detail item-controls">
-			{{#each item.system.sheetButtons as |button index|}} {{button.element}}{{/each}}
+			{{#each item.buttons as |button index|}} {{button.element}}{{/each}}
 		</div>
 	</div>
 </li>
@@ -29,10 +29,10 @@
 		<div class="item-header item-casting-time">Time</div>
 		<div class="item-header item-duration">Duration</div>
 		<div class="item-header item-difficulty">Diff</div>
-		<div class="item-header item-difficulty">P#</div>
+		<div class="item-header item-prereq-count">P#</div>
 		<div class="item-header item-controls"></div>
 	</div>
 	<ul class="item-list">
-		{{#each system.children}} {{this.system.getCellData sheet="test"}} {{/each}}
+		{{#each children}} {{> item item=this type=@root.item.type}} {{/each}}
 	</ul>
 </div>

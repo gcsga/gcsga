@@ -117,7 +117,7 @@ class TechniqueData extends ItemDataModel.mixin(
 		}) as TechniqueSchema
 	}
 
-	override cellData(_options: { hash: CellDataOptions } = { hash: {} }): Record<string, CellData> {
+	override cellData(_options: CellDataOptions = {}): Record<string, CellData> {
 		const levelTooltip = () => {
 			const tooltip = new TooltipGURPS()
 			const level = this.level

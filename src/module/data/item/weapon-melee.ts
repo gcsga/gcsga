@@ -29,7 +29,7 @@ class WeaponMeleeData extends ItemDataModel.mixin(
 		}) as WeaponMeleeSchema
 	}
 
-	override cellData(_options: { hash: CellDataOptions } = { hash: {} }): Record<string, CellData> {
+	override cellData(_options: CellDataOptions = {}): Record<string, CellData> {
 		function addBuffer(tooltip: string, buffer: TooltipGURPS): string {
 			if (tooltip.length !== 0) {
 				tooltip += "\n\n"

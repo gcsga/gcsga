@@ -5,7 +5,7 @@ import { ContainerTemplate, ContainerTemplateSchema } from "./templates/containe
 import { ItemType } from "../constants.ts"
 import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
 import { cell, display, StringBuilder } from "@util"
-import { CellData } from "./components/cell-data.ts"
+import { CellData, CellDataOptions } from "./components/cell-data.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { TemplatePicker } from "./fields/template-picker.ts"
 
@@ -24,7 +24,10 @@ class SpellContainerData extends ItemDataModel.mixin(BasicInformationTemplate, C
 		}) as SpellContainerSchema
 	}
 
-	override cellData(options:{hash:CellDataOptions}={hash:{}}): Record<string, CellData> {
+	override cellData(options: CellDataOptions = {}): Record<string, CellData> {
+		const { type } = options
+		const isSpellContainerSheet = type === ItemType.SpellContainer
+
 		return {
 			name: new CellData({
 				type: cell.Type.Text,
@@ -32,26 +35,37 @@ class SpellContainerData extends ItemDataModel.mixin(BasicInformationTemplate, C
 				secondary: this.secondaryText(display.Option.isInline),
 				tooltip: this.secondaryText(display.Option.isTooltip),
 			}),
-			resist: new CellData({}),
-			class: new CellData({}),
-			college: new CellData({}),
-			castingCost: new CellData({}),
-			maintenanceCost: new CellData({}),
-			castingTime: new CellData({}),
-			duration: new CellData({}),
-			difficulty: new CellData({}),
-			level: new CellData({}),
-			relativeLevel: new CellData({}),
+			resist: new CellData({
+				condition: isSpellContainerSheet,
+			}),
+			class: new CellData({
+				condition: isSpellContainerSheet,
+			}),
+			college: new CellData({
+				condition: isSpellContainerSheet,
+			}),
+			castingCost: new CellData({
+				condition: isSpellContainerSheet,
+			}),
+			maintenanceCost: new CellData({
+				condition: isSpellContainerSheet,
+			}),
+			castingTime: new CellData({
+				condition: isSpellContainerSheet,
+			}),
+			duration: new CellData({
+				condition: isSpellContainerSheet,
+			}),
+			difficulty: new CellData({
+				condition: isSpellContainerSheet,
+			}),
+			level: new CellData({
+				condition: !isSpellContainerSheet,
+			}),
+			relativeLevel: new CellData({
+				condition: !isSpellContainerSheet,
+			}),
 			points: new CellData({}),
-			tags: new CellData({
-				type: cell.Type.Tags,
-				primary: this.combinedTags,
-			}),
-			reference: new CellData({
-				type: cell.Type.PageRef,
-				primary: this.reference,
-				secondary: this.reference_highlight === "" ? this.nameWithReplacements : this.reference_highlight,
-			}),
 		}
 	}
 

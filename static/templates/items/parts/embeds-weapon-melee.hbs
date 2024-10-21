@@ -9,10 +9,10 @@
 >
 	<div class="item-row">
 		<!-- Cell Data -->
-		{{#each item.system.cellData as |cell key|}} {{cell.element}} {{/each}}
+		{{#each item.cells as |cell key|}} {{cell.element}} {{/each}}
 		<!-- Buttons -->
 		<div class="item-detail item-controls">
-			{{#each item.system.sheetButtons as |button index|}} {{button.element}}{{/each}}
+			{{#each item.buttons as |button index|}} {{button.element}}{{/each}}
 		</div>
 	</div>
 </li>
@@ -30,6 +30,6 @@
 		<div class="item-header item-controls"></div>
 	</div>
 	<ul class="item-list">
-		{{#each system.itemTypes.weaponMelee}} {{> item item=this}} {{/each}}
+		{{#each weaponsMelee}} {{> item item=this}} {{/each}}
 	</ul>
 </div>

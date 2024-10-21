@@ -39,7 +39,7 @@ class WeaponRangedData extends ItemDataModel.mixin(
 		}) as WeaponRangedSchema
 	}
 
-	override cellData(_options: { hash: CellDataOptions } = { hash: {} }): Record<string, CellData> {
+	override cellData(_options: CellDataOptions = {}): Record<string, CellData> {
 		function addBuffer(tooltip: string, buffer: TooltipGURPS): string {
 			if (tooltip.length !== 0) {
 				tooltip += "\n\n"

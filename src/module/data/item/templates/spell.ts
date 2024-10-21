@@ -1,16 +1,16 @@
-import { ItemDataModel } from "@module/data/item/abstract.ts"
-import fields = foundry.data.fields
-import { ErrorGURPS, LocalizeGURPS, StringBuilder, TooltipGURPS, align, cell, display } from "@util"
-import { ItemInst, SkillLevel, addTooltipForSkillLevelAdj, formatRelativeSkill } from "../helpers.ts"
 import { ItemType } from "@module/data/constants.ts"
-import { ItemTemplateType } from "../types.ts"
-import { CellData, CellDataOptions } from "../components/cell-data.ts"
+import { ItemDataModel } from "@module/data/item/abstract.ts"
 import { SheetSettings } from "@module/data/sheet-settings.ts"
 import { Study } from "@module/data/study.ts"
-import { Nameable } from "@module/util/index.ts"
-import { StringArrayField } from "../fields/string-array-field.ts"
 import { MaybePromise } from "@module/data/types.ts"
+import { Nameable } from "@module/util/index.ts"
+import { LocalizeGURPS, StringBuilder, TooltipGURPS, align, cell, display } from "@util"
 import { AttributeDifficulty } from "../components/attribute-difficulty.ts"
+import { CellData, CellDataOptions } from "../components/cell-data.ts"
+import { StringArrayField } from "../fields/string-array-field.ts"
+import { ItemInst, SkillLevel, addTooltipForSkillLevelAdj, formatRelativeSkill } from "../helpers.ts"
+import { ItemTemplateType } from "../types.ts"
+import fields = foundry.data.fields
 
 class SpellTemplate extends ItemDataModel<SpellTemplateSchema> {
 	// TODO: see if this causes issues
@@ -69,7 +69,10 @@ class SpellTemplate extends ItemDataModel<SpellTemplateSchema> {
 		}) as SpellTemplateSchema
 	}
 
-	override cellData(_options: { hash: CellDataOptions } = { hash: {} }): Record<string, CellData> {
+	override cellData(options: CellDataOptions = {}): Record<string, CellData> {
+		const { type } = options
+		const isSpellContainerSheet = type === ItemType.SpellContainer
+
 		const levelTooltip = () => {
 			const tooltip = new TooltipGURPS()
 			const level = this.level
@@ -79,14 +82,12 @@ class SpellTemplate extends ItemDataModel<SpellTemplateSchema> {
 			return tooltip.toString()
 		}
 
-		if (!this.isOfType(ItemType.Spell, ItemType.RitualMagicSpell))
-			throw ErrorGURPS("Spell field template is somehow not a spell.")
-
 		const tooltip = new TooltipGURPS()
 		const points = new CellData({
 			type: cell.Type.Text,
 			primary: this.adjustedPoints(tooltip).toString(),
 			alignment: align.Option.End,
+			classList: ["item-points"],
 		})
 		if (tooltip.length !== 0) {
 			const pointsTooltip = new TooltipGURPS()
@@ -101,61 +102,73 @@ class SpellTemplate extends ItemDataModel<SpellTemplateSchema> {
 				primary: this.processedName,
 				secondary: this.secondaryText(display.Option.isInline),
 				unsatisfiedReason: this.unsatisfiedReason,
+				classList: ["item-name"],
 				tooltip: this.secondaryText(display.Option.isTooltip),
 			}),
 			resist: new CellData({
 				type: cell.Type.Text,
 				primary: this.resistWithReplacements,
+				classList: ["item-resist"],
+				condition: isSpellContainerSheet,
 			}),
 			class: new CellData({
 				type: cell.Type.Text,
 				primary: this.classWithReplacements,
+				classList: ["item-spell-class"],
+				condition: isSpellContainerSheet,
 			}),
 			college: new CellData({
 				type: cell.Type.Text,
 				primary: this.collegeWithReplacements.join(", "),
+				classList: ["item-college"],
+				condition: isSpellContainerSheet,
 			}),
 			castingCost: new CellData({
 				type: cell.Type.Text,
 				primary: this.castingCostWithReplacements,
+				classList: ["item-casting-cost"],
+				condition: isSpellContainerSheet,
 			}),
 			maintenanceCost: new CellData({
 				type: cell.Type.Text,
 				primary: this.maintenanceCostWithReplacements,
+				classList: ["item-maintenance-cost"],
+				condition: isSpellContainerSheet,
 			}),
 			castingTime: new CellData({
 				type: cell.Type.Text,
 				primary: this.castingTimeWithReplacements,
+				classList: ["item-casting-time"],
+				condition: isSpellContainerSheet,
 			}),
 			duration: new CellData({
 				type: cell.Type.Text,
 				primary: this.durationWithReplacements,
+				classList: ["item-duration"],
+				condition: isSpellContainerSheet,
 			}),
 			difficulty: new CellData({
 				type: cell.Type.Text,
 				primary: this.difficulty.toString(),
+				classList: ["item-difficulty"],
+				condition: isSpellContainerSheet,
 			}),
 			level: new CellData({
 				type: cell.Type.Text,
 				primary: this.levelAsString,
 				tooltip: levelTooltip(),
 				alignment: align.Option.End,
+				classList: ["item-skill-level"],
+				condition: !isSpellContainerSheet,
 			}),
 			relativeLevel: new CellData({
 				type: cell.Type.Text,
 				primary: formatRelativeSkill(this.actor, false, this.difficulty, this.adjustedRelativeLevel),
 				tooltip: levelTooltip(),
+				classList: ["item-rsl"],
+				condition: !isSpellContainerSheet,
 			}),
 			points,
-			tags: new CellData({
-				type: cell.Type.Tags,
-				primary: this.combinedTags,
-			}),
-			reference: new CellData({
-				type: cell.Type.PageRef,
-				primary: this.reference,
-				secondary: this.reference_highlight === "" ? this.nameWithReplacements : this.reference_highlight,
-			}),
 		}
 	}
 
@@ -246,7 +259,9 @@ interface SpellTemplate extends ModelPropsFromSchema<SpellTemplateSchema> {
 	get nameableReplacements(): Map<string, string>
 	get processedName(): string
 	get processedNotes(): string
-	get dififculty(): AttributeDifficulty
+	get difficulty(): AttributeDifficulty
+	get levelAsString(): string
+	get adjustedRelativeLevel(): number
 
 	level: SkillLevel
 	unsatisfiedReason: string

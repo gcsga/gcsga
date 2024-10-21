@@ -15,6 +15,7 @@ import { ContextMenuGURPS } from "../context-menu.ts"
 import { MaybePromise } from "@module/data/types.ts"
 import { Weight } from "@util/weight.ts"
 import { SheetSettings } from "@module/data/sheet-settings.ts"
+import { ItemCell } from "@module/data/item/components/cell-data.ts"
 
 const { api, sheets } = foundry.applications
 
@@ -666,7 +667,55 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 					break
 			}
 		}
+
+		if (partId === "embeds") {
+			if (!this.item.hasTemplate(ItemTemplateType.Container)) return context
+			context.modifiers = await this._prepareEmbedList(this.item.system.modifiers, {
+				type: this.item.type as ItemType,
+			})
+			context.children = await this._prepareEmbedList(this.item.system.children, {
+				type: this.item.type as ItemType,
+			})
+			context.weaponsMelee = await this._prepareEmbedList(
+				(await this.item.system.itemTypes)[ItemType.WeaponMelee],
+				{
+					type: this.item.type as ItemType,
+				},
+			)
+			context.weaponsRanged = await this._prepareEmbedList(
+				(await this.item.system.itemTypes)[ItemType.WeaponRanged],
+				{
+					type: this.item.type as ItemType,
+				},
+			)
+		}
 		return context
+	}
+
+	/* -------------------------------------------- */
+
+	protected async _prepareEmbedList(
+		embeds: MaybePromise<Collection<ItemGURPS2> | Array<ItemGURPS2>>,
+		{ type }: { type: ItemType },
+	): Promise<ItemCell[]> {
+		const list: ItemCell[] = []
+
+		;(await embeds).forEach(async item => {
+			const listItem: ItemCell = {
+				name: item.name,
+				id: item.id,
+				sort: item.sort,
+				uuid: item.uuid,
+				type: item.type as ItemType,
+				cells: item.system.cellData({ type }),
+				buttons: item.system.sheetButtons,
+			}
+			if (item.hasTemplate(ItemTemplateType.Container)) {
+				listItem.children = await this._prepareEmbedList(item.system.children, { type })
+			}
+			list.push(listItem)
+		})
+		return list
 	}
 
 	/* -------------------------------------------- */

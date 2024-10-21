@@ -50,7 +50,7 @@ class ItemDataModel<TSchema extends ItemDataSchema = ItemDataSchema> extends Sys
 
 	/* -------------------------------------------- */
 
-	cellData(_options: { hash: CellDataOptions } = { hash: {} }): Record<string, CellData> {
+	cellData(_options: CellDataOptions = {}): Record<string, CellData> {
 		throw ErrorGURPS(`ItemGURPS#cellData must be implemented.`)
 	}
 

@@ -13,7 +13,7 @@ class NoteTemplate extends ItemDataModel<NoteTemplateSchema> {
 		}
 	}
 
-	override cellData(_options: { hash: CellDataOptions } = { hash: {} }): Record<string, CellData> {
+	override cellData(_options: CellDataOptions = {}): Record<string, CellData> {
 		return {
 			// TODO: revise
 			text: new CellData({ type: cell.Type.Markdown, primary: this.enrichedText as unknown as string }),

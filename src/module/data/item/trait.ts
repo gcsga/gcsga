@@ -114,7 +114,7 @@ class TraitData extends ItemDataModel.mixin(
 		return this.can_level
 	}
 
-	override cellData(_options: { hash: CellDataOptions } = { hash: {} }): Record<string, CellData> {
+	override cellData(_options: CellDataOptions = {}): Record<string, CellData> {
 		return {
 			name: new CellData({
 				type: cell.Type.Text,

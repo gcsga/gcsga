@@ -1,9 +1,22 @@
 import { SystemDataModel } from "@module/data/abstract.ts"
 import { cell, align } from "@util"
 import fields = foundry.data.fields
+import { SheetButton } from "./sheet-button.ts"
+import { ItemType } from "@module/data/constants.ts"
 
 type CellDataOptions = {
-	sheet?: string
+	type?: string
+}
+
+type ItemCell = {
+	name: string
+	id: string
+	sort: number
+	uuid: string
+	type: ItemType
+	cells: Record<string, CellData>
+	buttons: SheetButton[]
+	children?: ItemCell[]
 }
 
 class CellData extends foundry.abstract.DataModel<SystemDataModel, CellDataSchema> {
@@ -135,4 +148,4 @@ type CellDataSchema = {
 	condition: fields.BooleanField<boolean, boolean, true, false, true>
 }
 
-export { CellData, type CellDataOptions }
+export { CellData, type CellDataOptions, type ItemCell }
