@@ -183,7 +183,9 @@ class TechniqueData extends ItemDataModel.mixin(
 		source: DeepPartial<SourceFromSchema<TechniqueSchema>> & { [key: string]: unknown },
 		_options?: Record<string, unknown>,
 	): void {
-		source.limit = source.limited ? source.limit || 0 : null
+		if (source) {
+			source.limit = source.limited ? source.limit || 0 : null
+		}
 	}
 
 	get specialization(): string {

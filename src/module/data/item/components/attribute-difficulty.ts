@@ -3,6 +3,8 @@ import fields = foundry.data.fields
 import { ItemDataModel } from "@module/data/item/abstract.ts"
 import { ItemType, gid } from "@module/data/constants.ts"
 import { getAttributeChoices } from "@module/data/attribute/helpers.ts"
+import { ActorGURPS2 } from "@module/document/actor.ts"
+import { SheetSettings } from "@module/data/sheet-settings.ts"
 
 class AttributeDifficulty extends foundry.abstract.DataModel<ItemDataModel, AttributeDifficultySchema> {
 	constructor(
@@ -60,8 +62,18 @@ class AttributeDifficulty extends foundry.abstract.DataModel<ItemDataModel, Attr
 		}
 	}
 
+	get actor(): ActorGURPS2 | null {
+		return this.parent.actor
+	}
+
 	override toString(): string {
-		return `${this.attribute.toString()}/${this.difficulty.toString()}`
+		const attributes = SheetSettings.for(this.actor).attributes
+		const attDef = attributes.find(e => e.id === this.attribute)
+		const attValue = attDef?.name ?? this.attribute
+
+		const diffValue = this.difficulty.toUpperCase()
+
+		return `${attValue}/${diffValue}`
 	}
 }
 
