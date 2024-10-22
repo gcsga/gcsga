@@ -110,7 +110,10 @@ class SkillData extends ItemDataModel.mixin(
 		}) as SkillSchema
 	}
 
-	override cellData(_options: CellDataOptions = {}): Record<string, CellData> {
+	override cellData(options: CellDataOptions = {}): Record<string, CellData> {
+		const { type } = options
+		const isSkillContainerSheet = type === ItemType.SkillContainer
+
 		const levelTooltip = () => {
 			const tooltip = new TooltipGURPS()
 			const level = this.level
@@ -125,6 +128,8 @@ class SkillData extends ItemDataModel.mixin(
 			type: cell.Type.Text,
 			primary: this.adjustedPoints(tooltip).toString(),
 			alignment: align.Option.End,
+			classList: ["item-points"],
+			condition: !isSkillContainerSheet,
 		})
 		if (tooltip.length !== 0) {
 			const pointsTooltip = new TooltipGURPS()
@@ -140,32 +145,30 @@ class SkillData extends ItemDataModel.mixin(
 				secondary: this.secondaryText(display.Option.isInline),
 				unsatisfiedReason: this.unsatisfiedReason,
 				tooltip: this.secondaryText(display.Option.isTooltip),
+				classList: ["item-name"],
 			}),
 			difficulty: new CellData({
 				type: cell.Type.Text,
 				primary: this.difficulty.toString(),
+				classList: ["item-difficulty"],
+				condition: isSkillContainerSheet,
 			}),
 			level: new CellData({
 				type: cell.Type.Text,
 				primary: this.levelAsString,
 				tooltip: levelTooltip(),
 				alignment: align.Option.End,
+				classList: ["item-skill-level"],
+				condition: !isSkillContainerSheet,
 			}),
 			relativeLevel: new CellData({
 				type: cell.Type.Text,
 				primary: formatRelativeSkill(this.actor, false, this.difficulty, this.adjustedRelativeLevel),
 				tooltip: levelTooltip(),
+				classList: ["item-rsl"],
+				condition: !isSkillContainerSheet,
 			}),
 			points,
-			tags: new CellData({
-				type: cell.Type.Tags,
-				primary: this.combinedTags,
-			}),
-			reference: new CellData({
-				type: cell.Type.PageRef,
-				primary: this.reference,
-				secondary: this.reference_highlight === "" ? this.nameWithReplacements : this.reference_highlight,
-			}),
 		}
 	}
 

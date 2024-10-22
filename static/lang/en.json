@@ -233,7 +233,7 @@
 					"Resist": { "Name": "Resistance" },
 					"CastingCost": { "Name": "Casting Cost" },
 					"MaintenanceCost": { "Name": "Maintenance Cost" },
-					"CastingTime": { "Name": "Cating Time" },
+					"CastingTime": { "Name": "Casting Time" },
 					"Duration": { "Name": "Casting Duration" }
 				}
 			},

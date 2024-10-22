@@ -44,6 +44,7 @@ section[data-tab="embeds"] {
 			div.item-row {
 				display: flex;
 				align-items: stretch;
+				height: fit-content;
 			}
 		}
 	}
@@ -53,7 +54,8 @@ section[data-tab="embeds"] {
 		align-items: center;
 		display: flex;
 		font-size: 0.8rem;
-		height: 1.625rem;
+		height: fit-content;
+		// height: 1.625rem;
 		justify-content: center;
 		padding: 0.3rem 0;
 
@@ -63,6 +65,15 @@ section[data-tab="embeds"] {
 
 		&.item-name {
 			flex: 1;
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			justify-content: flex-start;
+			padding-left: 0.3rem;
+
+			.item-notes {
+				font-size: 0.6rem;
+			}
 		}
 
 		&.item-toggle {
@@ -99,6 +110,10 @@ section[data-tab="embeds"] {
 			width: 6rem;
 		}
 
+		&.item-maintenance-cost {
+			width: 4rem;
+		}
+
 		&.item-accuracy,
 		&.item-parry,
 		&.item-block,
@@ -108,6 +123,12 @@ section[data-tab="embeds"] {
 		&.item-recoil,
 		&.item-shots,
 		&.item-range,
+		&.item-spell-class,
+		&.item-college,
+		&.item-casting-cost,
+		&.item-casting-time,
+		&.item-duration,
+		&.item-difficulty,
 		&.item-rof {
 			width: 3rem;
 		}
@@ -117,6 +138,7 @@ section[data-tab="embeds"] {
 		&.item-cost,
 		&.item-cost-extended,
 		&.item-weight,
+		&.item-prereq-count,
 		&.item-weight-extended {
 			width: 2rem;
 		}

@@ -109,6 +109,14 @@ class CellData extends foundry.abstract.DataModel<SystemDataModel, CellDataSchem
 				return
 			}
 			case cell.Type.Text:
+				element.innerHTML = this.primary ?? ""
+				if (this.secondary !== null) {
+					const notesElement = document.createElement("div")
+					notesElement.classList.add("item-notes")
+					notesElement.innerHTML = this.secondary
+					element.append(notesElement)
+				}
+				return
 			case cell.Type.Tags: {
 				element.innerHTML = this.primary ?? ""
 				return

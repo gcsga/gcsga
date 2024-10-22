@@ -88,6 +88,7 @@ class SpellTemplate extends ItemDataModel<SpellTemplateSchema> {
 			primary: this.adjustedPoints(tooltip).toString(),
 			alignment: align.Option.End,
 			classList: ["item-points"],
+			condition: !isSpellContainerSheet,
 		})
 		if (tooltip.length !== 0) {
 			const pointsTooltip = new TooltipGURPS()
@@ -105,6 +106,12 @@ class SpellTemplate extends ItemDataModel<SpellTemplateSchema> {
 				classList: ["item-name"],
 				tooltip: this.secondaryText(display.Option.isTooltip),
 			}),
+			college: new CellData({
+				type: cell.Type.Text,
+				primary: this.collegeWithReplacements.join(", "),
+				classList: ["item-college"],
+				condition: isSpellContainerSheet,
+			}),
 			resist: new CellData({
 				type: cell.Type.Text,
 				primary: this.resistWithReplacements,
@@ -115,12 +122,6 @@ class SpellTemplate extends ItemDataModel<SpellTemplateSchema> {
 				type: cell.Type.Text,
 				primary: this.classWithReplacements,
 				classList: ["item-spell-class"],
-				condition: isSpellContainerSheet,
-			}),
-			college: new CellData({
-				type: cell.Type.Text,
-				primary: this.collegeWithReplacements.join(", "),
-				classList: ["item-college"],
 				condition: isSpellContainerSheet,
 			}),
 			castingCost: new CellData({
@@ -152,6 +153,11 @@ class SpellTemplate extends ItemDataModel<SpellTemplateSchema> {
 				primary: this.difficulty.toString(),
 				classList: ["item-difficulty"],
 				condition: isSpellContainerSheet,
+			}),
+			prereqCount: new CellData({
+				type: cell.Type.Text,
+				primary: this.isOfType(ItemType.RitualMagicSpell) ? this.prereq_count.toString() : "",
+				classList: ["item-prereq-count"],
 			}),
 			level: new CellData({
 				type: cell.Type.Text,

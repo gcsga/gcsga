@@ -14,7 +14,7 @@ class SkillContainerData extends ItemDataModel.mixin(BasicInformationTemplate, C
 
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
 		context.detailsParts = ["gurps.details-container"]
-		context.embedsParts = ["gurps.embeds-children"]
+		context.embedsParts = ["gurps.embeds-skill"]
 	}
 
 	static override defineSchema(): SkillContainerSchema {
@@ -24,26 +24,33 @@ class SkillContainerData extends ItemDataModel.mixin(BasicInformationTemplate, C
 		}) as SkillContainerSchema
 	}
 
-	override cellData(_options: { hash: CellDataOptions } = { hash: {} }): Record<string, CellData> {
+	override cellData(options: CellDataOptions = {}): Record<string, CellData> {
+		const { type } = options
+		const isSkillContainerSheet = type === ItemType.SkillContainer
+
 		return {
 			name: new CellData({
 				type: cell.Type.Text,
 				primary: this.processedName,
 				secondary: this.secondaryText(display.Option.isInline),
 				tooltip: this.secondaryText(display.Option.isTooltip),
+				classList: ["item-name"],
 			}),
-			difficulty: new CellData({}),
-			level: new CellData({}),
-			relativeLevel: new CellData({}),
-			points: new CellData({}),
-			tags: new CellData({
-				type: cell.Type.Tags,
-				primary: this.combinedTags,
+			difficulty: new CellData({
+				classList: ["item-difficulty"],
+				condition: isSkillContainerSheet,
 			}),
-			reference: new CellData({
-				type: cell.Type.PageRef,
-				primary: this.reference,
-				secondary: this.reference_highlight === "" ? this.nameWithReplacements : this.reference_highlight,
+			level: new CellData({
+				classList: ["item-skill-level"],
+				condition: !isSkillContainerSheet,
+			}),
+			relativeLevel: new CellData({
+				classList: ["item-rsl"],
+				condition: !isSkillContainerSheet,
+			}),
+			points: new CellData({
+				classList: ["item-points"],
+				condition: !isSkillContainerSheet,
 			}),
 		}
 	}
