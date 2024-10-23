@@ -7,6 +7,7 @@ export namespace cell {
 		Toggle = "toggle",
 		PageRef = "page_ref",
 		Markdown = "markdown",
+		Dropdown = "dropdown",
 	}
 
 	export namespace Type {
@@ -26,5 +27,5 @@ export namespace cell {
 			return Types[0]
 		}
 	}
-	export const Types: Type[] = [Type.Text, Type.Tags, Type.Toggle, Type.PageRef, Type.Markdown]
+	export const Types: Type[] = [Type.Text, Type.Tags, Type.Toggle, Type.PageRef, Type.Markdown, Type.Dropdown]
 }

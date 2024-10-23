@@ -35,6 +35,11 @@ class EquipmentModifierContainerData extends ItemDataModel.mixin(
 				alignment: align.Option.Middle,
 				classList: ["item-toggle"],
 			}),
+			dropdown: new CellData({
+				type: cell.Type.Dropdown,
+				open: this.open,
+				classList: ["item-dropdown"],
+			}),
 			name: new CellData({
 				type: cell.Type.Text,
 				primary: this.nameWithReplacements,

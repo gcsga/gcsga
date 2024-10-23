@@ -178,7 +178,8 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 		return buffer.toString()
 	}
 
-	override cellData(_options: CellDataOptions = {}): Record<string, CellData> {
+	override cellData(options: CellDataOptions = {}): Record<string, CellData> {
+		const { level } = options
 		let dim = this.quantity === 0
 		const weightUnits = SheetSettings.for(this.actor).default_weight_units
 
@@ -198,6 +199,11 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 				dim,
 				classList: ["item-quantity"],
 			}),
+			dropdown: new CellData({
+				type: this.isOfType(ItemType.EquipmentContainer) ? cell.Type.Dropdown : cell.Type.Text,
+				open: this.open,
+				classList: ["item-dropdown"],
+			}),
 			name: new CellData({
 				type: cell.Type.Text,
 				primary: this.processedName,
@@ -205,6 +211,7 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 				alignment: align.Option.Start,
 				dim,
 				classList: ["item-name"],
+				indentLevel: level,
 			}),
 			uses: new CellData({
 				type: cell.Type.Text,
@@ -342,6 +349,8 @@ interface EquipmentFieldsTemplate extends ModelPropsFromSchema<EquipmentFieldsTe
 	>
 	get weapons(): MaybePromise<Collection<ItemInst<ItemType.WeaponMelee | ItemType.WeaponRanged>>>
 	get allModifiers(): MaybePromise<Collection<ItemInst<ItemType.EquipmentModifier>>>
+
+	open: boolean | null
 }
 
 type EquipmentFieldsTemplateSchema = {

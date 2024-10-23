@@ -98,6 +98,10 @@ class SpellTemplate extends ItemDataModel<SpellTemplateSchema> {
 		}
 
 		return {
+			dropdown: new CellData({
+				type: cell.Type.Text,
+				classList: ["item-dropdown"],
+			}),
 			name: new CellData({
 				type: cell.Type.Text,
 				primary: this.processedName,

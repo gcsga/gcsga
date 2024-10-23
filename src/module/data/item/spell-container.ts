@@ -29,6 +29,11 @@ class SpellContainerData extends ItemDataModel.mixin(BasicInformationTemplate, C
 		const isSpellContainerSheet = type === ItemType.SpellContainer
 
 		return {
+			dropdown: new CellData({
+				type: cell.Type.Dropdown,
+				open: this.open,
+				classList: ["item-dropdown"],
+			}),
 			name: new CellData({
 				type: cell.Type.Text,
 				primary: this.processedName,

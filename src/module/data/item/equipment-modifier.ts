@@ -62,6 +62,10 @@ class EquipmentModifierData extends ItemDataModel.mixin(
 				alignment: align.Option.Middle,
 				classList: ["item-toggle"],
 			}),
+			dropdown: new CellData({
+				type: cell.Type.Text,
+				classList: ["item-dropdown"],
+			}),
 			name: new CellData({
 				type: cell.Type.Text,
 				primary: this.nameWithReplacements,

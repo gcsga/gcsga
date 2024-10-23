@@ -25,16 +25,22 @@ class SkillContainerData extends ItemDataModel.mixin(BasicInformationTemplate, C
 	}
 
 	override cellData(options: CellDataOptions = {}): Record<string, CellData> {
-		const { type } = options
+		const { type, level } = options
 		const isSkillContainerSheet = type === ItemType.SkillContainer
 
 		return {
+			dropdown: new CellData({
+				type: cell.Type.Dropdown,
+				open: this.open,
+				classList: ["item-dropdown"],
+			}),
 			name: new CellData({
 				type: cell.Type.Text,
 				primary: this.processedName,
 				secondary: this.secondaryText(display.Option.isInline),
 				tooltip: this.secondaryText(display.Option.isTooltip),
 				classList: ["item-name"],
+				indentLevel: level,
 			}),
 			difficulty: new CellData({
 				classList: ["item-difficulty"],

@@ -90,6 +90,7 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			deleteDefault: this.#onDeleteDefault,
 			toggleMode: this.#onToggleMode,
 			toggleCheckbox: this.#onToggleCheckbox,
+			toggleDropdown: this.#onToggleDropdown,
 			openItemContextMenu: this.#onOpenItemContextMenu,
 		},
 		dragDrop: [{ dragSelector: ".items-list .item", dropSelector: null }],
@@ -672,20 +673,24 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			if (!this.item.hasTemplate(ItemTemplateType.Container)) return context
 			context.modifiers = await this._prepareEmbedList(this.item.system.modifiers, {
 				type: this.item.type as ItemType,
+				level: 0,
 			})
 			context.children = await this._prepareEmbedList(this.item.system.children, {
 				type: this.item.type as ItemType,
+				level: 0,
 			})
 			context.weaponsMelee = await this._prepareEmbedList(
 				(await this.item.system.itemTypes)[ItemType.WeaponMelee],
 				{
 					type: this.item.type as ItemType,
+					level: 0,
 				},
 			)
 			context.weaponsRanged = await this._prepareEmbedList(
 				(await this.item.system.itemTypes)[ItemType.WeaponRanged],
 				{
 					type: this.item.type as ItemType,
+					level: 0,
 				},
 			)
 		}
@@ -696,10 +701,9 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 
 	protected async _prepareEmbedList(
 		embeds: MaybePromise<Collection<ItemGURPS2> | Array<ItemGURPS2>>,
-		{ type }: { type: ItemType },
+		{ type, level }: { type: ItemType; level: number },
 	): Promise<ItemCell[]> {
 		const list: ItemCell[] = []
-
 		;(await embeds).forEach(async item => {
 			const listItem: ItemCell = {
 				name: item.name,
@@ -707,11 +711,11 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 				sort: item.sort,
 				uuid: item.uuid,
 				type: item.type as ItemType,
-				cells: item.system.cellData({ type }),
+				cells: item.system.cellData({ type, level }),
 				buttons: item.system.sheetButtons,
 			}
 			if (item.hasTemplate(ItemTemplateType.Container)) {
-				listItem.children = await this._prepareEmbedList(item.system.children, { type })
+				listItem.children = await this._prepareEmbedList(item.system.children, { type, level: level + 1 })
 			}
 			list.push(listItem)
 		})
@@ -730,7 +734,6 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 	/* -------------------------------------------- */
 
 	protected async _prepareEquipmentPartContext(context: Record<string, any>): Promise<object> {
-		console.log("_prepareEquipmentPartContext")
 		if (!this.item.hasTemplate(ItemTemplateType.EquipmentFields)) return context
 		context.extendedValue = this.item.system.extendedValue
 		context.extendedWeight = Weight.format(
@@ -818,6 +821,34 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		}
 
 		await childItem.update({ "system.disabled": !disabled })
+	}
+
+	/* -------------------------------------------- */
+
+	static async #onToggleDropdown(this: ItemSheetGURPS, event: Event): Promise<void> {
+		const toggle = event.target as HTMLElement
+		const itemId = (toggle.closest("li.item") as HTMLElement)?.dataset.itemId ?? null
+
+		if (itemId === null) {
+			console.error("#onToggleDropdown action failed: No itemId found")
+			return
+		}
+
+		const open = toggle.classList.contains("fa-caret-down")
+		toggle.classList.toggle("enabled")
+		const item = this.item
+		if (!item.hasTemplate(ItemTemplateType.Container)) {
+			console.error(`#onToggleDropdown action failed: container is not a valid Container Item.`)
+			return
+		}
+
+		const childItem = await item.system.getContainedItem(itemId)
+		if (!childItem) {
+			console.error(`#onToggleDropdown action failed: no item with ID "${itemId} found."`)
+			return
+		}
+
+		await childItem.update({ "system.open": !open })
 	}
 
 	/* -------------------------------------------- */

@@ -20,7 +20,8 @@ class NoteContainerData extends ItemDataModel.mixin(
 	static override childTypes = new Set([ItemType.Note, ItemType.NoteContainer])
 
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
-		context.detailsParts = ["gurps.details-note", "gurps.note-preview"]
+		context.detailsParts = ["gurps.details-note"]
+		context.embedsParts = ["gurps.embeds-note"]
 	}
 
 	static override defineSchema(): NoteContainerSchema {

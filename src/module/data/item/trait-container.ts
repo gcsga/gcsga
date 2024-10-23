@@ -95,6 +95,11 @@ class TraitContainerData extends ItemDataModel.mixin(
 
 	override cellData(_options: { hash: CellDataOptions } = { hash: {} }): Record<string, CellData> {
 		return {
+			dropdown: new CellData({
+				type: cell.Type.Dropdown,
+				open: this.open,
+				classList: ["item-dropdown"],
+			}),
 			name: new CellData({
 				type: cell.Type.Text,
 				primary: this.nameWithReplacements,

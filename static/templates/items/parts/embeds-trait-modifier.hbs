@@ -1,31 +1,7 @@
-{{#* inline "item"}}
-<li
-	class="item"
-	data-item-name="{{item.name}}"
-	data-item-id="{{item.id}}"
-	data-item-sort="{{item.sort}}"
-	data-uuid="{{item.uuid}}"
-	draggable="true"
->
-	<div class="item-row">
-		<!-- Cell Data -->
-		{{#each item.cells as |cell key|}} {{cell.element}} {{/each}}
-		<!-- Buttons -->
-		<div class="item-detail item-controls">
-			{{#each item.buttons as |button index|}} {{button.element}}{{/each}}
-		</div>
-	</div>
-	{{#if (eq item.type "traitModifierContainer")}}
-	<ul class="item-list">
-		{{#each item.children}} {{>item item=this}} {{/each}}
-	</ul>
-	{{/if}}
-</li>
-{{/inline}}
-
 <div class="items-section" data-types="{{join system.modifierTypes ','}}">
 	<div class="items-header">
 		<i class="fa-solid fa-check item-header item-toggle"></i>
+		<div class="item-header item-dropdown"></div>
 		<div class="item-header item-name">Trait Modifier</div>
 		<div class="item-header item-cost-adjustment">Cost Adjustment</div>
 		<div class="item-header item-controls"></div>
@@ -35,11 +11,11 @@
 
 		{{#if (or (eq item.type "trait") (eq item.type "traitContainer"))}}
 		<!-- Loop -->
-		{{#each modifiers}} {{> item item=this}} {{/each}}
+		{{#each modifiers}} {{> "gurps.embeds-entry" item=this}} {{/each}}
 		<!-- For trait modifier containers -->
 		{{else}}
 		<!-- Loop -->
-		{{#each children}} {{> item item=this}} {{/each}}
+		{{#each children}} {{> "gurps.embeds-entry" item=this}} {{/each}}
 		<!-- End -->
 		{{/if}}
 	</ul>

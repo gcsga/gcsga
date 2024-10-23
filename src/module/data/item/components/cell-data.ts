@@ -6,6 +6,7 @@ import { ItemType } from "@module/data/constants.ts"
 
 type CellDataOptions = {
 	type?: string
+	level?: number
 }
 
 type ItemCell = {
@@ -62,6 +63,13 @@ class CellData extends foundry.abstract.DataModel<SystemDataModel, CellDataSchem
 			),
 			// Condition which determines whether the cell should be displayed
 			condition: new fields.BooleanField({ required: true, nullable: false, initial: true }),
+			// [Dropdown fields only]: template info displayed as tag
+			open: new fields.BooleanField({ required: true, nullable: true, initial: null }),
+			// dropdown: new fields.SchemaField({
+			// 	present: new fields.BooleanField({ required: true, nullable: false, initial: false }),
+			// 	open: new fields.BooleanField({ required: true, nullable: false, initial: false }),
+			// }),
+			indentLevel: new fields.NumberField({ required: true, nullable: false, initial: 0 }),
 		}
 	}
 
@@ -73,7 +81,8 @@ class CellData extends foundry.abstract.DataModel<SystemDataModel, CellDataSchem
 		if (!this.condition) return null
 		const element = document.createElement(this._getElementType())
 		this._getFormValuesForType(element)
-		element.style.setProperty("align-self", this._getAlignment())
+		element.style.setProperty("justify-content", this._getAlignment())
+		element.style.setProperty("padding-left", this._getIndent())
 		element.classList.add("item-detail", ...this.classList)
 		return element
 	}
@@ -81,10 +90,15 @@ class CellData extends foundry.abstract.DataModel<SystemDataModel, CellDataSchem
 	private _getElementType(): string {
 		switch (this.type) {
 			case cell.Type.Toggle:
+			case cell.Type.Dropdown:
 				return "a"
 			default:
 				return "div"
 		}
+	}
+
+	private _getIndent(): string {
+		return `${this.indentLevel + 0.3}rem`
 	}
 
 	private _getAlignment(): string {
@@ -102,6 +116,11 @@ class CellData extends foundry.abstract.DataModel<SystemDataModel, CellDataSchem
 
 	private _getFormValuesForType(element: HTMLElement): void {
 		switch (this.type) {
+			case cell.Type.Dropdown: {
+				element.classList.add("fa-solid", this.open ? "fa-caret-down" : "fa-caret-right")
+				element.dataset.action = "toggleDropdown"
+				return
+			}
 			case cell.Type.Toggle: {
 				element.classList.add("fa-solid", "fa-check")
 				if (this.checked) element.classList.add("enabled")
@@ -109,13 +128,19 @@ class CellData extends foundry.abstract.DataModel<SystemDataModel, CellDataSchem
 				return
 			}
 			case cell.Type.Text:
-				element.innerHTML = this.primary ?? ""
+				const nameElement = document.createElement("div")
+				nameElement.classList.add("name")
+				nameElement.innerHTML = this.primary ?? ""
+
 				if (this.secondary !== null) {
 					const notesElement = document.createElement("div")
 					notesElement.classList.add("item-notes")
 					notesElement.innerHTML = this.secondary
-					element.append(notesElement)
+					nameElement.append(notesElement)
 				}
+
+				element.append(nameElement)
+
 				return
 			case cell.Type.Tags: {
 				element.innerHTML = this.primary ?? ""
@@ -154,6 +179,8 @@ type CellDataSchema = {
 		true
 	>
 	condition: fields.BooleanField<boolean, boolean, true, false, true>
+	open: fields.BooleanField<boolean, boolean, true, true, true>
+	indentLevel: fields.NumberField<number, number, true, false, true>
 }
 
 export { CellData, type CellDataOptions, type ItemCell }

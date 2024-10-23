@@ -1,0 +1,23 @@
+<li
+	class="item"
+	data-item-name="{{item.name}}"
+	data-item-id="{{item.id}}"
+	data-item-sort="{{item.sort}}"
+	data-uuid="{{item.uuid}}"
+	draggable="true"
+>
+	<div class="item-row">
+		<!-- Cell Data -->
+		{{#each item.cells as |cell key|}} {{cell.element}} {{/each}}
+		<!-- Buttons -->
+		<div class="item-detail item-controls">
+			{{#each item.buttons as |button index|}} {{button.element}}{{/each}}
+		</div>
+	</div>
+	<!-- Embeds -->
+	{{#if item.cells.dropdown.open}}
+	<ul class="item-list">
+		{{#each item.children}} {{>"gurps.embeds-entry" item=this}} {{/each}}
+	</ul>
+	{{/if}}
+</li>

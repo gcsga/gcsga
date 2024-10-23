@@ -2,6 +2,8 @@
 
 ## Current Tasks
 
+- fix closed containers showing contents
+- fix alternating colors for lists with containers
 - Add embeds tab functionality for easier testing.
 
 ## Left To Do

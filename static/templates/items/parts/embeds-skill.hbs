@@ -1,30 +1,11 @@
-{{#* inline "item"}}
-<li
-	class="item"
-	data-item-name="{{item.name}}"
-	data-item-id="{{item.id}}"
-	data-item-sort="{{item.sort}}"
-	data-uuid="{{item.uuid}}"
-	draggable="true"
->
-	<div class="item-row">
-		<!-- Cell Data -->
-		{{#each item.cells as |cell key|}} {{cell.element}} {{/each}}
-		<!-- Buttons -->
-		<div class="item-detail item-controls">
-			{{#each item.buttons as |button index|}} {{button.element}}{{/each}}
-		</div>
-	</div>
-</li>
-{{/inline}}
-
 <div class="items-section" data-types="{{join system.childTypes ','}}">
 	<div class="items-header">
+		<div class="item-header item-dropdown"></div>
 		<div class="item-header item-name">Name</div>
 		<div class="item-header item-difficulty">Diff</div>
 		<div class="item-header item-controls"></div>
 	</div>
 	<ul class="item-list">
-		{{#each children}} {{> item item=this type=@root.item.type}} {{/each}}
+		{{#each modifiers}} {{> "gurps.embeds-entry" item=this}} {{/each}}
 	</ul>
 </div>
