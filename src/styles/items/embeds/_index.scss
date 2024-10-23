@@ -32,9 +32,13 @@ section[data-tab="embeds"] {
 			background-color: #25282b; // Slightly darker shade for odd rows
 			color: #e1e1e1; // Off-white text color
 
-			&:nth-child(even) {
+			&.banding {
 				background-color: #2f3338; // Neutral grey/soft navy for even rows
 			}
+
+			// &:nth-child(even) {
+			// 	background-color: #2f3338; // Neutral grey/soft navy for even rows
+			// }
 
 			&:last-child {
 				border-radius: 0 0 0.25rem 0.25rem;

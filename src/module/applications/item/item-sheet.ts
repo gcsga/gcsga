@@ -603,6 +603,14 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 				onOpen: this._onOpenItemContextMenu.bind(this),
 			})
 		}
+
+		for (const list of this.element.querySelectorAll("div.items-section")) {
+			let alternate = false
+			for (const row of list.querySelectorAll("li.item")) {
+				if (alternate) row.classList.add("banding")
+				alternate = !alternate
+			}
+		}
 	}
 
 	/* -------------------------------------------- */
