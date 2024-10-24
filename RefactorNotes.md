@@ -2,8 +2,6 @@
 
 ## Current Tasks
 
-- Add embeds tab functionality for easier testing.
-
 ## Left To Do
 
 - Weapon Fields

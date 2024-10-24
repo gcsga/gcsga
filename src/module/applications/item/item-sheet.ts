@@ -712,7 +712,7 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		{ type, level }: { type: ItemType; level: number },
 	): Promise<ItemCell[]> {
 		const list: ItemCell[] = []
-		;(await embeds).forEach(async item => {
+		for (const item of await embeds) {
 			const listItem: ItemCell = {
 				name: item.name,
 				id: item.id,
@@ -726,7 +726,8 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 				listItem.children = await this._prepareEmbedList(item.system.children, { type, level: level + 1 })
 			}
 			list.push(listItem)
-		})
+		}
+		list.sort((a, b) => (a.sort > b.sort ? 1 : -1))
 		return list
 	}
 
