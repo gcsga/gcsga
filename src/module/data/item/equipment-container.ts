@@ -11,6 +11,7 @@ import { ContainerTemplate } from "./templates/container.ts"
 import { FeatureTemplate } from "./templates/features.ts"
 import { PrereqTemplate } from "./templates/prereqs.ts"
 import { ReplacementTemplate } from "./templates/replacements.ts"
+import { Nameable } from "@module/util/nameable.ts"
 
 class EquipmentContainerData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -100,6 +101,19 @@ class EquipmentContainerData extends ItemDataModel.mixin(
 	}
 
 	/** Nameables */
+	override fillWithNameableKeys(
+		m: Map<string, string>,
+		existing: Map<string, string> = this.nameableReplacements,
+	): void {
+		super.fillWithNameableKeys(m, existing)
+
+		Nameable.extract(this.notes, m, existing)
+
+		this._fillWithNameableKeysFromPrereqs(m, existing)
+		this._fillWithNameableKeysFromFeatures(m, existing)
+		this._fillWithNameableKeysFromEmbeds(m, existing)
+	}
+
 	protected override async _fillWithNameableKeysFromPrereqs(
 		m: Map<string, string>,
 		existing: Map<string, string>,

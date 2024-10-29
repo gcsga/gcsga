@@ -417,7 +417,9 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 				label: "GURPS.Sheets.Item.Tabs.Replacements",
 			},
 		}
-		if (!this.item.hasTemplate(ItemTemplateType.Replacement)) delete tabs.replacements
+		if (!this.item.hasTemplate(ItemTemplateType.Replacement) || this.item.system.nameableReplacements.size === 0)
+			delete tabs.replacements
+
 		if (!this.item.hasTemplate(ItemTemplateType.Container)) delete tabs.embeds
 
 		return this._markTabs(tabs)
