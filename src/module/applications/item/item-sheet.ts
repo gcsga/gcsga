@@ -93,7 +93,10 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			toggleDropdown: this.#onToggleDropdown,
 			openItemContextMenu: this.#onOpenItemContextMenu,
 		},
-		dragDrop: [{ dragSelector: ".items-list .item", dropSelector: null }],
+		dragDrop: [
+			// { dragSelector: ".items-list .item", dropSelector: null },
+			{ dragSelector: ".item-list .item", dropSelector: null },
+		],
 	}
 
 	/* -------------------------------------------- */
@@ -160,6 +163,9 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 	/* -------------------------------------------- */
 
 	async _onDragStart(event: DragEvent) {
+		// event.preventDefault()
+		event.stopImmediatePropagation()
+
 		const li = event.currentTarget as HTMLElement
 		if ((event.target as HTMLElement).classList.contains("content-link")) return
 
@@ -182,7 +188,32 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 
 	/* -------------------------------------------- */
 
-	async _onDragOver(_event: DragEvent) {}
+	async _onDragOver(event: DragEvent): Promise<void> {
+		const element = event.target as HTMLElement
+		const li = element.closest("li.item")
+		if (li) return this._onDragOverItem(event, li as HTMLElement)
+		return
+	}
+
+	/* -------------------------------------------- */
+
+	async _onDragOverItem(event: DragEvent, li: HTMLElement): Promise<void> {
+		;(event.currentTarget as HTMLElement).querySelectorAll("li.item").forEach(el => {
+			if (el === li) return
+			;(el as HTMLElement).classList.remove("above", "below", "inside")
+		})
+		const rect = li.getBoundingClientRect()
+		if (li.hasAttribute("data-is-container") && event.x > rect.x + rect.width / 5) {
+			li.classList.remove("above", "below")
+			li.classList.add("inside")
+		} else if (event.y > rect.y + rect.height / 2) {
+			li.classList.remove("above", "inside")
+			li.classList.add("below")
+		} else {
+			li.classList.remove("below", "inside")
+			li.classList.add("above")
+		}
+	}
 
 	/* -------------------------------------------- */
 
@@ -201,6 +232,36 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		}
 		return false
 	}
+
+	/* -------------------------------------------- */
+
+	// #onMoveItem(event: Sortable.MoveEvent): boolean {
+	// 	// Won't work for items in compendiums
+	// 	if (this.item.pack) return false
+	//
+	// 	const isSeparateSheet = htmlClosest(event.target, "form") !== htmlClosest(event.related, "form")
+	// 	if (!this.isEditable || isSeparateSheet) return false
+	//
+	// 	const contents = (this.item as ItemTemplateInst<ItemTemplateType.Container>).system
+	// 		.allContents as Collection<ItemGURPS2>
+	// 	const sourceItem = contents.get(event.dragged?.dataset.itemId, { strict: true })
+	//
+	// 	const containerRows = this.element.querySelectorAll("li[data-is-container] > .item-row")
+	// 	for (const row of containerRows) {
+	// 		row.classList.remove("drop-highlight")
+	// 	}
+	//
+	// 	const targetSection = htmlClosest(event.related, ".items-section[data-types]")?.dataset.types?.split(",") ?? []
+	// 	console.log(targetSection)
+	// 	if (targetSection.length === 0) return false
+	// 	if (targetSection.includes(sourceItem.type)) return true
+	//
+	// 	return false
+	// }
+	//
+	// /* -------------------------------------------- */
+	//
+	// async #onDropItem(_event: Sortable.SortableEvent & { originalEvent?: DragEvent }): Promise<void> { }
 
 	/* -------------------------------------------- */
 
@@ -226,7 +287,9 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		}
 
 		// If item already exists in this container, just adjust its sorting
-		if ((item.system as any).container === this.item.id) {
+		const allContainers = (await item.system.allContainers()).map(e => e.id)
+		if (allContainers.includes(this.item.id)) {
+			// if ((item.system as any).container === this.item.id) {
 			return this._onSortItem(event, item)
 		}
 
@@ -253,15 +316,32 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 	/* -------------------------------------------- */
 
 	protected async _onSortItem(event: DragEvent, item: ItemGURPS2) {
+		// Clear indicator classes
+		;(event.currentTarget as HTMLElement).querySelectorAll("li.item").forEach(el => {
+			;(el as HTMLElement).classList.remove("above", "below", "inside")
+		})
+
 		if (!this.item.hasTemplate(ItemTemplateType.Container)) return
 
 		const dropTarget = (event.target as HTMLElement).closest("[data-item-id]") as HTMLElement
 		if (!dropTarget) return
-		const contents = await this.item.system.contents
+		const contents = await this.item.system.allContents
 		const target = contents.get(dropTarget.dataset.itemId ?? "")!
+		let targetContainerId = this.item.id
+
+		const rect = dropTarget.getBoundingClientRect()
+		if (dropTarget.hasAttribute("data-is-container") && event.x > rect.x + rect.width / 5) {
+			targetContainerId = dropTarget.dataset.itemId ?? targetContainerId
+		}
 
 		// Don't sort on yourself
 		if (item.id === target.id) return
+
+		// Find nested container, if any
+		const container = dropTarget.closest("[data-container-id]")
+		if (container) {
+			targetContainerId = (target.system as any).container
+		}
 
 		// Identify sibling items based on adjacent HTML elements
 		const siblings = []
@@ -273,13 +353,16 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		// Perform the sort
 		const sortUpdates = SortingHelpers.performIntegerSort(item, { target, siblings })
 		const updateData = sortUpdates.map(u => {
-			const update = u.update
+			const update = u.update as Record<string, unknown>
 			update._id = u.target.id
+			if (u.target.id === item.id && targetContainerId !== item.id) {
+				update["system.container"] = targetContainerId
+			}
 			return update
 		})
 
 		// Perform the update
-		Item.updateDocuments(updateData, { pack: this.item.pack, parent: this.item.actor })
+		return Item.updateDocuments(updateData, { pack: this.item.pack, parent: this.item.actor })
 	}
 
 	/* -------------------------------------------- */
@@ -585,13 +668,32 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 
 	protected override _onRender(context: object, options: ApplicationRenderOptions): void {
 		super._onRender(context, options)
-		const prereqTypeFields = this.element.querySelectorAll("[data-selector='prereq-type'")
-		for (const input of prereqTypeFields) {
-			input.addEventListener("change", event => this._onChangePrereqType(event))
-		}
-		const featureTypeFields = this.element.querySelectorAll("[data-selector='feature-type'")
-		for (const input of featureTypeFields) {
-			input.addEventListener("change", event => this._onChangeFeatureType(event))
+		// // Create SortableJS handlers
+		// htmlQueryAll(this.element, "ul.item-list").forEach(list => {
+		// 	const options: Sortable.Options = {
+		// 		...SORTABLE_BASE_OPTIONS,
+		// 		scroll: this.element,
+		// 		setData: async (dataTransfer, dragEl) => {
+		// 			const item = await (this.item.system as any).allContents.get(dragEl.dataset.itemId, {
+		// 				strict: true,
+		// 			})
+		// 			dataTransfer.setData("text/plain", JSON.stringify({ ...item.toDragData() }))
+		// 		},
+		// 		onMove: event => this.#onMoveItem(event),
+		// 		onEnd: event => this.#onDropItem(event),
+		// 	}
+		// 	new Sortable(list as HTMLElement, options)
+		// })
+
+		if (options.isFirstRender) {
+			const prereqTypeFields = this.element.querySelectorAll("[data-selector='prereq-type'")
+			for (const input of prereqTypeFields) {
+				input.addEventListener("change", event => this._onChangePrereqType(event))
+			}
+			const featureTypeFields = this.element.querySelectorAll("[data-selector='feature-type'")
+			for (const input of featureTypeFields) {
+				input.addEventListener("change", event => this._onChangeFeatureType(event))
+			}
 		}
 		if (!this.isEditable) this._disableFields()
 
@@ -639,7 +741,7 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 	override async _prepareContext(options = {}): Promise<object> {
 		const context: Record<string, unknown> = {}
 		await this.item.system.getSheetData(context)
-		const obj = {
+		const obj: Record<string, unknown> = {
 			...super._prepareContext(options),
 			fields: this.item.system.schema.fields,
 			tabs: this._getTabs(),
@@ -650,6 +752,10 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			embedsParts: context.embedsParts ?? [],
 			headerFilter: context.headerFilter ?? "",
 			editable: this.isEditable && this._mode === this.constructor.MODES.EDIT,
+		}
+		if (this.item.hasTemplate(ItemTemplateType.Container)) {
+			obj.modifierTypes = [...this.item.system.modifierTypes]
+			obj.childTypes = [...this.item.system.childTypes]
 		}
 		return obj
 	}
@@ -728,6 +834,9 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			list.push(listItem)
 		}
 		list.sort((a, b) => (a.sort > b.sort ? 1 : -1))
+		// list.forEach(e => {
+		// 	console.log(e.name, e.sort)
+		// })
 		return list
 	}
 

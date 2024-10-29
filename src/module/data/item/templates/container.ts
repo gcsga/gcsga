@@ -26,15 +26,33 @@ class ContainerTemplate extends ItemDataModel<ContainerTemplateSchema> {
 	 */
 	static childTypes: Set<ItemType> = new Set()
 
+	/* -------------------------------------------- */
+
+	get childTypes(): Set<ItemType> {
+		return this.constructor.childTypes
+	}
+
 	/**
 	 * Valid modifier types for this item type
 	 */
 	static modifierTypes: Set<ItemType> = new Set()
 
+	/* -------------------------------------------- */
+
+	get modifierTypes(): Set<ItemType> {
+		return this.constructor.modifierTypes
+	}
+
 	/**
 	 * Valid weapon types for this item type
 	 */
 	static weaponTypes: Set<ItemType> = new Set()
+
+	/* -------------------------------------------- */
+
+	get weaponTypes(): Set<ItemType> {
+		return this.constructor.weaponTypes
+	}
 
 	get itemTypes(): MaybePromise<{ [K in keyof ItemDataInstances]: ItemInst<K>[] }> {
 		if (this.parent.pack) return this.#itemTypes()

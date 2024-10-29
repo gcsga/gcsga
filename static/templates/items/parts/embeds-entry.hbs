@@ -5,6 +5,9 @@
 	data-item-sort="{{item.sort}}"
 	data-uuid="{{item.uuid}}"
 	draggable="true"
+	{{#if (eq item.cells.dropdown.type "dropdown")}}
+	data-is-container
+	{{/if}}
 >
 	<div class="item-row">
 		<!-- Cell Data -->
@@ -16,7 +19,7 @@
 	</div>
 	<!-- Embeds -->
 	{{#if item.cells.dropdown.open}}
-	<ul class="item-list">
+	<ul class="item-list" data-container-id="{{item.id}}">
 		{{#each item.children}} {{>"gurps.embeds-entry" item=this}} {{/each}}
 	</ul>
 	{{/if}}

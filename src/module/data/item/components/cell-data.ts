@@ -65,10 +65,6 @@ class CellData extends foundry.abstract.DataModel<SystemDataModel, CellDataSchem
 			condition: new fields.BooleanField({ required: true, nullable: false, initial: true }),
 			// [Dropdown fields only]: template info displayed as tag
 			open: new fields.BooleanField({ required: true, nullable: true, initial: null }),
-			// dropdown: new fields.SchemaField({
-			// 	present: new fields.BooleanField({ required: true, nullable: false, initial: false }),
-			// 	open: new fields.BooleanField({ required: true, nullable: false, initial: false }),
-			// }),
 			indentLevel: new fields.NumberField({ required: true, nullable: false, initial: 0 }),
 		}
 	}
