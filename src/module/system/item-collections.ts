@@ -1,7 +1,7 @@
 import { ItemType } from "@module/data/constants.ts"
 import { ItemInst } from "@module/data/item/helpers.ts"
-import { ActorGURPS2 } from "@module/document/actor.ts"
-import { ItemGURPS2 } from "@module/document/item.ts"
+import { ActorGURPS2 } from "@module/documents/actor.ts"
+import { ItemGURPS2 } from "@module/documents/item.ts"
 import EmbeddedCollection from "types/foundry/common/abstract/embedded-collection.js"
 
 class ItemCollectionsMap<TActor extends ActorGURPS2> {

@@ -2,7 +2,7 @@ import fields = foundry.data.fields
 import { getNewAttributeId } from "@util"
 import { gid } from "@module/data/constants.ts"
 import { SheetSettings } from "../sheet-settings.ts"
-import { ActorGURPS2 } from "@module/document/actor.ts"
+import { ActorGURPS2 } from "@module/documents/actor.ts"
 
 export const RESERVED_IDS: string[] = [gid.Skill, gid.Parry, gid.Block, gid.Dodge, gid.SizeModifier, gid.Ten]
 

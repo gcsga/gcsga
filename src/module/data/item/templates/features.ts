@@ -1,8 +1,8 @@
 import fields = foundry.data.fields
 import { SystemDataModel } from "@module/data/abstract.ts"
 import { Feature, FeatureSet, FeatureTypes } from "@module/data/feature/types.ts"
-import { ItemGURPS2 } from "@module/document/item.ts"
-import { ActiveEffectGURPS } from "@module/document/active-effect.ts"
+import { ItemGURPS2 } from "@module/documents/item.ts"
+import { ActiveEffectGURPS } from "@module/documents/active-effect.ts"
 import { ErrorGURPS, feature } from "@util"
 import { ItemType } from "@module/data/constants.ts"
 import { DRBonus } from "@module/data/feature/dr-bonus.ts"

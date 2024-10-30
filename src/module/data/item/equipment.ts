@@ -1,6 +1,6 @@
 import { ItemType } from "@module/data/constants.ts"
 import { EquipmentFieldsTemplate } from "./templates/equipment-fields.ts"
-import { ItemGURPS2 } from "@module/document/item.ts"
+import { ItemGURPS2 } from "@module/documents/item.ts"
 import { MaybePromise } from "../types.ts"
 import { ItemInst } from "./helpers.ts"
 import { ItemTemplateType } from "./types.ts"

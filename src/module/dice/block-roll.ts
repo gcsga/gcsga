@@ -1,5 +1,5 @@
 import { ItemType } from "@module/data/constants.ts"
-import { ItemGURPS2 } from "@module/document/item.ts"
+import { ItemGURPS2 } from "@module/documents/item.ts"
 import { SuccessRoll, SuccessRollOptions } from "./success-roll.ts"
 
 class BlockRoll extends SuccessRoll {

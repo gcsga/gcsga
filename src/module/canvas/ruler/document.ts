@@ -1,5 +1,5 @@
 // import { RollModifierTags, SETTINGS, SSRT_SETTING, SYSTEM_NAME } from "@data"
-import { UserGURPS } from "@module/document/user.ts"
+import { UserGURPS } from "@module/documents/user.ts"
 import { Length } from "@util"
 // import { TokenGURPS } from "../token/object.ts"
 // import { UserGURPS } from "@module/user/document.ts"

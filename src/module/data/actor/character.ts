@@ -2,7 +2,7 @@ import fields = foundry.data.fields
 import { PointsRecord, PointsRecordSchema } from "./fields/points-record.ts"
 import { ItemType, gid } from "../constants.ts"
 import { DamageProgression } from "@module/util/index.ts"
-import { ItemGURPS2 } from "@module/document/item.ts"
+import { ItemGURPS2 } from "@module/documents/item.ts"
 import {
 	FeatureHolderTemplate,
 	FeatureHolderTemplateSchema,

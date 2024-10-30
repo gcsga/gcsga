@@ -4,7 +4,7 @@ import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./temp
 import { FeatureTemplate, FeatureTemplateSchema } from "./templates/features.ts"
 import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
 import fields = foundry.data.fields
-import { ItemGURPS2 } from "@module/document/item.ts"
+import { ItemGURPS2 } from "@module/documents/item.ts"
 import { CellData, CellDataOptions } from "./components/cell-data.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { Nameable } from "@module/util/index.ts"

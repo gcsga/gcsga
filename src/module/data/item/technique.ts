@@ -17,7 +17,7 @@ import {
 	formatRelativeSkill,
 } from "./helpers.ts"
 import { ActorTemplateType } from "../actor/types.ts"
-import { ItemGURPS2 } from "@module/document/item.ts"
+import { ItemGURPS2 } from "@module/documents/item.ts"
 import { CellData, CellDataOptions } from "./components/cell-data.ts"
 import { SkillDefault } from "./components/skill-default.ts"
 import { SheetSettings } from "../sheet-settings.ts"

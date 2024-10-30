@@ -1,6 +1,6 @@
 import { ErrorGURPS, TooltipGURPS } from "@util"
 import { AbstractWeaponTemplate } from "../templates/abstract-weapon.ts"
-import { type ItemGURPS2 } from "@module/document/item.ts"
+import { type ItemGURPS2 } from "@module/documents/item.ts"
 
 class WeaponField<
 	TParent extends AbstractWeaponTemplate = AbstractWeaponTemplate,

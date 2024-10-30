@@ -3,7 +3,7 @@ import fields = foundry.data.fields
 import { ErrorGURPS, encumbrance } from "@util"
 import { ActorInst } from "../helpers.ts"
 import { ActorType } from "@module/data/constants.ts"
-import { ActorGURPS2 } from "@module/document/actor.ts"
+import { ActorGURPS2 } from "@module/documents/actor.ts"
 
 type CharacterEncumbranceSchema = {
 	levels: fields.ArrayField<fields.EmbeddedDataField<CharacterEncumbranceEntry>>

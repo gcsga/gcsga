@@ -1,7 +1,7 @@
-import { ActiveEffectGURPS } from "@module/document/active-effect.ts"
+import { ActiveEffectGURPS } from "@module/documents/active-effect.ts"
 import { EffectType } from "../constants.ts"
-import { ActorGURPS2 } from "@module/document/actor.ts"
-import { ItemGURPS2 } from "@module/document/item.ts"
+import { ActorGURPS2 } from "@module/documents/actor.ts"
+import { ItemGURPS2 } from "@module/documents/item.ts"
 import { SystemDataModel } from "../abstract.ts"
 import { EffectDataInstances } from "./types.ts"
 

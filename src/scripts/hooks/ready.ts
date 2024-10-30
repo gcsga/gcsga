@@ -1,15 +1,11 @@
 import { SOCKET } from "@data"
 import { loadModifiers } from "@module/apps/modifier-bucket/data.ts"
-import { CharacterDataGURPS } from "@module/data/actor/character.ts"
-import { AttributeDef } from "@module/data/attribute/attribute-definition.ts"
-import { formatRelativeSkill } from "@module/data/item/helpers.ts"
-import { SheetSettings } from "@module/data/sheet-settings.ts"
-import { AttributesConfig } from "@module/settings/attributes-config.ts"
-import { HitLocationsConfig } from "@module/settings/hit-location-config.ts"
-import { Evaluator, Nameable } from "@module/util/index.ts"
 import { SetGameGURPS } from "@scripts/set-game-gurps.ts"
-import { Weight } from "@util"
-import { Int } from "@util/int.ts"
+
+// Import Submodules
+import * as applications from "@module/applications/index.ts"
+import * as documents from "@module/documents/index.ts"
+import * as dataModels from "@module/data/index.ts"
 
 export const Ready = {
 	listen: (): void => {
@@ -25,18 +21,9 @@ export const Ready = {
 			// getDefaultSkills()
 
 			globalThis.GURPS = {
-				// LastActor: await LastActor.get(),
-				// LastToken: await LastActor.getToken(),
-				Int,
-				AttributesConfig,
-				AttributeDef,
-				HitLocationsConfig,
-				CharacterData: CharacterDataGURPS,
-				Evaluator,
-				SheetSettings,
-				Weight,
-				formatRelativeSkill,
-				Nameable,
+				applications,
+				documents,
+				dataModels,
 			}
 
 			// Determine whether a system migration is required and feasible

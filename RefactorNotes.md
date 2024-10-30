@@ -2,6 +2,11 @@
 
 ## Current Tasks
 
+- Restyle input fields
+- Implement some input fields being disabled when sheet is not in edit mode
+  - exclude points, quantity, enabled/disabled, equipped/unequipped
+- show replacement values when not in edit mode, use different background color to indicate, and tooltip to show original text
+
 ## Left To Do
 
 - Weapon Fields

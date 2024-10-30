@@ -22,7 +22,7 @@ import {
 } from "./injury-effect.ts"
 import { RulerGURPS } from "@module/canvas/ruler/document.ts"
 import { DiceGURPS } from "@module/data/dice.ts"
-import { TokenDocumentGURPS } from "@module/document/token.ts"
+import { TokenDocumentGURPS } from "@module/documents/token.ts"
 import { RollModifier } from "@module/data/roll-modifier.ts"
 import { gid } from "@module/data/constants.ts"
 import { ActorBody, HitLocation } from "@module/data/hit-location.ts"

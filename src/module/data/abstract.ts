@@ -1,4 +1,4 @@
-import { DocumentSystemFlags } from "@module/document/system-flags.ts"
+import { DocumentSystemFlags } from "@module/documents/system-flags.ts"
 import fields = foundry.data.fields
 import { SYSTEM_NAME } from "./constants.ts"
 

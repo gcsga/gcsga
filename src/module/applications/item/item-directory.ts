@@ -1,5 +1,5 @@
 import { SYSTEM_NAME } from "@module/data/constants.ts"
-import { ItemGURPS2 } from "@module/document/item.ts"
+import { ItemGURPS2 } from "@module/documents/item.ts"
 
 class ItemDirectoryGURPS extends ItemDirectory<ItemGURPS2<null>> {
 	static override entryPartial = `systems/${SYSTEM_NAME}/templates/sidebar/partials/item-partial.hbs`

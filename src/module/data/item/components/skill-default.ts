@@ -1,7 +1,7 @@
 import { ActorType, SkillDefaultType, gid } from "@data"
 import fields = foundry.data.fields
 import { LocalizeGURPS, StringBuilder } from "@util"
-import { ActorGURPS2 } from "@module/document/actor.ts"
+import { ActorGURPS2 } from "@module/documents/actor.ts"
 import { ActorTemplateType } from "@module/data/actor/types.ts"
 import { Nameable } from "@module/util/index.ts"
 import { ItemTemplateType } from "../types.ts"

@@ -1,5 +1,5 @@
 import { ErrorGURPS } from "@util"
-import { ActorGURPS2 } from "@module/document/actor.ts"
+import { ActorGURPS2 } from "@module/documents/actor.ts"
 import { ActorTemplateType } from "@module/data/actor/types.ts"
 import { DefaultSheetSettings, SheetSettingsSchema } from "@module/settings/sheet-settings-config.ts"
 import { AttributeSettings, AttributeSettingsSchema } from "@module/settings/attributes-config.ts"

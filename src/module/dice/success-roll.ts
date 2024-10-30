@@ -1,11 +1,11 @@
 import { ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
 import { BaseRollGURPS, BaseRollOptions } from "./base-roll.ts"
-import { ItemGURPS2 } from "@module/document/item.ts"
+import { ItemGURPS2 } from "@module/documents/item.ts"
 import { selfctrl } from "@util"
 import { SkillDefaultSchema } from "@module/data/item/components/skill-default.ts"
 import { WeaponROFSchema } from "@module/data/item/fields/weapon-rof.ts"
 import { WeaponRecoilSchema } from "@module/data/item/fields/weapon-recoil.ts"
-import { ActorGURPS2 } from "@module/document/actor.ts"
+import { ActorGURPS2 } from "@module/documents/actor.ts"
 import { ActorTemplateType } from "@module/data/actor/types.ts"
 
 class SuccessRoll extends BaseRollGURPS {

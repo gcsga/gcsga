@@ -1,4 +1,4 @@
-import { ItemGURPS2 } from "@module/document/item.ts"
+import { ItemGURPS2 } from "@module/documents/item.ts"
 import { ItemTemplateType } from "../item/types.ts"
 import { ItemTemplateInst } from "../item/helpers.ts"
 import { SYSTEM_NAME } from "../constants.ts"

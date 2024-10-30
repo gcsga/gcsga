@@ -1,4 +1,4 @@
-import { ActorGURPS2 } from "@module/document/actor.ts"
+import { ActorGURPS2 } from "@module/documents/actor.ts"
 import { ActorType } from "../constants.ts"
 import { ActorDataInstances, ActorDataTemplates, ActorTemplateType } from "./types.ts"
 

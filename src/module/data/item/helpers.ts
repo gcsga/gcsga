@@ -1,4 +1,4 @@
-import { ActorGURPS2 } from "@module/document/actor.ts"
+import { ActorGURPS2 } from "@module/documents/actor.ts"
 import {
 	Int,
 	LocalizeGURPS,
@@ -17,7 +17,7 @@ import {
 import { ActorType, ItemType, gid } from "../constants.ts"
 import { AttributeDifficulty } from "./components/attribute-difficulty.ts"
 import { ActorTemplateType } from "../actor/types.ts"
-import type { ItemGURPS2 } from "@module/document/item.ts"
+import type { ItemGURPS2 } from "@module/documents/item.ts"
 import { ItemDataInstances, ItemDataTemplates, ItemTemplateType } from "./types.ts"
 import { Feature } from "../feature/types.ts"
 import { SheetSettings } from "../sheet-settings.ts"

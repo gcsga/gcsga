@@ -2,7 +2,7 @@ import { DnD } from "@util/drag-drop.ts"
 import { DAMAGE_TYPE } from "./damage-type.ts"
 import { DiceGURPS } from "@module/data/dice.ts"
 import { RollModifier } from "@module/data/roll-modifier.ts"
-import { ChatMessageGURPS } from "@module/document/chat-message.ts"
+import { ChatMessageGURPS } from "@module/documents/chat-message.ts"
 import { SYSTEM_NAME } from "@module/data/constants.ts"
 import { ChatMessageSource } from "types/foundry/common/documents/chat-message.js"
 

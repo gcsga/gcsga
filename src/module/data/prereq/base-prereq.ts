@@ -1,5 +1,5 @@
-import { ActorGURPS2 } from "@module/document/actor.ts"
-import { ItemGURPS2 } from "@module/document/item.ts"
+import { ActorGURPS2 } from "@module/documents/actor.ts"
+import { ItemGURPS2 } from "@module/documents/item.ts"
 import { LocalizeGURPS, TooltipGURPS, generateId, prereq } from "@util"
 import { ActorInst } from "../actor/helpers.ts"
 import { ActorType } from "../constants.ts"

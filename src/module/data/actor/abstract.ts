@@ -1,9 +1,9 @@
 import { ActorType } from "../constants.ts"
-import { type ActorGURPS2 } from "@module/document/actor.ts"
+import { type ActorGURPS2 } from "@module/documents/actor.ts"
 import { type ActorDataInstances, type ActorDataTemplates, type ActorTemplateType } from "./types.ts"
 import { ErrorGURPS } from "@util/misc.ts"
 import { SystemDataModel, SystemDataModelMetadata } from "../abstract.ts"
-import { ActorSystemFlags } from "@module/document/actor-system-flags.ts"
+import { ActorSystemFlags } from "@module/documents/actor-system-flags.ts"
 
 interface ActorDataModelMetadata extends SystemDataModelMetadata {
 	systemFlagsModel: ConstructorOf<ActorSystemFlags> | null

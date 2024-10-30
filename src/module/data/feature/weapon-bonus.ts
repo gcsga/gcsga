@@ -8,7 +8,7 @@ import { StringCriteriaField } from "../item/fields/string-criteria-field.ts"
 import { NumericCriteriaField } from "../item/fields/numeric-criteria-field.ts"
 import { createButton } from "@module/applications/helpers.ts"
 import { BooleanSelectField } from "../item/fields/boolean-select-field.ts"
-import { ActiveEffectGURPS } from "@module/document/active-effect.ts"
+import { ActiveEffectGURPS } from "@module/documents/active-effect.ts"
 
 class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 	declare dieCount: number

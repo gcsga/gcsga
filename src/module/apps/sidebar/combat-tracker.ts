@@ -1,6 +1,6 @@
 import { ActorType } from "@data"
-import { CombatGURPS } from "@module/document/combat.ts"
-import { CombatantGURPS } from "@module/document/combatant.ts"
+import { CombatGURPS } from "@module/documents/combat.ts"
+import { CombatantGURPS } from "@module/documents/combatant.ts"
 
 export class CombatTrackerGURPS<TCombat extends CombatGURPS | null> extends CombatTracker<TCombat> {
 	override async _onToggleDefeatedStatus(combatant: CombatantGURPS<TCombat>): Promise<void> {

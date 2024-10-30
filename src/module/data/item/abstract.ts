@@ -1,12 +1,12 @@
 import { ItemType } from "../constants.ts"
-import { type ItemGURPS2 } from "@module/document/item.ts"
+import { type ItemGURPS2 } from "@module/documents/item.ts"
 import type { ItemDataInstances, ItemDataTemplates, ItemTemplateType } from "./types.ts"
-import { type ActorGURPS2 } from "@module/document/actor.ts"
+import { type ActorGURPS2 } from "@module/documents/actor.ts"
 import { CellDataOptions, type CellData } from "./components/cell-data.ts"
 import { type ItemTemplateInst } from "./helpers.ts"
 import { ErrorGURPS } from "@util/misc.ts"
 import { SystemDataModel, SystemDataModelMetadata } from "../abstract.ts"
-import { ItemSystemFlags } from "@module/document/item-system-flags.ts"
+import { ItemSystemFlags } from "@module/documents/item-system-flags.ts"
 import { SheetButton } from "./components/sheet-button.ts"
 
 interface ItemDataModelMetadata extends SystemDataModelMetadata {

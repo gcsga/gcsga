@@ -1,6 +1,6 @@
 import { ItemDataModel } from "@module/data/item/abstract.ts"
 import fields = foundry.data.fields
-import { ItemGURPS2 } from "@module/document/item.ts"
+import { ItemGURPS2 } from "@module/documents/item.ts"
 import { EvalEmbeddedRegex, replaceAllStringFunc } from "@util"
 import { ItemTemplateType } from "../types.ts"
 import { Nameable } from "@module/util/index.ts"

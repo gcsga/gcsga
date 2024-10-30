@@ -1,6 +1,6 @@
 import { ItemType } from "@module/data/constants.ts"
 import { BaseRollGURPS, BaseRollOptions } from "./base-roll.ts"
-import { ItemGURPS2 } from "@module/document/item.ts"
+import { ItemGURPS2 } from "@module/documents/item.ts"
 import { type ItemInst } from "@module/data/item/helpers.ts"
 import { DAMAGE_TYPE } from "@module/apps/damage-calculator/damage-type.ts"
 

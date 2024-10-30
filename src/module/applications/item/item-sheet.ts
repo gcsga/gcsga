@@ -7,11 +7,10 @@ import { AttributePrereq } from "@module/data/prereq/index.ts"
 import { PrereqList, PrereqListSchema } from "@module/data/prereq/prereq-list.ts"
 import { PrereqTypes } from "@module/data/prereq/types.ts"
 import { SkillDefault } from "@module/data/item/components/skill-default.ts"
-import { ItemGURPS2 } from "@module/document/item.ts"
+import { ItemGURPS2 } from "@module/documents/item.ts"
 import { feature, prereq } from "@util/enum/index.ts"
 import { generateId } from "@util/misc.ts"
-import { ActiveEffectGURPS } from "@module/document/active-effect.ts"
-import { ContextMenuGURPS } from "../context-menu.ts"
+import { ActiveEffectGURPS } from "@module/documents/active-effect.ts"
 import { MaybePromise } from "@module/data/types.ts"
 import { Weight } from "@util/weight.ts"
 import { SheetSettings } from "@module/data/sheet-settings.ts"
@@ -50,7 +49,7 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 
 	// Set initial values for tabgroups
 	override tabGroups: Record<string, string> = {
-		primary: "embeds",
+		primary: "details",
 	}
 
 	/* -------------------------------------------- */
@@ -68,9 +67,6 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		position: {
 			width: 650,
 			height: 700,
-			// width: "fit-content",
-			// height: "auto",
-			// scale: 1.5,
 		},
 		form: {
 			submitOnChange: true,
@@ -91,12 +87,8 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			toggleMode: this.#onToggleMode,
 			toggleCheckbox: this.#onToggleCheckbox,
 			toggleDropdown: this.#onToggleDropdown,
-			openItemContextMenu: this.#onOpenItemContextMenu,
 		},
-		dragDrop: [
-			// { dragSelector: ".items-list .item", dropSelector: null },
-			{ dragSelector: ".item-list .item", dropSelector: null },
-		],
+		dragDrop: [{ dragSelector: ".item-list .item", dropSelector: null }],
 	}
 
 	/* -------------------------------------------- */
@@ -702,11 +694,11 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		this.element.classList.add(this.item.type)
 		this.#dragDrop.forEach(d => d.bind(this.element))
 
-		if (options.isFirstRender) {
-			new ContextMenuGURPS(this.element, "[data-item-id]", [], {
-				onOpen: this._onOpenItemContextMenu.bind(this),
-			})
-		}
+		// if (options.isFirstRender) {
+		// 	new ContextMenuGURPS(this.element, "[data-item-id]", [], {
+		// 		onOpen: this._onOpenItemContextMenu.bind(this),
+		// 	})
+		// }
 
 		for (const list of this.element.querySelectorAll("div.items-section")) {
 			let alternate = false
@@ -969,110 +961,6 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		}
 
 		await childItem.update({ "system.open": !open })
-	}
-
-	/* -------------------------------------------- */
-
-	static async #onOpenItemContextMenu(this: ItemSheetGURPS, event: PointerEvent): Promise<void> {
-		event.preventDefault()
-		event.stopPropagation()
-		const { clientX, clientY } = event
-
-		;(event.target as HTMLElement).closest("[data-item-id]")?.dispatchEvent(
-			new PointerEvent("contextmenu", {
-				view: window,
-				bubbles: true,
-				cancelable: true,
-				clientX,
-				clientY,
-			}),
-		)
-	}
-
-	/* -------------------------------------------- */
-
-	protected _onOpenItemContextMenu(element: HTMLElement): void {
-		const item = this.getItem((element.closest("[data-item-id]") as HTMLElement)?.dataset.itemId ?? "")
-		// Parts of ContextMenu doesn't play well with promises, so don't show menus for containers in packs
-		if (!item || item instanceof Promise) return
-
-		if (ui.context) {
-			ui.context.menuItems = this._getItemContextOptions(item, element)
-			Hooks.call(`${SYSTEM_NAME}.${HOOKS.GET_ITEM_CONTEXT_OPTIONS}`, item, ui.context.menuItems)
-		}
-	}
-
-	/* -------------------------------------------- */
-
-	protected async _onItemAction(target: HTMLElement, action: string) {
-		const { itemId } = (target.closest("[data-item-id]") as HTMLElement)?.dataset ?? {}
-		const item = await this.getItem(itemId ?? "")
-		if (!item) return
-
-		switch (action) {
-			case "delete":
-				return item.deleteDialog()
-			case "duplicate":
-				return item.clone({ name: game.i18n.format("DOCUMENT.CopyOf", { name: item.name }) }, { save: true })
-			case "edit":
-			case "view":
-				return item.sheet.render(true)
-			case "toggle": {
-				if (!item.isOfType(ItemType.TraitModifier, ItemType.EquipmentModifier)) return
-				return item.update({ "system.disabled": !item.system.disabled })
-			}
-			default:
-				console.error(`Invalid action "${action}"`)
-				return
-		}
-	}
-
-	/* -------------------------------------------- */
-
-	protected _getItemContextOptions(item: ItemGURPS2, _element: HTMLElement): ContextMenuEntry[] {
-		const options = [
-			{
-				name: "Edit",
-				icon: "<i class='fa-solid fa-edit'></i>",
-				callback: (li: JQuery<HTMLElement>) => this._onItemAction(li[0], "edit"),
-				condition: () => item.isOwner && !item.compendium?.locked,
-			},
-			{
-				name: "View",
-				icon: "<i class='fa-solid fa-eye'></i>",
-				callback: (li: JQuery<HTMLElement>) => this._onItemAction(li[0], "view"),
-				condition: () => !item.isOwner || (!!item.compendium && item.compendium.locked),
-			},
-			{
-				name: "Duplicate",
-				icon: "<i class='fa-solid fa-copy'></i>",
-				callback: (li: JQuery<HTMLElement>) => this._onItemAction(li[0], "duplicate"),
-				condition: () => item.isOwner && !item.compendium?.locked,
-			},
-			{
-				name: "Delete",
-				icon: "<i class='fa-solid fa-trash'></i>",
-				callback: (li: JQuery<HTMLElement>) => this._onItemAction(li[0], "delete"),
-				condition: () => item.isOwner && !item.compendium?.locked,
-			},
-			{
-				name: "Toggle",
-				icon: `<i class='fa-solid fa-${
-					item.isOfType(ItemType.EquipmentModifier, ItemType.TraitModifier)
-						? item.system.disabled
-							? "toggle-off"
-							: "toggle-on"
-						: "fa-ban" // Placeholder
-				}'></i>`,
-				callback: (li: JQuery<HTMLElement>) => this._onItemAction(li[0], "toggle"),
-				condition: () =>
-					item.isOwner &&
-					!item.compendium?.locked &&
-					item.isOfType(ItemType.EquipmentModifier, ItemType.TraitModifier),
-			},
-		]
-
-		return options
 	}
 
 	/* -------------------------------------------- */

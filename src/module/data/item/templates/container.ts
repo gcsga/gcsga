@@ -1,6 +1,6 @@
 import { ItemDataModel } from "@module/data/item/abstract.ts"
 import { ItemType, ItemTypes } from "@module/data/constants.ts"
-import { type ItemGURPS2 } from "@module/document/item.ts"
+import { type ItemGURPS2 } from "@module/documents/item.ts"
 import fields = foundry.data.fields
 import { ItemDataInstances, ItemTemplateType } from "../types.ts"
 import { MaybePromise } from "@module/data/types.ts"

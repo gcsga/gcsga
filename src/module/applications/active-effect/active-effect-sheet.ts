@@ -1,4 +1,4 @@
-import { ActiveEffectGURPS } from "@module/document/active-effect.ts"
+import { ActiveEffectGURPS } from "@module/documents/active-effect.ts"
 import api = foundry.applications.api
 import { EffectType, SYSTEM_NAME } from "@module/data/constants.ts"
 import { AttributeBonus } from "@module/data/feature/attribute-bonus.ts"

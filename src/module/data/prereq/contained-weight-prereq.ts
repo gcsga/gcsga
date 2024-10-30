@@ -1,7 +1,7 @@
 import { BasePrereq, BasePrereqSchema } from "./base-prereq.ts"
 import { LocalizeGURPS, NumericComparison, TooltipGURPS, Weight, prereq } from "@util"
 import { ActorType, ItemType } from "@module/data/constants.ts"
-import { ItemGURPS2 } from "@module/document/item.ts"
+import { ItemGURPS2 } from "@module/documents/item.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { ActorInst } from "../actor/helpers.ts"
 import { BooleanSelectField } from "../item/fields/boolean-select-field.ts"

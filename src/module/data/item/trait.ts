@@ -1,4 +1,4 @@
-import { type ItemGURPS2 } from "@module/document/item.ts"
+import { type ItemGURPS2 } from "@module/documents/item.ts"
 import { Nameable } from "@module/util/index.ts"
 import { ErrorGURPS, StringBuilder, StringComparison, align, cell, display, feature, selfctrl } from "@util"
 import { ItemDataModel } from "./abstract.ts"

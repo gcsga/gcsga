@@ -3,7 +3,7 @@ import { ActorType, gid } from "@data"
 import { equalFold } from "@module/data/item/components/string-criteria.ts"
 import { StringBuilder, TooltipGURPS, generateId } from "@util"
 import { DiceGURPS } from "./dice.ts"
-import { type ActorGURPS2 } from "@module/document/actor.ts"
+import { type ActorGURPS2 } from "@module/documents/actor.ts"
 
 type ActorBodySchema = {
 	name: fields.StringField<string, string, true, false, true>

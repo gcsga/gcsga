@@ -5,7 +5,7 @@ import {
 	RollModifierStackSchema,
 } from "@module/data/roll-modifier.ts"
 import fields = foundry.data.fields
-import { UserGURPS } from "@module/document/user.ts"
+import { UserGURPS } from "@module/documents/user.ts"
 
 class UserSystemFlags<TParent extends UserGURPS = UserGURPS> extends foundry.abstract.DataModel<
 	TParent,
