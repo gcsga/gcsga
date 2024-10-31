@@ -15,7 +15,7 @@ class ReplaceableStringField<
 		if (config && !config.editable && config?.replacements) {
 			config.value = Nameable.applyToElement(config.value, config.replacements)
 		}
-		return super.toInput(config)
+		return super._toInput(config)
 	}
 }
 

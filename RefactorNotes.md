@@ -2,27 +2,12 @@
 
 ## Current Tasks
 
+- Add replacements object to all replaceablestringfields
 - Replace toggleable fields as appropriate for all items, features, Prereqs
-  - Trait
-  - trait container
-  - skill
-  - technique
-  - skill container
-  - trait mod
-  - trait mod container
-  - Spell
-  - rpm Spell
-  - spell container
-  - Equipment
-  - equipment container
-  - eqp mod
-  - eqp mod container
-  - note
-  - note container
-  - melee Weapon
-  - ranged weapon
   - features (to expand)
   - prereqs (to expand)
+  - skill defaults
+  - study
 - Restyle input fields and toggleable input fields
 - Implement some input fields being disabled when sheet is not in edit mode
   - exclude points, quantity, enabled/disabled, equipped/unequipped
