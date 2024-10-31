@@ -2,23 +2,23 @@ import fields = foundry.data.fields
 import { Int, LocalizeGURPS, StringBuilder, TooltipGURPS, feature, wswitch } from "@util"
 import { WeaponField } from "./weapon-field.ts"
 import { AbstractWeaponTemplate } from "../templates/index.ts"
+import { ToggleableBooleanField, ToggleableNumberField } from "@module/data/fields/index.ts"
 
 class WeaponROFMode extends WeaponField<AbstractWeaponTemplate, WeaponROFModeSchema> {
 	static override defineSchema(): WeaponROFModeSchema {
-		const fields = foundry.data.fields
 		return {
-			shotsPerAttack: new fields.NumberField<number, number, true, false, true>({
+			shotsPerAttack: new ToggleableNumberField({
 				required: true,
 				nullable: false,
 				initial: 1,
 			}),
-			secondaryProjectiles: new fields.NumberField<number, number, true, false, true>({
+			secondaryProjectiles: new ToggleableNumberField({
 				required: true,
 				nullable: false,
 				initial: 0,
 			}),
-			fullAutoOnly: new fields.BooleanField<boolean>({ required: true, nullable: false, initial: false }),
-			highCyclicControlledBursts: new fields.BooleanField<boolean>({
+			fullAutoOnly: new ToggleableBooleanField({ required: true, nullable: false, initial: false }),
+			highCyclicControlledBursts: new ToggleableBooleanField({
 				required: true,
 				nullable: false,
 				initial: false,
@@ -178,10 +178,10 @@ interface WeaponROFMode
 		ModelPropsFromSchema<WeaponROFModeSchema> {}
 
 type WeaponROFModeSchema = {
-	shotsPerAttack: fields.NumberField<number, number, true, false, true>
-	secondaryProjectiles: fields.NumberField<number, number, true, false, true>
-	fullAutoOnly: fields.BooleanField<boolean, boolean, true, false, true>
-	highCyclicControlledBursts: fields.BooleanField<boolean, boolean, true, false, true>
+	shotsPerAttack: ToggleableNumberField<number, number, true, false, true>
+	secondaryProjectiles: ToggleableNumberField<number, number, true, false, true>
+	fullAutoOnly: ToggleableBooleanField<boolean, boolean, true, false, true>
+	highCyclicControlledBursts: ToggleableBooleanField<boolean, boolean, true, false, true>
 }
 
 export { WeaponROFMode, type WeaponROFModeSchema }

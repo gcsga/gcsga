@@ -2,33 +2,33 @@ import { AbstractWeaponTemplate } from "../templates/index.ts"
 import fields = foundry.data.fields
 import { WeaponField } from "./weapon-field.ts"
 import { Int, LocalizeGURPS, StringBuilder, TooltipGURPS, feature, wswitch } from "@util"
+import { ToggleableBooleanField, ToggleableNumberField } from "@module/data/fields/index.ts"
 
 class WeaponShots extends WeaponField<AbstractWeaponTemplate, WeaponShotsSchema> {
 	static override defineSchema(): WeaponShotsSchema {
-		const fields = foundry.data.fields
 		return {
-			count: new fields.NumberField<number, number, true, false, true>({
+			count: new ToggleableNumberField({
 				required: true,
 				nullable: false,
 				initial: 0,
 			}),
-			inChamber: new fields.NumberField<number, number, true, false, true>({
+			inChamber: new ToggleableNumberField({
 				required: true,
 				nullable: false,
 				initial: 0,
 			}),
-			duration: new fields.NumberField<number, number, true, false, true>({
+			duration: new ToggleableNumberField({
 				required: true,
 				nullable: false,
 				initial: 0,
 			}),
-			reloadTime: new fields.NumberField<number, number, true, false, true>({
+			reloadTime: new ToggleableNumberField({
 				required: true,
 				nullable: false,
 				initial: 0,
 			}),
-			reloadTimeIsPerShot: new fields.BooleanField<boolean>({ required: true, nullable: false, initial: false }),
-			thrown: new fields.BooleanField<boolean>({ required: true, nullable: false, initial: false }),
+			reloadTimeIsPerShot: new ToggleableBooleanField({ required: true, nullable: false, initial: false }),
+			thrown: new ToggleableBooleanField({ required: true, nullable: false, initial: false }),
 		}
 	}
 
@@ -152,12 +152,12 @@ interface WeaponShots
 		ModelPropsFromSchema<WeaponShotsSchema> {}
 
 type WeaponShotsSchema = {
-	count: fields.NumberField<number, number, true, false, true>
-	inChamber: fields.NumberField<number, number, true, false, true>
-	duration: fields.NumberField<number, number, true, false, true>
-	reloadTime: fields.NumberField<number, number, true, false, true>
-	reloadTimeIsPerShot: fields.BooleanField<boolean, boolean, true, false, true>
-	thrown: fields.BooleanField<boolean, boolean, true, false, true>
+	count: ToggleableNumberField<number, number, true, false, true>
+	inChamber: ToggleableNumberField<number, number, true, false, true>
+	duration: ToggleableNumberField<number, number, true, false, true>
+	reloadTime: ToggleableNumberField<number, number, true, false, true>
+	reloadTimeIsPerShot: ToggleableBooleanField<boolean, boolean, true, false, true>
+	thrown: ToggleableBooleanField<boolean, boolean, true, false, true>
 }
 
 export { WeaponShots, type WeaponShotsSchema }

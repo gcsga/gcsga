@@ -24,10 +24,8 @@ import {
 	StudyTemplateSchema,
 } from "./templates/index.ts"
 import { ItemTemplateType } from "./types.ts"
+import { ToggleableBooleanField, ToggleableNumberField, ToggleableStringField } from "../fields/index.ts"
 import { ReplaceableStringField } from "../fields/replaceable-string-field.ts"
-import { ToggleableNumberField } from "../fields/toggleable-number-field.ts"
-import { ToggleableStringField } from "../fields/toggleable-string-fields.ts"
-import { ToggleableBooleanField } from "../fields/toggleable-boolean-field.ts"
 
 class TraitData extends ItemDataModel.mixin(
 	BasicInformationTemplate,

@@ -1,5 +1,4 @@
 import { ItemDataModel } from "@module/data/item/abstract.ts"
-import fields = foundry.data.fields
 import { difficulty, Int, LocalizeGURPS, StringBuilder } from "@util"
 import { ItemType } from "@module/data/constants.ts"
 import { SkillLevel } from "../helpers.ts"
@@ -8,27 +7,27 @@ import { ActorTemplateType } from "@module/data/actor/types.ts"
 import { AttributeDifficulty } from "../components/attribute-difficulty.ts"
 import { Nameable } from "@module/util/index.ts"
 import { AttributeDifficultyField } from "../fields/attribute-difficulty-field.ts"
+import { ToggleableBooleanField, ToggleableNumberField, ToggleableStringField } from "@module/data/fields/index.ts"
 
 class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 	protected declare _skillLevel: SkillLevel
 
 	static override defineSchema(): AbstractSkillTemplateSchema {
-		const fields = foundry.data.fields
 		return {
 			difficulty: new AttributeDifficultyField(),
-			tech_level: new fields.StringField({
+			tech_level: new ToggleableStringField({
 				required: true,
 				nullable: true,
 				initial: null,
 				label: "GURPS.Item.Skill.FIELDS.TechLevel.Name",
 			}),
-			tech_level_required: new fields.BooleanField({
+			tech_level_required: new ToggleableBooleanField({
 				required: true,
 				nullable: false,
 				initial: false,
 				label: "GURPS.Item.Skill.FIELDS.TechLevelRequired.Name",
 			}),
-			points: new fields.NumberField({
+			points: new ToggleableNumberField({
 				required: true,
 				nullable: false,
 				integer: true,
@@ -179,8 +178,8 @@ interface AbstractSkillTemplate
 
 type AbstractSkillTemplateSchema = {
 	difficulty: AttributeDifficultyField
-	tech_level: fields.StringField<string, string, true, true, true>
-	tech_level_required: fields.BooleanField<boolean, boolean, true, false, true>
-	points: fields.NumberField<number, number, true, false, true>
+	tech_level: ToggleableStringField<string, string, true, true, true>
+	tech_level_required: ToggleableBooleanField<boolean, boolean, true, false, true>
+	points: ToggleableNumberField<number, number, true, false, true>
 }
 export { AbstractSkillTemplate, type AbstractSkillTemplateSchema }

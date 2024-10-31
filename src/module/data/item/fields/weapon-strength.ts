@@ -2,22 +2,22 @@ import { WeaponField } from "./weapon-field.ts"
 import fields = foundry.data.fields
 import { AbstractWeaponTemplate } from "../templates/abstract-weapon.ts"
 import { Int, LocalizeGURPS, StringBuilder, TooltipGURPS, feature, wswitch } from "@util"
+import { ToggleableBooleanField, ToggleableNumberField } from "@module/data/fields/index.ts"
 
 class WeaponStrength extends WeaponField<AbstractWeaponTemplate, WeaponStrengthSchema> {
 	static override defineSchema(): WeaponStrengthSchema {
-		const fields = foundry.data.fields
 		return {
-			min: new fields.NumberField<number, number, true, false, true>({
+			min: new ToggleableNumberField({
 				required: true,
 				nullable: false,
 				min: 0,
 				initial: 0,
 			}),
-			bipod: new fields.BooleanField<boolean>({ required: true, nullable: false, initial: false }),
-			mounted: new fields.BooleanField<boolean>({ required: true, nullable: false, initial: false }),
-			musketRest: new fields.BooleanField<boolean>({ required: true, nullable: false, initial: false }),
-			twoHanded: new fields.BooleanField<boolean>({ required: true, nullable: false, initial: false }),
-			twoHandedUnready: new fields.BooleanField<boolean>({ required: true, nullable: false, initial: false }),
+			bipod: new ToggleableBooleanField({ required: true, nullable: false, initial: false }),
+			mounted: new ToggleableBooleanField({ required: true, nullable: false, initial: false }),
+			musketRest: new ToggleableBooleanField({ required: true, nullable: false, initial: false }),
+			twoHanded: new ToggleableBooleanField({ required: true, nullable: false, initial: false }),
+			twoHandedUnready: new ToggleableBooleanField({ required: true, nullable: false, initial: false }),
 		}
 	}
 
@@ -149,12 +149,12 @@ interface WeaponStrength
 		ModelPropsFromSchema<WeaponStrengthSchema> {}
 
 type WeaponStrengthSchema = {
-	min: fields.NumberField<number, number, true, false, true>
-	bipod: fields.BooleanField<boolean, boolean, true, false, true>
-	mounted: fields.BooleanField<boolean, boolean, true, false, true>
-	musketRest: fields.BooleanField<boolean, boolean, true, false, true>
-	twoHanded: fields.BooleanField<boolean, boolean, true, false, true>
-	twoHandedUnready: fields.BooleanField<boolean, boolean, true, false, true>
+	min: ToggleableNumberField<number, number, true, false, true>
+	bipod: ToggleableBooleanField<boolean, boolean, true, false, true>
+	mounted: ToggleableBooleanField<boolean, boolean, true, false, true>
+	musketRest: ToggleableBooleanField<boolean, boolean, true, false, true>
+	twoHanded: ToggleableBooleanField<boolean, boolean, true, false, true>
+	twoHandedUnready: ToggleableBooleanField<boolean, boolean, true, false, true>
 }
 
 export { WeaponStrength, type WeaponStrengthSchema }

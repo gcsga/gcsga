@@ -3,13 +3,13 @@ import fields = foundry.data.fields
 import { AbstractWeaponTemplate } from "../templates/abstract-weapon.ts"
 import { Int, StringBuilder, TooltipGURPS, feature, wswitch } from "@util"
 import { ActorType, gid } from "@module/data/constants.ts"
+import { ToggleableBooleanField, ToggleableNumberField } from "@module/data/fields/index.ts"
 
 class WeaponBlock extends WeaponField<AbstractWeaponTemplate, WeaponBlockSchema> {
 	static override defineSchema(): WeaponBlockSchema {
-		const fields = foundry.data.fields
 		return {
-			canBlock: new fields.BooleanField<boolean>({ required: true, nullable: false, initial: false }),
-			modifier: new fields.NumberField<number, number, true, false, true>({
+			canBlock: new ToggleableBooleanField({ required: true, nullable: false, initial: false }),
+			modifier: new ToggleableNumberField({
 				required: true,
 				nullable: false,
 				initial: 0,
@@ -94,8 +94,8 @@ interface WeaponBlock
 		ModelPropsFromSchema<WeaponBlockSchema> {}
 
 type WeaponBlockSchema = {
-	canBlock: fields.BooleanField<boolean, boolean, true, false, true>
-	modifier: fields.NumberField<number, number, true, false, true>
+	canBlock: ToggleableBooleanField<boolean, boolean, true, false, true>
+	modifier: ToggleableNumberField<number, number, true, false, true>
 }
 
 export { WeaponBlock, type WeaponBlockSchema }

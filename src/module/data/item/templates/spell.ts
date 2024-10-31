@@ -10,13 +10,10 @@ import { CellData, CellDataOptions } from "../components/cell-data.ts"
 import { StringArrayField } from "../fields/string-array-field.ts"
 import { ItemInst, SkillLevel, addTooltipForSkillLevelAdj, formatRelativeSkill } from "../helpers.ts"
 import { ItemTemplateType } from "../types.ts"
-import fields = foundry.data.fields
+import { ReplaceableStringField } from "@module/data/fields/replaceable-string-field.ts"
 
 class SpellTemplate extends ItemDataModel<SpellTemplateSchema> {
-	// TODO: see if this causes issues
 	static override defineSchema(): SpellTemplateSchema {
-		const fields = foundry.data.fields
-
 		return this.mergeSchema(super.defineSchema(), {
 			college: new StringArrayField({
 				required: true,
@@ -24,43 +21,43 @@ class SpellTemplate extends ItemDataModel<SpellTemplateSchema> {
 				initial: [],
 				label: "GURPS.Item.Spell.FIELDS.College.Name",
 			}),
-			power_source: new fields.StringField<string, string, true, false, true>({
+			power_source: new ReplaceableStringField({
 				required: true,
 				nullable: false,
 				initial: "Arcane",
 				label: "GURPS.Item.Spell.FIELDS.PowerSource.Name",
 			}),
-			spell_class: new fields.StringField<string, string, true, false, true>({
+			spell_class: new ReplaceableStringField({
 				required: true,
 				nullable: false,
 				initial: "Regular",
 				label: "GURPS.Item.Spell.FIELDS.Class.Name",
 			}),
-			resist: new fields.StringField<string, string, true, false, true>({
+			resist: new ReplaceableStringField({
 				required: true,
 				nullable: false,
 				initial: "",
 				label: "GURPS.Item.Spell.FIELDS.Resist.Name",
 			}),
-			casting_cost: new fields.StringField<string, string, true, false, true>({
+			casting_cost: new ReplaceableStringField({
 				required: true,
 				nullable: false,
 				initial: "1",
 				label: "GURPS.Item.Spell.FIELDS.CastingCost.Name",
 			}),
-			maintenance_cost: new fields.StringField<string, string, true, false, true>({
+			maintenance_cost: new ReplaceableStringField({
 				required: true,
 				nullable: false,
 				initial: "",
 				label: "GURPS.Item.Spell.FIELDS.MaintenanceCost.Name",
 			}),
-			casting_time: new fields.StringField<string, string, true, false, true>({
+			casting_time: new ReplaceableStringField({
 				required: true,
 				nullable: false,
 				initial: "1 sec",
 				label: "GURPS.Item.Spell.FIELDS.CastingTime.Name",
 			}),
-			duration: new fields.StringField<string, string, true, false, true>({
+			duration: new ReplaceableStringField({
 				required: true,
 				nullable: false,
 				initial: "Instant",
@@ -283,13 +280,13 @@ interface SpellTemplate extends ModelPropsFromSchema<SpellTemplateSchema> {
 
 type SpellTemplateSchema = {
 	college: StringArrayField<true, false, true>
-	power_source: fields.StringField<string, string, true, false, true>
-	spell_class: fields.StringField<string, string, true, false, true>
-	resist: fields.StringField<string, string, true, false, true>
-	casting_cost: fields.StringField<string, string, true, false, true>
-	maintenance_cost: fields.StringField<string, string, true, false, true>
-	casting_time: fields.StringField<string, string, true, false, true>
-	duration: fields.StringField<string, string, true, false, true>
+	power_source: ReplaceableStringField<string, string, true, false, true>
+	spell_class: ReplaceableStringField<string, string, true, false, true>
+	resist: ReplaceableStringField<string, string, true, false, true>
+	casting_cost: ReplaceableStringField<string, string, true, false, true>
+	maintenance_cost: ReplaceableStringField<string, string, true, false, true>
+	casting_time: ReplaceableStringField<string, string, true, false, true>
+	duration: ReplaceableStringField<string, string, true, false, true>
 }
 
 export { SpellTemplate, type SpellTemplateSchema }

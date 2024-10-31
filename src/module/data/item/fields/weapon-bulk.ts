@@ -1,26 +1,25 @@
 import { AbstractWeaponTemplate } from "../templates/index.ts"
-import fields = foundry.data.fields
 import { WeaponField } from "./weapon-field.ts"
 import { Int, LocalizeGURPS, StringBuilder, TooltipGURPS, feature } from "@util"
 import { ItemType } from "@module/data/constants.ts"
+import { ToggleableBooleanField, ToggleableNumberField } from "@module/data/fields/index.ts"
 
 class WeaponBulk extends WeaponField<AbstractWeaponTemplate, WeaponBulkSchema> {
 	static override defineSchema(): WeaponBulkSchema {
-		const fields = foundry.data.fields
 		return {
-			normal: new fields.NumberField<number, number, true, false, true>({
+			normal: new ToggleableNumberField({
 				required: true,
 				nullable: false,
 				min: 0,
 				initial: 0,
 			}),
-			giant: new fields.NumberField<number, number, true, false, true>({
+			giant: new ToggleableNumberField({
 				required: true,
 				nullable: false,
 				min: 0,
 				initial: 0,
 			}),
-			retractingStock: new fields.BooleanField<boolean>({ required: true, nullable: false, initial: false }),
+			retractingStock: new ToggleableBooleanField({ required: true, nullable: false, initial: false }),
 		}
 	}
 
@@ -96,9 +95,9 @@ interface WeaponBulk
 		ModelPropsFromSchema<WeaponBulkSchema> {}
 
 type WeaponBulkSchema = {
-	normal: fields.NumberField<number, number, true, false, true>
-	giant: fields.NumberField<number, number, true, false, true>
-	retractingStock: fields.BooleanField<boolean, boolean, true, false, true>
+	normal: ToggleableNumberField<number, number, true, false, true>
+	giant: ToggleableNumberField<number, number, true, false, true>
+	retractingStock: ToggleableBooleanField<boolean, boolean, true, false, true>
 }
 
 export { WeaponBulk, type WeaponBulkSchema }

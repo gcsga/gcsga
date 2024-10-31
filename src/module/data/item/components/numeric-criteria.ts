@@ -1,7 +1,7 @@
 import { NumericComparison } from "@util/enum/numeric-comparison.ts"
-import fields = foundry.data.fields
 import { ItemDataModel } from "@module/data/item/abstract.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
+import fields = foundry.data.fields
 
 class NumericCriteria extends foundry.abstract.DataModel<ItemDataModel, NumericCriteriaSchema> {
 	static override defineSchema(): NumericCriteriaSchema {

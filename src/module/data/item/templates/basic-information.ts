@@ -30,7 +30,7 @@ class BasicInformationTemplate extends ItemDataModel<BasicInformationTemplateSch
 				initial: [],
 				label: "GURPS.Item.BasicInformation.FIELDS.Tags.Name",
 			}),
-			vtt_notes: new fields.StringField({ required: true, nullable: false, initial: "" }),
+			vtt_notes: new ToggleableStringField({ required: true, nullable: false, initial: "" }),
 			reference: new ToggleableStringField({
 				required: true,
 				nullable: false,
@@ -75,7 +75,7 @@ type BasicInformationTemplateSchema = {
 	name: ToggleableStringField<string, string, true, false, true>
 	notes: ToggleableStringField<string, string, true, false, true>
 	tags: StringArrayField<true, false, true>
-	vtt_notes: fields.StringField<string, string, true, false, true>
+	vtt_notes: ToggleableStringField<string, string, true, false, true>
 	reference: ToggleableStringField<string, string, true, false, true>
 	reference_highlight: ToggleableStringField<string, string, true, false, true>
 }

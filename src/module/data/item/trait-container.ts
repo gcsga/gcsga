@@ -14,6 +14,7 @@ import { TemplatePicker } from "./fields/template-picker.ts"
 import { Nameable } from "@module/util/index.ts"
 import { MaybePromise } from "../types.ts"
 import { ItemTemplateType } from "./types.ts"
+import { ToggleableBooleanField, ToggleableNumberField, ToggleableStringField } from "../fields/index.ts"
 
 class TraitContainerData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -46,34 +47,34 @@ class TraitContainerData extends ItemDataModel.mixin(
 				idOnly: true,
 				label: "GURPS.Item.TraitContainer.FIELDS.Ancestry.Name",
 			}),
-			userdesc: new fields.StringField({
+			userdesc: new ToggleableStringField({
 				required: true,
 				nullable: false,
 				initial: "",
 				label: "GURPS.Item.Trait.FIELDS.UserDesc.Name",
 			}),
-			cr: new fields.NumberField({
+			cr: new ToggleableNumberField({
 				required: true,
 				nullable: false,
 				choices: selfctrl.RollsChoices,
 				initial: selfctrl.Roll.NoCR,
 				label: "GURPS.Item.Trait.FIELDS.Cr.Name",
 			}),
-			cr_adj: new fields.StringField({
+			cr_adj: new ToggleableStringField({
 				required: true,
 				nullable: false,
 				choices: selfctrl.AdjustmentsChoices,
 				initial: selfctrl.Adjustment.NoCRAdj,
 				label: "GURPS.Item.Trait.FIELDS.CrAdj.Name",
 			}),
-			container_type: new fields.StringField({
+			container_type: new ToggleableStringField({
 				required: true,
 				nullable: false,
 				choices: container.TypesChoices,
 				initial: container.Type.Group,
 				label: "GURPS.Item.TraitContainer.FIELDS.ContainerType.Name",
 			}),
-			disabled: new fields.BooleanField({
+			disabled: new ToggleableBooleanField({
 				required: true,
 				nullable: false,
 				initial: false,
@@ -334,11 +335,11 @@ type TraitContainerSchema = BasicInformationTemplateSchema &
 	ContainerTemplateSchema &
 	ReplacementTemplateSchema & {
 		ancestry: fields.ForeignDocumentField<string, true, true, true>
-		userdesc: fields.StringField<string, string, true, false, true>
-		cr: fields.NumberField<selfctrl.Roll, selfctrl.Roll, true, false, true>
-		cr_adj: fields.StringField<selfctrl.Adjustment, selfctrl.Adjustment, true, false, true>
-		container_type: fields.StringField<container.Type, container.Type, true, false, true>
-		disabled: fields.BooleanField<boolean, boolean, true, false, true>
+		userdesc: ToggleableStringField<string, string, true, false, true>
+		cr: ToggleableNumberField<selfctrl.Roll, selfctrl.Roll, true, false, true>
+		cr_adj: ToggleableStringField<selfctrl.Adjustment, selfctrl.Adjustment, true, false, true>
+		container_type: ToggleableStringField<container.Type, container.Type, true, false, true>
+		disabled: ToggleableBooleanField<boolean, boolean, true, false, true>
 		template_picker: fields.EmbeddedDataField<TemplatePicker, true, false, true>
 	}
 

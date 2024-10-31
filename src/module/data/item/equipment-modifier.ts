@@ -3,7 +3,6 @@ import { ItemDataModel } from "./abstract.ts"
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { FeatureTemplate, FeatureTemplateSchema } from "./templates/features.ts"
 import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
-import fields = foundry.data.fields
 import { SheetSettings } from "../sheet-settings.ts"
 import { ItemType } from "../constants.ts"
 import { ItemInst } from "./helpers.ts"
@@ -11,6 +10,7 @@ import { FeatureSet } from "../feature/types.ts"
 import { Nameable } from "@module/util/nameable.ts"
 import { CellData } from "./components/index.ts"
 import { CellDataOptions } from "./components/cell-data.ts"
+import { ToggleableBooleanField, ToggleableStringField } from "../fields/index.ts"
 
 class EquipmentModifierData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -25,32 +25,30 @@ class EquipmentModifierData extends ItemDataModel.mixin(
 	}
 
 	static override defineSchema(): EquipmentModifierSchema {
-		const fields = foundry.data.fields
-
 		return this.mergeSchema(super.defineSchema(), {
-			cost_type: new fields.StringField({
+			cost_type: new ToggleableStringField({
 				required: true,
 				nullable: false,
 				choices: emcost.TypesChoices,
 				initial: emcost.Type.Original,
 			}),
-			cost_is_per_level: new fields.BooleanField({ required: true, nullable: false, initial: false }),
-			weight_type: new fields.StringField({
+			cost_is_per_level: new ToggleableBooleanField({ required: true, nullable: false, initial: false }),
+			weight_type: new ToggleableStringField({
 				required: true,
 				nullable: false,
 				choices: emweight.TypesChoices,
 				initial: emweight.Type.Original,
 			}),
-			weight_is_per_level: new fields.BooleanField({ required: true, nullable: false, initial: false }),
-			disabled: new fields.BooleanField({ required: true, nullable: false, initial: false }),
-			tech_level: new fields.StringField({
+			weight_is_per_level: new ToggleableBooleanField({ required: true, nullable: false, initial: false }),
+			disabled: new ToggleableBooleanField({ required: true, nullable: false, initial: false }),
+			tech_level: new ToggleableStringField({
 				required: true,
 				nullable: false,
 				initial: "",
 				label: "GURPS.Item.EquipmentModifier.FIELDS.TechLevel.Name",
 			}),
-			cost: new fields.StringField({ required: true, nullable: false, blank: false, initial: "0" }),
-			weight: new fields.StringField({ required: true, nullable: false, blank: false, initial: "0" }),
+			cost: new ToggleableStringField({ required: true, nullable: false, blank: false, initial: "0" }),
+			weight: new ToggleableStringField({ required: true, nullable: false, blank: false, initial: "0" }),
 		}) as EquipmentModifierSchema
 	}
 
@@ -235,14 +233,14 @@ interface EquipmentModifierData extends ModelPropsFromSchema<EquipmentModifierSc
 type EquipmentModifierSchema = BasicInformationTemplateSchema &
 	FeatureTemplateSchema &
 	ReplacementTemplateSchema & {
-		cost_type: fields.StringField<emcost.Type, emcost.Type, true, false, true>
-		cost_is_per_level: fields.BooleanField<boolean, boolean, true, false, true>
-		weight_type: fields.StringField<emweight.Type, emweight.Type, true, false, true>
-		weight_is_per_level: fields.BooleanField<boolean, boolean, true, false, true>
-		disabled: fields.BooleanField<boolean, boolean, true, false, true>
-		tech_level: fields.StringField<string, string, true, false, true>
-		cost: fields.StringField<string, string, true, false, true>
-		weight: fields.StringField<string, string, true, false, true>
+		cost_type: ToggleableStringField<emcost.Type, emcost.Type, true, false, true>
+		cost_is_per_level: ToggleableBooleanField<boolean, boolean, true, false, true>
+		weight_type: ToggleableStringField<emweight.Type, emweight.Type, true, false, true>
+		weight_is_per_level: ToggleableBooleanField<boolean, boolean, true, false, true>
+		disabled: ToggleableBooleanField<boolean, boolean, true, false, true>
+		tech_level: ToggleableStringField<string, string, true, false, true>
+		cost: ToggleableStringField<string, string, true, false, true>
+		weight: ToggleableStringField<string, string, true, false, true>
 	}
 
 export { EquipmentModifierData, type EquipmentModifierSchema }

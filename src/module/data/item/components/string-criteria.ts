@@ -1,13 +1,12 @@
-import fields = foundry.data.fields
 import { ItemDataModel } from "@module/data/item/abstract.ts"
 import { Nameable } from "../../../util/nameable.ts"
 import { StringComparison } from "@util/enum/string-comparison.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
+import fields = foundry.data.fields
 
 class StringCriteria extends foundry.abstract.DataModel<ItemDataModel, StringCriteriaSchema> {
 	static override defineSchema(): StringCriteriaSchema {
 		const fields = foundry.data.fields
-
 		return {
 			compare: new fields.StringField({
 				required: true,

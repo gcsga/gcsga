@@ -2,17 +2,17 @@
 	<legend>{{localize "GURPS.Item.Skill.DetailsLegend"}}</legend>
 
 	<!-- Notes -->
-	{{formField fields.notes value=source.notes localize=true}}
+	{{formField fields.notes value=source.notes localize=true editable=editable}}
 
 	<!-- Tags -->
-	{{formField fields.tags value=source.tags localize=true}}
+	{{formField fields.tags value=source.tags localize=true editable=editable}}
 
 	<!-- Default -->
 	<div class="form-group">
 		<label>{{localize "GURPS.Item.Technique.FIELDS.Default.Name"}}</label>
 		<div class="form-fields">
 			<!-- Type -->
-			{{formInput fields.default.fields.type value=source.default.type}}
+			{{formInput fields.default.fields.type value=source.default.type editable=editable}}
 
 			<!-- Only display these fields if defualt is skill-based -->
 			{{#if system.default.skillBased}}
@@ -27,7 +27,7 @@
 			{{/if}}
 
 			<!-- Modifier -->
-			{{formInput fields.default.fields.modifier value=source.default.modifier }}
+			{{formInput fields.default.fields.modifier value=source.default.modifier editable=editable}}
 		</div>
 	</div>
 	<div class="form-group">
@@ -35,17 +35,17 @@
 		<div class="form-fields">
 			<label>
 				<!-- Input -->
-				{{formInput fields.limited value=source.limited}}
+				{{formInput fields.limited value=source.limited editable=editable}}
 				<!-- Label Contents -->
 				{{localize "GURPS.Item.Technique.FIELDS.Limited.Name"}}
 			</label>
 			<!-- Cannot Exceed -->
-			{{formInput fields.limit value=source.limit disabled=(not source.limited)}}
+			{{formInput fields.limit value=source.limit disabled=(not source.limited) editable=editable}}
 		</div>
 	</div>
 
 	<!-- Difficulty -->
-	{{formField fields.difficulty.fields.difficulty value=source.difficulty.difficulty localize=true}}
+	{{formField fields.difficulty.fields.difficulty value=source.difficulty.difficulty localize=true editable=editable}}
 
 	<!-- Points & Level -->
 	{{#if item.isOwned}}
@@ -53,7 +53,7 @@
 		<label>{{localize "GURPS.Item.Technique.FIELDS.Points.Name"}}</label>
 		<div class="form-fields">
 			<!-- Points -->
-			{{formInput fields.points value=source.points}}
+			{{formInput fields.points value=source.points editable=editable}}
 
 			<!-- Level -->
 			<label>{{localize "GURPS.Item.Technique.FIELDS.Level.Name"}}</label>
@@ -63,5 +63,5 @@
 	{{/if}}
 
 	<!-- Reference -->
-	{{formField fields.reference value=source.reference localize=true}}
+	{{formField fields.reference value=source.reference localize=true editable=editable}}
 </fieldset>

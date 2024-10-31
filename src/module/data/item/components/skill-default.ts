@@ -1,5 +1,4 @@
 import { ActorType, SkillDefaultType, gid } from "@data"
-import fields = foundry.data.fields
 import { LocalizeGURPS, StringBuilder } from "@util"
 import { ActorGURPS2 } from "@module/documents/actor.ts"
 import { ActorTemplateType } from "@module/data/actor/types.ts"
@@ -8,13 +7,13 @@ import { ItemTemplateType } from "../types.ts"
 import { createButton } from "@module/applications/helpers.ts"
 import { getAttributeChoices } from "../../attribute/helpers.ts"
 import { ItemDataModel } from "../abstract.ts"
+import fields = foundry.data.fields
 
 const SKILL_BASED_DEFAULT_TYPES: Set<string> = new Set([gid.Skill, gid.Parry, gid.Block])
 
 class SkillDefault extends foundry.abstract.DataModel<ItemDataModel, SkillDefaultSchema> {
 	static override defineSchema(): SkillDefaultSchema {
 		const fields = foundry.data.fields
-
 		return {
 			type: new fields.StringField({
 				required: true,
@@ -59,7 +58,7 @@ class SkillDefault extends foundry.abstract.DataModel<ItemDataModel, SkillDefaul
 		const prefix = `system.defaults.${this.index}`
 
 		const choices = Object.entries(
-			getAttributeChoices(this.parent.actor, this.type, "GURPS.Item.Defaults.FIELDS.Attribute", {
+			getAttributeChoices(this.parent.actor, this.type, "GURPS.Item.Defaults.ToggleableAttribute", {
 				blank: false,
 				ten: true,
 				size: false,
@@ -100,7 +99,7 @@ class SkillDefault extends foundry.abstract.DataModel<ItemDataModel, SkillDefaul
 				name: `${prefix}.name`,
 				value: this.name ?? "",
 				localize: true,
-				placeholder: game.i18n.localize("GURPS.Item.Defaults.FIELDS.Name"),
+				placeholder: game.i18n.localize("GURPS.Item.Defaults.ToggleableName"),
 				disabled: !SKILL_BASED_DEFAULT_TYPES.has(this.type),
 			}) as HTMLElement,
 		)
@@ -110,7 +109,7 @@ class SkillDefault extends foundry.abstract.DataModel<ItemDataModel, SkillDefaul
 				name: `${prefix}.specialization`,
 				value: this.specialization ?? "",
 				localize: true,
-				placeholder: game.i18n.localize("GURPS.Item.Defaults.FIELDS.Specialization"),
+				placeholder: game.i18n.localize("GURPS.Item.Defaults.ToggleableSpecialization"),
 				disabled: !SKILL_BASED_DEFAULT_TYPES.has(this.type),
 			}) as HTMLElement,
 		)

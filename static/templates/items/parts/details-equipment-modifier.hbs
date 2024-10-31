@@ -10,7 +10,9 @@
 	<!-- Enabled -->
 	<div class="form-group">
 		<label>{{localize "GURPS.Item.EquipmentModifier.FIELDS.Enabled.Name"}}</label>
-		<div class="form-fields">{{formInput fields.disabled value=(not source.disabled) name="system.enabled"}}</div>
+		<div class="form-fields">
+			{{formInput fields.disabled value=(not source.disabled) name="system.enabled" editable=editable}}
+		</div>
 	</div>
 
 	<!-- Cost -->
@@ -18,12 +20,12 @@
 		<label>{{localize "GURPS.Item.EquipmentModifier.FIELDS.CostModifier.Name"}}</label>
 		<div class="form-fields">
 			<!-- Cost Value-->
-			{{formInput fields.cost value=source.cost}}
+			{{formInput fields.cost value=source.cost editable=editable}}
 			<!-- Cost Type -->
-			{{formInput fields.cost_type value=source.cost_type localize=true}}
+			{{formInput fields.cost_type value=source.cost_type localize=true editable=editable}}
 			<label>
 				<!-- Cost is per level -->
-				{{formInput fields.cost_is_per_level value=source.cost_is_per_level}}
+				{{formInput fields.cost_is_per_level value=source.cost_is_per_level editable=editable}}
 				<!-- Label -->
 				{{localize "GURPS.Item.EquipmentModifier.FIELDS.CostIsPerLevel.Name"}}
 			</label>
@@ -39,12 +41,12 @@
 		<label>{{localize "GURPS.Item.EquipmentModifier.FIELDS.WeightModifier.Name"}}</label>
 		<div class="form-fields">
 			<!-- Weight Value-->
-			{{formInput fields.weight value=source.weight}}
+			{{formInput fields.weight value=source.weight editable=editable}}
 			<!-- Weight Type -->
-			{{formInput fields.weight_type value=source.weight_type localize=true}}
+			{{formInput fields.weight_type value=source.weight_type localize=true editable=editable}}
 			<label>
 				<!-- Weight is per level -->
-				{{formInput fields.weight_is_per_level value=source.weight_is_per_level}}
+				{{formInput fields.weight_is_per_level value=source.weight_is_per_level editable=editable}}
 				<!-- Label -->
 				{{localize "GURPS.Item.EquipmentModifier.FIELDS.WeightIsPerLevel.Name"}}
 			</label>

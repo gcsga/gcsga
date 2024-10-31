@@ -1,5 +1,5 @@
-import { ToggleableFormInputConfig } from "./helpers.ts"
 import fields = foundry.data.fields
+import { ToggleableFormInputConfig } from "./helpers.ts"
 
 class ToggleableStringField<
 	TSourceProp extends string = string,

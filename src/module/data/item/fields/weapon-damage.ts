@@ -6,31 +6,26 @@ import { ActorType, ItemType, gid } from "@module/data/constants.ts"
 import { DiceGURPS, DiceSchema } from "@module/data/dice.ts"
 import { SheetSettings } from "@module/data/sheet-settings.ts"
 import { DiceField } from "./dice-field.ts"
+import { ToggleableBooleanField, ToggleableNumberField, ToggleableStringField } from "@module/data/fields/index.ts"
 
 class WeaponDamage extends WeaponField<AbstractWeaponTemplate, WeaponDamageSchema> {
 	static override defineSchema(): WeaponDamageSchema {
-		const fields = foundry.data.fields
 		return {
-			type: new fields.StringField({ required: true, nullable: false, initial: "cr" }),
-			st: new fields.StringField({
+			type: new ToggleableStringField({ required: true, nullable: false, initial: "cr" }),
+			st: new ToggleableStringField({
 				required: true,
 				nullable: false,
 				choices: stdmg.OptionsChoices,
 				initial: stdmg.Option.Thrust,
 			}),
-			leveled: new fields.BooleanField({ required: true, nullable: false, initial: false }),
-			st_mul: new fields.NumberField({ required: true, nullable: false, initial: 0 }),
-			// base: new fields.SchemaField(DiceGURPS.defineSchema()),
-			// base: new fields.EmbeddedDataField(DiceGURPS),
-			// base: new fields.EmbeddedDataField(DiceGURPS),
+			leveled: new ToggleableBooleanField({ required: true, nullable: false, initial: false }),
+			st_mul: new ToggleableNumberField({ required: true, nullable: false, initial: 0 }),
 			base: new DiceField(),
-			armor_divisor: new fields.NumberField({ required: true, nullable: false, initial: 1 }),
-			// fragmentation: new fields.SchemaField(DiceGURPS.defineSchema()),
-			// fragmentation: new fields.EmbeddedDataField(DiceGURPS),
+			armor_divisor: new ToggleableNumberField({ required: true, nullable: false, initial: 1 }),
 			fragmentation: new DiceField(),
-			fragmentation_armor_divisor: new fields.NumberField({ required: true, nullable: false, initial: 1 }),
-			fragmentation_type: new fields.StringField({ required: true, nullable: false, initial: "" }),
-			modifier_per_die: new fields.NumberField({ required: true, nullable: false, initial: 0 }),
+			fragmentation_armor_divisor: new ToggleableNumberField({ required: true, nullable: false, initial: 1 }),
+			fragmentation_type: new ToggleableStringField({ required: true, nullable: false, initial: "" }),
+			modifier_per_die: new ToggleableNumberField({ required: true, nullable: false, initial: 0 }),
 		}
 	}
 
@@ -280,16 +275,16 @@ interface WeaponDamage
 		ModelPropsFromSchema<WeaponDamageSchema> {}
 
 type WeaponDamageSchema = {
-	type: fields.StringField<string, string, true, false, true>
-	st: fields.StringField<stdmg.Option, stdmg.Option, true, false, true>
-	leveled: fields.BooleanField<boolean, boolean, true, false, true>
-	st_mul: fields.NumberField<number, number, true, false, true>
+	type: ToggleableStringField<string, string, true, false, true>
+	st: ToggleableStringField<stdmg.Option, stdmg.Option, true, false, true>
+	leveled: ToggleableBooleanField<boolean, boolean, true, false, true>
+	st_mul: ToggleableNumberField<number, number, true, false, true>
 	base: fields.SchemaField<DiceSchema, SourceFromSchema<DiceSchema>, DiceGURPS, true, true, true>
-	armor_divisor: fields.NumberField<number, number, true, false, true>
+	armor_divisor: ToggleableNumberField<number, number, true, false, true>
 	fragmentation: fields.SchemaField<DiceSchema, SourceFromSchema<DiceSchema>, DiceGURPS, true, true, true>
-	fragmentation_armor_divisor: fields.NumberField<number, number, true, false, true>
-	fragmentation_type: fields.StringField<string, string, true, false, true>
-	modifier_per_die: fields.NumberField<number, number, true, false, true>
+	fragmentation_armor_divisor: ToggleableNumberField<number, number, true, false, true>
+	fragmentation_type: ToggleableStringField<string, string, true, false, true>
+	modifier_per_die: ToggleableNumberField<number, number, true, false, true>
 }
 
 export { WeaponDamage, type WeaponDamageSchema }

@@ -31,6 +31,8 @@ import { AttributeDifficultyField } from "./fields/attribute-difficulty-field.ts
 import { getAttributeChoices } from "../attribute/helpers.ts"
 import { Nameable } from "@module/util/nameable.ts"
 import { MaybePromise } from "../types.ts"
+import { ToggleableNumberField } from "../fields/index.ts"
+import { ReplaceableStringField } from "../fields/replaceable-string-field.ts"
 
 class SkillData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -73,7 +75,7 @@ class SkillData extends ItemDataModel.mixin(
 		const fields = foundry.data.fields
 
 		return this.mergeSchema(super.defineSchema(), {
-			specialization: new fields.StringField({
+			specialization: new ReplaceableStringField({
 				required: true,
 				nullable: false,
 				initial: "",
@@ -95,7 +97,7 @@ class SkillData extends ItemDataModel.mixin(
 				}).choices,
 				label: "GURPS.Item.Skill.FIELDS.Difficulty.Name",
 			}),
-			encumbrance_penalty_multiplier: new fields.NumberField({
+			encumbrance_penalty_multiplier: new ToggleableNumberField({
 				integer: true,
 				min: 0,
 				max: 9,
@@ -451,8 +453,8 @@ type SkillSchema = BasicInformationTemplateSchema &
 	ReplacementTemplateSchema &
 	SkillDefaultTemplateSchema &
 	AbstractSkillTemplateSchema & {
-		specialization: fields.StringField<string, string, true, false, true>
-		encumbrance_penalty_multiplier: fields.NumberField<number, number, true, false, true>
+		specialization: ReplaceableStringField<string, string, true, false, true>
+		encumbrance_penalty_multiplier: ToggleableNumberField<number, number, true, false, true>
 		defaulted_from: fields.EmbeddedDataField<SkillDefault, true, true, true>
 		// defaults: fields.ArrayField<fields.EmbeddedDataField<SkillDefault>>
 	}

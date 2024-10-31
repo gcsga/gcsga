@@ -3,15 +3,15 @@ import fields = foundry.data.fields
 import { AbstractWeaponTemplate } from "../templates/abstract-weapon.ts"
 import { Int, LocalizeGURPS, StringBuilder, TooltipGURPS, feature, wswitch } from "@util"
 import { ActorType, gid } from "@module/data/constants.ts"
+import { ToggleableBooleanField, ToggleableNumberField } from "@module/data/fields/index.ts"
 
 class WeaponParry extends WeaponField<AbstractWeaponTemplate, WeaponParrySchema> {
 	static override defineSchema(): WeaponParrySchema {
-		const fields = foundry.data.fields
 		return {
-			canParry: new fields.BooleanField<boolean>({ required: true, nullable: false, initial: false }),
-			fencing: new fields.BooleanField<boolean>({ required: true, nullable: false, initial: false }),
-			unbalanced: new fields.BooleanField<boolean>({ required: true, nullable: false, initial: false }),
-			modifier: new fields.NumberField<number, number, true, false, true>({
+			canParry: new ToggleableBooleanField({ required: true, nullable: false, initial: false }),
+			fencing: new ToggleableBooleanField({ required: true, nullable: false, initial: false }),
+			unbalanced: new ToggleableBooleanField({ required: true, nullable: false, initial: false }),
+			modifier: new ToggleableNumberField({
 				required: true,
 				nullable: false,
 				initial: 0,
@@ -128,10 +128,10 @@ interface WeaponParry
 		ModelPropsFromSchema<WeaponParrySchema> {}
 
 type WeaponParrySchema = {
-	canParry: fields.BooleanField<boolean, boolean, true, false, true>
-	fencing: fields.BooleanField<boolean, boolean, true, false, true>
-	unbalanced: fields.BooleanField<boolean, boolean, true, false, true>
-	modifier: fields.NumberField<number, number, true, false, true>
+	canParry: ToggleableBooleanField<boolean, boolean, true, false, true>
+	fencing: ToggleableBooleanField<boolean, boolean, true, false, true>
+	unbalanced: ToggleableBooleanField<boolean, boolean, true, false, true>
+	modifier: ToggleableNumberField<number, number, true, false, true>
 }
 
 export { WeaponParry, type WeaponParrySchema }

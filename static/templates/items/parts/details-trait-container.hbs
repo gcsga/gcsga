@@ -2,31 +2,31 @@
 	<legend>{{localize "GURPS.Item.TraitContainer.DetailsLegend"}}</legend>
 
 	<!-- Notes -->
-	{{formField fields.notes value=source.notes localize=true}}
+	{{formField fields.notes value=source.notes localize=true editable=editable}}
 
 	<!-- User Description -->
-	{{formField fields.userdesc value=source.userdesc localize=true}}
+	{{formField fields.userdesc value=source.userdesc localize=true editable=editable}}
 
 	<!-- Tags -->
-	{{formField fields.tags value=source.tags localize=true}}
+	{{formField fields.tags value=source.tags localize=true editable=editable}}
 
 	<!-- Enabled -->
 	<div class="form-group">
 		<label>{{localize "GURPS.Item.Trait.FIELDS.Enabled.Name"}}</label>
 		<div class="form-fields">
 			<!-- Tech Level Number -->
-			{{formInput fields.disabled value=(not source.disabled) name="system.enabled"}}
+			{{formInput fields.disabled value=(not source.disabled) name="system.enabled" editable=editable}}
 		</div>
 	</div>
 
 	<!-- CR -->
-	{{formField fields.cr value=source.cr localize=true}}
+	{{formField fields.cr value=source.cr localize=true editable=editable}}
 
 	<!-- CR Adjustment -->
-	{{formField fields.cr_adj value=source.cr_adj localize=true}}
+	{{formField fields.cr_adj value=source.cr_adj localize=true editable=editable}}
 
 	<!-- Container Type -->
-	{{formField fields.container_type value=source.container_type localize=true}}
+	{{formField fields.container_type value=source.container_type localize=true editable=editable}}
 
 	<!-- Ancestry -->
 	<div class="form-group">
@@ -43,5 +43,5 @@
 	</div>
 
 	<!-- Reference -->
-	{{formField fields.reference value=source.reference localize=true}}
+	{{formField fields.reference value=source.reference localize=true editable=editable}}
 </fieldset>

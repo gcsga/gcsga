@@ -3,22 +3,22 @@ import { WeaponField } from "./weapon-field.ts"
 import { Int, TooltipGURPS, feature, wswitch } from "@util"
 import { ActorTemplateType } from "@module/data/actor/types.ts"
 import { AbstractWeaponTemplate } from "../templates/index.ts"
+import { ToggleableBooleanField, ToggleableNumberField } from "@module/data/fields/index.ts"
 
 class WeaponAccuracy extends WeaponField<AbstractWeaponTemplate, WeaponAccuracySchema> {
 	static override defineSchema(): WeaponAccuracySchema {
-		const fields = foundry.data.fields
 		return {
-			base: new fields.NumberField<number, number, true, false, true>({
+			base: new ToggleableNumberField({
 				required: true,
 				nullable: false,
 				initial: 0,
 			}),
-			scope: new fields.NumberField<number, number, true, false, true>({
+			scope: new ToggleableNumberField({
 				required: true,
 				nullable: false,
 				initial: 0,
 			}),
-			jet: new fields.BooleanField<boolean>({ required: true, nullable: false, initial: false }),
+			jet: new ToggleableBooleanField({ required: true, nullable: false, initial: false }),
 		}
 	}
 
@@ -107,9 +107,9 @@ interface WeaponAccuracy
 		ModelPropsFromSchema<WeaponAccuracySchema> {}
 
 type WeaponAccuracySchema = {
-	base: fields.NumberField<number, number, true, false, true>
-	scope: fields.NumberField<number, number, true, false, true>
-	jet: fields.BooleanField<boolean, boolean, true, false, true>
+	base: ToggleableNumberField<number, number, true, false, true>
+	scope: ToggleableNumberField<number, number, true, false, true>
+	jet: ToggleableBooleanField<boolean, boolean, true, false, true>
 }
 
 export { WeaponAccuracy, type WeaponAccuracySchema }

@@ -1,4 +1,3 @@
-import fields = foundry.data.fields
 import { ActorType, ItemType, gid } from "../constants.ts"
 import { EvalEmbeddedRegex, LocalizeGURPS, StringBuilder, TooltipGURPS, difficulty, replaceAllStringFunc } from "@util"
 import { SpellTemplate, SpellTemplateSchema } from "./templates/spell.ts"
@@ -15,6 +14,7 @@ import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/repl
 import { StudyTemplate, StudyTemplateSchema } from "./templates/study.ts"
 import { MaybePromise } from "../types.ts"
 import { ActorTemplateType } from "../actor/types.ts"
+import { ToggleableNumberField, ToggleableStringField } from "../fields/index.ts"
 
 class RitualMagicSpellData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -33,8 +33,6 @@ class RitualMagicSpellData extends ItemDataModel.mixin(
 	}
 
 	static override defineSchema(): RitualMagicSpellSchema {
-		const fields = foundry.data.fields
-
 		return this.mergeSchema(super.defineSchema(), {
 			difficulty: new AttributeDifficultyField({
 				initial: {
@@ -49,13 +47,13 @@ class RitualMagicSpellData extends ItemDataModel.mixin(
 				]),
 				label: "GURPS.Item.Spell.FIELDS.Difficulty.Name",
 			}),
-			base_skill: new fields.StringField<string, string, true, false, true>({
+			base_skill: new ToggleableStringField<string, string, true, false, true>({
 				required: true,
 				nullable: false,
 				initial: "Ritual Magic",
 				label: "GURPS.Item.RitualMagicSpell.FIELDS.BaseSkill.Name",
 			}),
-			prereq_count: new fields.NumberField<number, number, true, false, true>({
+			prereq_count: new ToggleableNumberField<number, number, true, false, true>({
 				required: true,
 				nullable: false,
 				initial: 0,
@@ -271,8 +269,8 @@ type RitualMagicSpellSchema = BasicInformationTemplateSchema &
 	ReplacementTemplateSchema &
 	AbstractSkillTemplateSchema &
 	SpellTemplateSchema & {
-		base_skill: fields.StringField<string, string, true, false, true>
-		prereq_count: fields.NumberField<number, number, true, false, true>
+		base_skill: ToggleableStringField<string, string, true, false, true>
+		prereq_count: ToggleableNumberField<number, number, true, false, true>
 	}
 
 export { RitualMagicSpellData, type RitualMagicSpellSchema }

@@ -13,9 +13,7 @@ import {
 import { ItemTemplateType } from "../types.ts"
 import fields = foundry.data.fields
 import { WeightField } from "../fields/weight-field.ts"
-import { ToggleableStringField } from "@module/data/fields/toggleable-string-fields.ts"
-import { ToggleableNumberField } from "@module/data/fields/toggleable-number-field.ts"
-import { ToggleableBooleanField } from "@module/data/fields/toggleable-boolean-field.ts"
+import { ToggleableBooleanField, ToggleableNumberField, ToggleableStringField } from "@module/data/fields/index.ts"
 
 class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchema> {
 	static override defineSchema(): EquipmentFieldsTemplateSchema {
@@ -42,7 +40,7 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 				initial: 0,
 				label: "GURPS.Item.Equipment.FIELDS.RatedStrength.Name",
 			}),
-			quantity: new fields.NumberField({
+			quantity: new ToggleableNumberField({
 				required: true,
 				nullable: false,
 				integer: true,
@@ -73,12 +71,6 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 				label: "GURPS.Item.Equipment.FIELDS.Weight.Name",
 				hint: "oogly boogly",
 			}),
-			// weight: new fields.StringField({
-			// 	required: true,
-			// 	nullable: false,
-			// 	initial: "0 lb",
-			// 	label: "GURPS.Item.Equipment.FIELDS.Weight.Name",
-			// }),
 			max_uses: new ToggleableNumberField({
 				required: true,
 				nullable: false,
@@ -87,7 +79,7 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 				initial: 0,
 				label: "GURPS.Item.Equipment.FIELDS.MaxUses.Name",
 			}),
-			uses: new fields.NumberField({
+			uses: new ToggleableNumberField({
 				required: true,
 				nullable: true,
 				integer: true,
@@ -95,7 +87,7 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 				initial: null,
 				label: "GURPS.Item.Equipment.FIELDS.Uses.Name",
 			}),
-			equipped: new fields.BooleanField({
+			equipped: new ToggleableBooleanField({
 				required: true,
 				nullable: false,
 				initial: true,
@@ -360,13 +352,13 @@ type EquipmentFieldsTemplateSchema = {
 	tech_level: ToggleableStringField<string, string, true, false, true>
 	legality_class: ToggleableStringField<string, string, true, false, true>
 	rated_strength: ToggleableNumberField<number, number, true, false, true>
-	quantity: fields.NumberField<number, number, true, false, true>
+	quantity: ToggleableNumberField<number, number, true, false, true>
 	level: ToggleableNumberField<number, number, true, false, true>
 	value: ToggleableNumberField<number, number, true, false, true>
 	weight: WeightField<string, string, true, false, true>
 	max_uses: ToggleableNumberField<number, number, true, false, true>
-	uses: fields.NumberField<number, number, true, true, true>
-	equipped: fields.BooleanField<boolean, boolean, true, false, true>
+	uses: ToggleableNumberField<number, number, true, true, true>
+	equipped: ToggleableBooleanField<boolean, boolean, true, false, true>
 	ignore_weight_for_skills: ToggleableBooleanField<boolean, boolean, true, false, true>
 	other: fields.BooleanField<boolean, boolean, true, false, true>
 }

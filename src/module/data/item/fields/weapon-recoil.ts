@@ -1,19 +1,18 @@
 import { AbstractWeaponTemplate } from "../templates/index.ts"
-import fields = foundry.data.fields
 import { WeaponField } from "./weapon-field.ts"
 import { Int, LocalizeGURPS, StringBuilder, TooltipGURPS, feature } from "@util"
+import { ToggleableNumberField } from "@module/data/fields/index.ts"
 
 class WeaponRecoil extends WeaponField<AbstractWeaponTemplate, WeaponRecoilSchema> {
 	static override defineSchema(): WeaponRecoilSchema {
-		const fields = foundry.data.fields
 		return {
-			shot: new fields.NumberField<number, number, true, false, true>({
+			shot: new ToggleableNumberField({
 				required: true,
 				nullable: false,
 				min: 0,
 				initial: 0,
 			}),
-			slug: new fields.NumberField<number, number, true, false, true>({
+			slug: new ToggleableNumberField({
 				required: true,
 				nullable: false,
 				min: 0,
@@ -78,8 +77,8 @@ interface WeaponRecoil
 		ModelPropsFromSchema<WeaponRecoilSchema> {}
 
 type WeaponRecoilSchema = {
-	shot: fields.NumberField<number, number, true, false, true>
-	slug: fields.NumberField<number, number, true, false, true>
+	shot: ToggleableNumberField<number, number, true, false, true>
+	slug: ToggleableNumberField<number, number, true, false, true>
 }
 
 export { WeaponRecoil, type WeaponRecoilSchema }

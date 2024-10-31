@@ -30,7 +30,6 @@
 
 ## Left To Do
 
-- Weapon Fields
 - Chat Messages \*5
   - Re-do roll message templates and damage message handling
   - Move @module/util/chat.ts functionality to Chat Message

@@ -3,7 +3,6 @@ import { ItemDataModel } from "./abstract.ts"
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { FeatureTemplate, FeatureTemplateSchema } from "./templates/features.ts"
 import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
-import fields = foundry.data.fields
 import { ItemGURPS2 } from "@module/documents/item.ts"
 import { CellData, CellDataOptions } from "./components/cell-data.ts"
 import { SheetSettings } from "../sheet-settings.ts"
@@ -11,6 +10,7 @@ import { Nameable } from "@module/util/index.ts"
 import { ItemInst } from "./helpers.ts"
 import { ItemType } from "../constants.ts"
 import { FeatureSet } from "../feature/types.ts"
+import { ToggleableBooleanField, ToggleableNumberField, ToggleableStringField } from "../fields/index.ts"
 
 class TraitModifierData extends ItemDataModel.mixin(BasicInformationTemplate, FeatureTemplate, ReplacementTemplate) {
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
@@ -20,42 +20,40 @@ class TraitModifierData extends ItemDataModel.mixin(BasicInformationTemplate, Fe
 	/** Allows dynamic setting of containing trait for arbitrary value calculation */
 	private declare _trait: ItemGURPS2 | null
 	static override defineSchema(): TraitModifierSchema {
-		const fields = foundry.data.fields
-
 		return this.mergeSchema(super.defineSchema(), {
 			...super.defineSchema(),
-			cost: new fields.NumberField({
+			cost: new ToggleableNumberField({
 				required: true,
 				nullable: false,
 				initial: 0,
 				label: "GURPS.Item.TraitModifier.FIELDS.Cost.Name",
 			}),
-			levels: new fields.NumberField({
+			levels: new ToggleableNumberField({
 				required: true,
 				nullable: true,
 				initial: null,
 				label: "GURPS.Item.TraitModifier.FIELDS.Cost.Name",
 			}),
-			cost_type: new fields.StringField({
+			cost_type: new ToggleableStringField({
 				required: true,
 				nullable: false,
 				choices: tmcost.TypesChoices,
 				initial: tmcost.Type.Percentage,
 			}),
-			use_level_from_trait: new fields.BooleanField({
+			use_level_from_trait: new ToggleableBooleanField({
 				required: true,
 				nullable: false,
 				initial: true,
 				label: "GURPS.Item.TraitModifier.FIELDS.UseLevelFromTrait.Name",
 			}),
-			affects: new fields.StringField({
+			affects: new ToggleableStringField({
 				required: true,
 				nullable: false,
 				blank: false,
 				choices: affects.OptionsChoices,
 				initial: affects.Option.Total,
 			}),
-			disabled: new fields.BooleanField({
+			disabled: new ToggleableBooleanField({
 				required: true,
 				nullable: false,
 				initial: false,
@@ -234,12 +232,12 @@ interface TraitModifierData extends ModelPropsFromSchema<TraitModifierSchema> {}
 type TraitModifierSchema = BasicInformationTemplateSchema &
 	FeatureTemplateSchema &
 	ReplacementTemplateSchema & {
-		cost: fields.NumberField<number, number, true, false, true>
-		levels: fields.NumberField<number, number, true, true, true>
-		cost_type: fields.StringField<tmcost.Type>
-		use_level_from_trait: fields.BooleanField<boolean, boolean, true, false, true>
-		affects: fields.StringField<affects.Option>
-		disabled: fields.BooleanField<boolean>
+		cost: ToggleableNumberField<number, number, true, false, true>
+		levels: ToggleableNumberField<number, number, true, true, true>
+		cost_type: ToggleableStringField<tmcost.Type>
+		use_level_from_trait: ToggleableBooleanField<boolean, boolean, true, false, true>
+		affects: ToggleableStringField<affects.Option>
+		disabled: ToggleableBooleanField<boolean>
 	}
 
 export { TraitModifierData, type TraitModifierSchema }

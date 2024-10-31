@@ -2,23 +2,23 @@ import fields = foundry.data.fields
 import { WeaponField } from "./weapon-field.ts"
 import { Int, LocalizeGURPS, StringBuilder, TooltipGURPS, feature, wswitch } from "@util"
 import { AbstractWeaponTemplate } from "../templates/index.ts"
+import { ToggleableBooleanField, ToggleableNumberField } from "@module/data/fields/index.ts"
 
 class WeaponReach extends WeaponField<AbstractWeaponTemplate, WeaponReachSchema> {
 	static override defineSchema(): WeaponReachSchema {
-		const fields = foundry.data.fields
 		return {
-			min: new fields.NumberField<number, number, true, false, true>({
+			min: new ToggleableNumberField({
 				required: true,
 				nullable: false,
 				initial: 1,
 			}),
-			max: new fields.NumberField<number, number, true, false, true>({
+			max: new ToggleableNumberField({
 				required: true,
 				nullable: false,
 				initial: 1,
 			}),
-			closeCombat: new fields.BooleanField<boolean>({ required: true, nullable: false, initial: false }),
-			changeRequiresReady: new fields.BooleanField<boolean>({ required: true, nullable: false, initial: false }),
+			closeCombat: new ToggleableBooleanField({ required: true, nullable: false, initial: false }),
+			changeRequiresReady: new ToggleableBooleanField({ required: true, nullable: false, initial: false }),
 		}
 	}
 
@@ -119,10 +119,10 @@ interface WeaponReach
 		ModelPropsFromSchema<WeaponReachSchema> {}
 
 type WeaponReachSchema = {
-	min: fields.NumberField<number, number, true, false, true>
-	max: fields.NumberField<number, number, true, false, true>
-	closeCombat: fields.BooleanField<boolean, boolean, true, false, true>
-	changeRequiresReady: fields.BooleanField<boolean, boolean, true, false, true>
+	min: ToggleableNumberField<number, number, true, false, true>
+	max: ToggleableNumberField<number, number, true, false, true>
+	closeCombat: ToggleableBooleanField<boolean, boolean, true, false, true>
+	changeRequiresReady: ToggleableBooleanField<boolean, boolean, true, false, true>
 }
 
 export { WeaponReach, type WeaponReachSchema }

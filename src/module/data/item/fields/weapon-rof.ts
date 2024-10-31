@@ -3,6 +3,7 @@ import { WeaponField } from "./weapon-field.ts"
 import { LocalizeGURPS, TooltipGURPS, wswitch } from "@util"
 import { WeaponROFMode } from "./weapon-rof-mode.ts"
 import { AbstractWeaponTemplate } from "../templates/index.ts"
+import { ToggleableBooleanField } from "@module/data/fields/toggleable-boolean-field.ts"
 
 class WeaponROF extends WeaponField<AbstractWeaponTemplate, WeaponROFSchema> {
 	static override defineSchema(): WeaponROFSchema {
@@ -10,7 +11,7 @@ class WeaponROF extends WeaponField<AbstractWeaponTemplate, WeaponROFSchema> {
 		return {
 			mode1: new fields.EmbeddedDataField(WeaponROFMode),
 			mode2: new fields.EmbeddedDataField(WeaponROFMode),
-			jet: new fields.BooleanField<boolean>({ required: true, nullable: false, initial: false }),
+			jet: new ToggleableBooleanField({ required: true, nullable: false, initial: false }),
 		}
 	}
 
@@ -90,7 +91,7 @@ interface WeaponROF
 type WeaponROFSchema = {
 	mode1: fields.EmbeddedDataField<WeaponROFMode>
 	mode2: fields.EmbeddedDataField<WeaponROFMode>
-	jet: fields.BooleanField<boolean, boolean, true, false, true>
+	jet: ToggleableBooleanField<boolean, boolean, true, false, true>
 }
 
 export { WeaponROF, type WeaponROFSchema }

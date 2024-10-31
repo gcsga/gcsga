@@ -2,18 +2,20 @@
 	<legend>{{localize "GURPS.Item.Trait.DetailsLegend"}}</legend>
 
 	<!-- Notes -->
-	{{formField fields.notes value=source.notes localize=true}}
+	{{formField fields.notes value=source.notes localize=true editable=editable}}
 
 	<!-- User Description -->
-	{{formField fields.userdesc value=source.userdesc localize=true}}
+	{{formField fields.userdesc value=source.userdesc localize=true editable=editable}}
 
 	<!-- Tags -->
-	{{formField fields.tags value=source.tags localize=true}}
+	{{formField fields.tags value=source.tags localize=true editable=editable}}
 
 	<!-- Enabled -->
 	<div class="form-group">
 		<label>{{localize "GURPS.Item.Trait.FIELDS.Enabled.Name"}}</label>
-		<div class="form-fields">{{formInput fields.disabled value=(not source.disabled) name="system.enabled"}}</div>
+		<div class="form-fields">
+			{{formInput fields.disabled value=(not source.disabled) name="system.enabled" editable=editable}}
+		</div>
 	</div>
 
 	<!-- Point Cost -->
@@ -24,36 +26,37 @@
 			<input type="text" value="{{system.adjustedPoints}}" disabled />
 			<label>{{localize "GURPS.Item.Trait.FIELDS.RoundDown.Name"}}</label>
 			<!-- Round Down -->
-			{{formInput fields.round_down value=source.round_down}}
+			{{formInput fields.round_down value=source.round_down editable=editable}}
 		</div>
 	</div>
 
 	<!-- Base Cost -->
-	{{formField fields.base_points value=source.base_points localize=true}}
+	{{formField fields.base_points value=source.base_points localize=true editable=editable}}
 
 	<!-- Cost Per Level-->
 	<div class="form-group">
 		<label>
 			<!-- Checkbox -->
-			{{formInput fields.can_level value=source.can_level}}
+			{{formInput fields.can_level value=source.can_level editable=editable}}
 			<!-- Label -->
 			{{localize "GURPS.Item.Trait.FIELDS.Levels.Name"}}
 		</label>
 		<div class="form-fields">
 			<!-- Level Number -->
-			{{formInput fields.levels value=source.levels disabled=(not source.can_level)}}
+			{{formInput fields.levels value=source.levels disabled=(not source.can_level) editable=editable}}
 			<label>{{localize "GURPS.Item.Trait.FIELDS.PointsPerLevel.Name"}}</label>
 			<!-- Points Per Level-->
-			{{formInput fields.points_per_level value=source.points_per_level disabled=(not source.can_level)}}
+			{{formInput fields.points_per_level value=source.points_per_level disabled=(not source.can_level)
+			editable=editable}}
 		</div>
 	</div>
 
 	<!-- CR -->
-	{{formField fields.cr value=source.cr localize=true}}
+	{{formField fields.cr value=source.cr localize=true editable=editable}}
 
 	<!-- CR Adjustment -->
-	{{formField fields.cr_adj value=source.cr_adj localize=true}}
+	{{formField fields.cr_adj value=source.cr_adj localize=true editable=editable}}
 
 	<!-- Reference -->
-	{{formField fields.reference value=source.reference localize=true}}
+	{{formField fields.reference value=source.reference localize=true editable=editable}}
 </fieldset>

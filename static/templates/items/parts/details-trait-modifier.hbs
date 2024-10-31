@@ -2,12 +2,14 @@
 	<legend>{{localize "GURPS.Item.TraitModifier.DetailsLegend"}}</legend>
 
 	<!-- Notes -->
-	{{formField fields.notes value=source.notes localize=true}}
+	{{formField fields.notes value=source.notes localize=true editable=editable}}
 
 	<!-- Enabled -->
 	<div class="form-group">
 		<label>{{localize "GURPS.Item.TraitModifier.FIELDS.Enabled.Name"}}</label>
-		<div class="form-fields">{{formInput fields.disabled value=(not source.disabled) name="system.enabled"}}</div>
+		<div class="form-fields">
+			{{formInput fields.disabled value=(not source.disabled) name="system.enabled" editable=editable}}
+		</div>
 	</div>
 
 	<!-- Point Cost -->
@@ -15,11 +17,11 @@
 		<label>{{localize "GURPS.Item.TraitModifier.FIELDS.Points.Name"}}</label>
 		<div class="form-fields">
 			<!-- Point Cost -->
-			{{formInput fields.cost value=source.cost}}
+			{{formInput fields.cost value=source.cost editable=editable}}
 			<!-- Cost Type-->
-			{{formInput fields.cost_type value=source.cost_type localize=true}}
+			{{formInput fields.cost_type value=source.cost_type localize=true editable=editable}}
 			<!-- Affects -->
-			{{formInput fields.affects value=source.affects localize=true}}
+			{{formInput fields.affects value=source.affects localize=true editable=editable}}
 		</div>
 	</div>
 
@@ -28,10 +30,10 @@
 		<label>{{localize "GURPS.Item.TraitModifier.FIELDS.Levels.Name"}}</label>
 		<div class="form-fields">
 			<!-- Level Number -->
-			{{formInput fields.levels value=source.levels disabled=source.use_level_from_trait}}
+			{{formInput fields.levels value=source.levels disabled=source.use_level_from_trait editable=editable}}
 			<label>
 				<!-- Use Level From Trait -->
-				{{formInput fields.use_level_from_trait value=source.use_level_from_trait}}
+				{{formInput fields.use_level_from_trait value=source.use_level_from_trait editable=editable}}
 				<!-- Label -->
 				{{localize "GURPS.Item.TraitModifier.FIELDS.UseLevelFromTrait.Name"}}
 			</label>
@@ -46,8 +48,8 @@
 	</div>
 
 	<!-- Tags -->
-	{{formField fields.tags value=source.tags localize=true}}
+	{{formField fields.tags value=source.tags localize=true editable=editable}}
 
 	<!-- Reference -->
-	{{formField fields.reference value=source.reference localize=true}}
+	{{formField fields.reference value=source.reference localize=true editable=editable}}
 </fieldset>

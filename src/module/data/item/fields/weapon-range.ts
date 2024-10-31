@@ -2,28 +2,28 @@ import { AbstractWeaponTemplate } from "../templates/index.ts"
 import fields = foundry.data.fields
 import { WeaponField } from "./weapon-field.ts"
 import { Int, Length, StringBuilder, TooltipGURPS, feature, wswitch } from "@util"
+import { ToggleableBooleanField, ToggleableNumberField } from "@module/data/fields/index.ts"
 
 class WeaponRange extends WeaponField<AbstractWeaponTemplate, WeaponRangeSchema> {
 	static override defineSchema(): WeaponRangeSchema {
-		const fields = foundry.data.fields
 		return {
-			halfDamage: new fields.NumberField<number, number, true, false, true>({
+			halfDamage: new ToggleableNumberField({
 				required: true,
 				nullable: false,
 				initial: 0,
 			}),
-			min: new fields.NumberField<number, number, true, false, true>({
+			min: new ToggleableNumberField({
 				required: true,
 				nullable: false,
 				initial: 0,
 			}),
-			max: new fields.NumberField<number, number, true, false, true>({
+			max: new ToggleableNumberField({
 				required: true,
 				nullable: false,
 				initial: 0,
 			}),
-			musclePowered: new fields.BooleanField<boolean>({ required: true, nullable: false, initial: false }),
-			inMiles: new fields.BooleanField<boolean>({ required: true, nullable: false, initial: false }),
+			musclePowered: new ToggleableBooleanField({ required: true, nullable: false, initial: false }),
+			inMiles: new ToggleableBooleanField({ required: true, nullable: false, initial: false }),
 		}
 	}
 
@@ -173,11 +173,11 @@ interface WeaponRange
 		ModelPropsFromSchema<WeaponRangeSchema> {}
 
 type WeaponRangeSchema = {
-	halfDamage: fields.NumberField<number, number, true, false, true>
-	min: fields.NumberField<number, number, true, false, true>
-	max: fields.NumberField<number, number, true, false, true>
-	musclePowered: fields.BooleanField<boolean, boolean, true, false, true>
-	inMiles: fields.BooleanField<boolean, boolean, true, false, true>
+	halfDamage: ToggleableNumberField<number, number, true, false, true>
+	min: ToggleableNumberField<number, number, true, false, true>
+	max: ToggleableNumberField<number, number, true, false, true>
+	musclePowered: ToggleableBooleanField<boolean, boolean, true, false, true>
+	inMiles: ToggleableBooleanField<boolean, boolean, true, false, true>
 }
 
 export { WeaponRange, type WeaponRangeSchema }
