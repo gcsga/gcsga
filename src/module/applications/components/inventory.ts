@@ -9,8 +9,11 @@ import { SYSTEM_NAME, HOOKS, ItemType } from "@module/data/constants.ts"
 
 class InventoryElement extends HTMLElement {
 	connectedCallback(): void {
-		const app = ui?.windows[parseInt(htmlClosest(this, ".app")?.dataset.appid!)]
+		const app = foundry.applications.instances.get(htmlClosest(this, ".application")?.id ?? "")
 		if (app instanceof sheets.ActorSheetV2 || app instanceof sheets.ItemSheetV2) this.#app = app
+		else {
+			throw ErrorGURPS("Application holding Inventory element is not an Actor Sheet or Item Sheet")
+		}
 
 		for (const control of this.querySelectorAll("[data-context-menu]")) {
 			control.addEventListener("click", event => {

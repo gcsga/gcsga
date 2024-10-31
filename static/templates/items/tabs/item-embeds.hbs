@@ -1,3 +1,5 @@
 <section class="tab {{tab.cssClass}}" data-group="primary" data-tab="embeds">
-	<div class="items-list inventory-list">{{#each embedsParts as |part|}} {{> (part) @root }} {{/each}}</div>
+	<gurps-inventory>
+		<div class="items-list inventory-list">{{#each embedsParts as |part|}} {{> (part) @root }} {{/each}}</div>
+	</gurps-inventory>
 </section>

@@ -2,25 +2,25 @@
 	<legend>{{localize "GURPS.Item.Equipment.DetailsLegend"}}</legend>
 
 	<!-- Notes -->
-	{{formField fields.notes value=source.notes localize=true}}
+	{{formField fields.notes value=source.notes localize=true editable=editable replacements=replacements}}
 
 	<!-- Tech Level -->
-	{{formField fields.tech_level value=source.tech_level localize=true}}
+	{{formField fields.tech_level value=source.tech_level localize=true editable=editable}}
 
 	<!-- Legality Class -->
-	{{formField fields.legality_class value=source.legality_class localize=true}}
+	{{formField fields.legality_class value=source.legality_class localize=true editable=editable}}
 
 	<!-- Quantity / Equipped -->
 	<div class="form-group">
 		<label>{{localize "GURPS.Item.Equipment.FIELDS.Quantity.Name"}}</label>
 		<div class="form-fields">
 			<!-- Quantity -->
-			{{formInput fields.quantity value=source.quantity}}
+			{{formInput fields.quantity value=source.quantity editable=editable}}
 
 			<!-- Equipped -->
 			<label>
 				<!-- Input -->
-				{{formInput fields.equipped value=source.equipped}}
+				{{formInput fields.equipped value=source.equipped editable=editable}}
 				<!-- Label Contents -->
 				{{localize "GURPS.Item.Equipment.FIELDS.Equipped.Name"}}
 			</label>
@@ -31,7 +31,7 @@
 	<div class="form-group">
 		<label>{{localize "GURPS.Item.Equipment.FIELDS.Value.Name"}}</label>
 		<div class="form-fields">
-			{{formInput fields.value value=source.value}}
+			{{formInput fields.value value=source.value editable=editable}}
 			<!-- Basic -->
 
 			<!-- Label -->
@@ -45,7 +45,7 @@
 	<div class="form-group">
 		<label>{{localize "GURPS.Item.Equipment.FIELDS.Weight.Name"}}</label>
 		<div class="form-fields">
-			{{formInput fields.weight value=source.weight}}
+			{{formInput fields.weight value=source.weight editable=editable}}
 			<!-- Basic -->
 
 			<!-- Label -->
@@ -56,8 +56,8 @@
 	</div>
 
 	<!-- Tags -->
-	{{formField fields.tags value=source.tags localize=true}}
+	{{formField fields.tags value=source.tags localize=true editable=editable}}
 
 	<!-- Reference -->
-	{{formField fields.reference value=source.reference localize=true}}
+	{{formField fields.reference value=source.reference localize=true editable=editable}}
 </fieldset>

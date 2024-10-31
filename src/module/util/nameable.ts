@@ -24,6 +24,13 @@ function apply(str: string, m: Map<string, string>): string {
 	return str
 }
 
+function applyToElement(str: string, m: Map<string, string>): string {
+	for (const [key, value] of m.entries()) {
+		str = str.replaceAll(`@${key}@`, `<span class="replaced-text" data-tooltip="@${key}@">${value}</span>`)
+	}
+	return str
+}
+
 function applyToList(inputList: string[], m: Map<string, string>): string[] {
 	if (inputList.length === 0) return []
 	const list: string[] = new Array(inputList.length)
@@ -54,11 +61,12 @@ function isApplier(e: unknown): e is NameableApplier {
 }
 
 export const Nameable = {
-	extract,
 	apply,
+	applyToElement,
 	applyToList,
-	reduce,
-	isFiller,
+	extract,
 	isAccesser,
 	isApplier,
+	isFiller,
+	reduce,
 }

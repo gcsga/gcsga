@@ -5,7 +5,7 @@ export * as elements from "./elements/module.ts"
 export * as fields from "./forms/fields.ts"
 export * as sheets from "./sheets/module.ts"
 
-export const instances: Map<number, ApplicationV2>
+export const instances: Map<string, ApplicationV2>
 
 /**
  * Parse an HTML string, returning a processed HTMLElement or HTMLCollection.

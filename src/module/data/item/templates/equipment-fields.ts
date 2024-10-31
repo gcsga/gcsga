@@ -13,25 +13,28 @@ import {
 import { ItemTemplateType } from "../types.ts"
 import fields = foundry.data.fields
 import { WeightField } from "../fields/weight-field.ts"
+import { ToggleableStringField } from "@module/data/fields/toggleable-string-fields.ts"
+import { ToggleableNumberField } from "@module/data/fields/toggleable-number-field.ts"
+import { ToggleableBooleanField } from "@module/data/fields/toggleable-boolean-field.ts"
 
 class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchema> {
 	static override defineSchema(): EquipmentFieldsTemplateSchema {
 		const fields = foundry.data.fields
 
 		return {
-			tech_level: new fields.StringField({
+			tech_level: new ToggleableStringField({
 				required: true,
 				nullable: false,
 				initial: "",
 				label: "GURPS.Item.Equipment.FIELDS.TechLevel.Name",
 			}),
-			legality_class: new fields.StringField({
+			legality_class: new ToggleableStringField({
 				required: true,
 				nullable: false,
 				initial: "",
 				label: "GURPS.Item.Equipment.FIELDS.LegalityClass.Name",
 			}),
-			rated_strength: new fields.NumberField({
+			rated_strength: new ToggleableNumberField({
 				required: true,
 				nullable: false,
 				integer: true,
@@ -47,7 +50,7 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 				initial: 1,
 				label: "GURPS.Item.Equipment.FIELDS.Quantity.Name",
 			}),
-			level: new fields.NumberField({
+			level: new ToggleableNumberField({
 				required: true,
 				nullable: false,
 				integer: true,
@@ -55,7 +58,7 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 				initial: 0,
 				label: "GURPS.Item.Equipment.FIELDS.Level.Name",
 			}),
-			value: new fields.NumberField({
+			value: new ToggleableNumberField({
 				required: true,
 				nullable: false,
 				min: 0,
@@ -76,7 +79,7 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 			// 	initial: "0 lb",
 			// 	label: "GURPS.Item.Equipment.FIELDS.Weight.Name",
 			// }),
-			max_uses: new fields.NumberField({
+			max_uses: new ToggleableNumberField({
 				required: true,
 				nullable: false,
 				integer: true,
@@ -98,7 +101,7 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 				initial: true,
 				label: "GURPS.Item.Equipment.FIELDS.Equipped.Name",
 			}),
-			ignore_weight_for_skills: new fields.BooleanField({
+			ignore_weight_for_skills: new ToggleableBooleanField({
 				required: true,
 				nullable: false,
 				initial: false,
@@ -354,17 +357,17 @@ interface EquipmentFieldsTemplate extends ModelPropsFromSchema<EquipmentFieldsTe
 }
 
 type EquipmentFieldsTemplateSchema = {
-	tech_level: fields.StringField<string, string, true, false, true>
-	legality_class: fields.StringField<string, string, true, false, true>
-	rated_strength: fields.NumberField<number, number, true, false, true>
+	tech_level: ToggleableStringField<string, string, true, false, true>
+	legality_class: ToggleableStringField<string, string, true, false, true>
+	rated_strength: ToggleableNumberField<number, number, true, false, true>
 	quantity: fields.NumberField<number, number, true, false, true>
-	level: fields.NumberField<number, number, true, false, true>
-	value: fields.NumberField<number, number, true, false, true>
+	level: ToggleableNumberField<number, number, true, false, true>
+	value: ToggleableNumberField<number, number, true, false, true>
 	weight: WeightField<string, string, true, false, true>
-	max_uses: fields.NumberField<number, number, true, false, true>
+	max_uses: ToggleableNumberField<number, number, true, false, true>
 	uses: fields.NumberField<number, number, true, true, true>
 	equipped: fields.BooleanField<boolean, boolean, true, false, true>
-	ignore_weight_for_skills: fields.BooleanField<boolean, boolean, true, false, true>
+	ignore_weight_for_skills: ToggleableBooleanField<boolean, boolean, true, false, true>
 	other: fields.BooleanField<boolean, boolean, true, false, true>
 }
 export { EquipmentFieldsTemplate, type EquipmentFieldsTemplateSchema }

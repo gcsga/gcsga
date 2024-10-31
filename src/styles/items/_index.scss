@@ -94,6 +94,12 @@
 		}
 	}
 
+	span.replaced-text {
+		background-color: red;
+		padding: 0.1rem;
+		border-radius: 0.25rem;
+	}
+
 	@import "details_prereqs", "details_features", "details_defaults";
 	@import "embeds";
 }

@@ -1,5 +1,7 @@
 import { Int, Weight } from "@util"
 import fields = foundry.data.fields
+import { ToggleableStringField } from "@module/data/fields/toggleable-string-fields.ts"
+import { ToggleableFormInputConfig } from "@module/data/fields/helpers.ts"
 
 interface WeightFieldOptions<
 	TSourceProp extends string,
@@ -17,7 +19,7 @@ class WeightField<
 	TRequired extends boolean = false,
 	TNullable extends boolean = false,
 	THasInitial extends boolean = true,
-> extends fields.StringField<TSourceProp, TModelProp, TRequired, TNullable, THasInitial> {
+> extends ToggleableStringField<TSourceProp, TModelProp, TRequired, TNullable, THasInitial> {
 	allowPercent: boolean
 
 	constructor(
@@ -26,6 +28,10 @@ class WeightField<
 	) {
 		super(options, context)
 		this.allowPercent = options?.allowPercent ?? false
+	}
+
+	protected override _toInput(config?: ToggleableFormInputConfig<string> | undefined): HTMLElement | HTMLCollection {
+		return super._toInput(config)
 	}
 
 	override clean(

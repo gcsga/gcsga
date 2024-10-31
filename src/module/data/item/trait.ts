@@ -24,7 +24,10 @@ import {
 	StudyTemplateSchema,
 } from "./templates/index.ts"
 import { ItemTemplateType } from "./types.ts"
-import fields = foundry.data.fields
+import { ReplaceableStringField } from "../fields/replaceable-string-field.ts"
+import { ToggleableNumberField } from "../fields/toggleable-number-field.ts"
+import { ToggleableStringField } from "../fields/toggleable-string-fields.ts"
+import { ToggleableBooleanField } from "../fields/toggleable-boolean-field.ts"
 
 class TraitData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -45,44 +48,42 @@ class TraitData extends ItemDataModel.mixin(
 	}
 
 	static override defineSchema(): TraitSchema {
-		const fields = foundry.data.fields
-
 		return this.mergeSchema(super.defineSchema(), {
-			userdesc: new fields.StringField({
+			userdesc: new ReplaceableStringField({
 				required: true,
 				nullable: false,
 				initial: "",
 				label: "GURPS.Item.Trait.FIELDS.UserDesc.Name",
 			}),
-			base_points: new fields.NumberField({
+			base_points: new ToggleableNumberField({
 				required: true,
 				nullable: false,
 				integer: true,
 				initial: 0,
 				label: "GURPS.Item.Trait.FIELDS.BasePoints.Name",
 			}),
-			levels: new fields.NumberField({
+			levels: new ToggleableNumberField({
 				required: true,
 				nullable: true,
 				min: 0,
 				initial: null,
 				label: "GURPS.Item.Trait.FIELDS.Levels.Name",
 			}),
-			points_per_level: new fields.NumberField({
+			points_per_level: new ToggleableNumberField({
 				required: true,
 				nullable: true,
 				integer: true,
 				initial: null,
 				label: "GURPS.Item.Trait.FIELDS.PointsPerLevel.Name",
 			}),
-			cr: new fields.NumberField({
+			cr: new ToggleableNumberField({
 				required: true,
 				nullable: false,
 				choices: selfctrl.RollsChoices(),
 				initial: selfctrl.Roll.NoCR,
 				label: "GURPS.Item.Trait.FIELDS.Cr.Name",
 			}),
-			cr_adj: new fields.StringField({
+			cr_adj: new ToggleableStringField({
 				required: true,
 				nullable: false,
 				blank: false,
@@ -90,19 +91,19 @@ class TraitData extends ItemDataModel.mixin(
 				initial: selfctrl.Adjustment.NoCRAdj,
 				label: "GURPS.Item.Trait.FIELDS.CrAdj.Name",
 			}),
-			disabled: new fields.BooleanField({
+			disabled: new ToggleableBooleanField({
 				required: true,
 				nullable: false,
 				initial: false,
 				label: "GURPS.Item.Trait.FIELDS.Disabled.Name",
 			}),
-			round_down: new fields.BooleanField({
+			round_down: new ToggleableBooleanField({
 				required: true,
 				nullable: false,
 				initial: false,
 				label: "GURPS.Item.Trait.FIELDS.RoundDown.Name",
 			}),
-			can_level: new fields.BooleanField({
+			can_level: new ToggleableBooleanField({
 				required: true,
 				nullable: false,
 				initial: false,
@@ -343,15 +344,15 @@ type TraitSchema = BasicInformationTemplateSchema &
 	FeatureTemplateSchema &
 	StudyTemplateSchema &
 	ReplacementTemplateSchema & {
-		userdesc: fields.StringField<string, string, true, false, true>
-		base_points: fields.NumberField<number, number, true, false, true>
-		levels: fields.NumberField<number, number, true, true, true>
-		points_per_level: fields.NumberField<number, number, true, true, true>
-		cr: fields.NumberField<selfctrl.Roll, selfctrl.Roll, true, false, true>
-		cr_adj: fields.StringField<selfctrl.Adjustment>
-		disabled: fields.BooleanField<boolean>
-		round_down: fields.BooleanField<boolean>
-		can_level: fields.BooleanField
+		userdesc: ReplaceableStringField<string, string, true, false, true>
+		base_points: ToggleableNumberField<number, number, true, false, true>
+		levels: ToggleableNumberField<number, number, true, true, true>
+		points_per_level: ToggleableNumberField<number, number, true, true, true>
+		cr: ToggleableNumberField<selfctrl.Roll, selfctrl.Roll, true, false, true>
+		cr_adj: ToggleableStringField<selfctrl.Adjustment>
+		disabled: ToggleableBooleanField<boolean>
+		round_down: ToggleableBooleanField<boolean>
+		can_level: ToggleableBooleanField
 	}
 
 export { TraitData, type TraitSchema }

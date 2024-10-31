@@ -1,5 +1,6 @@
 import { MaybeSchemaProp } from "types/foundry/common/data/fields.js"
 import fields = foundry.data.fields
+import { ToggleableFormInputConfig } from "@module/data/fields/helpers.ts"
 
 class StringArrayField<
 	TRequired extends boolean = true,
@@ -25,9 +26,14 @@ class StringArrayField<
 		super(new fields.StringField({ required: true, nullable: false }), options, context)
 	}
 
-	protected override _toInput(config: FormInputConfig<string>): HTMLElement | HTMLCollection {
+	protected override _toInput(config: ToggleableFormInputConfig<string>): HTMLElement | HTMLCollection {
 		if (!config.value) config.value = ""
 		else if (Array.isArray(config.value)) config.value = config.value.join(", ")
+		if (config.editable === false) {
+			const element = document.createElement("span")
+			element.innerHTML = config.value ?? ""
+			return element
+		}
 		return foundry.applications.fields.createTextInput(config)
 	}
 

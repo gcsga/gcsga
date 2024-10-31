@@ -15,6 +15,7 @@ import { MaybePromise } from "@module/data/types.ts"
 import { Weight } from "@util/weight.ts"
 import { SheetSettings } from "@module/data/sheet-settings.ts"
 import { ItemCell } from "@module/data/item/components/cell-data.ts"
+import { ELEMENTS } from "../components/index.ts"
 
 const { api, sheets } = foundry.applications
 
@@ -43,7 +44,7 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 
 	/* -------------------------------------------- */
 
-	protected _mode = this.constructor.MODES.PLAY
+	protected _mode = this.item.isOwned ? this.constructor.MODES.PLAY : this.constructor.MODES.EDIT
 
 	/* -------------------------------------------- */
 
@@ -746,10 +747,14 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			embedsParts: context.embedsParts ?? [],
 			headerFilter: context.headerFilter ?? "",
 			editable: this.isEditable && this._mode === this.constructor.MODES.EDIT,
+			ELEMENTS: ELEMENTS,
 		}
 		if (this.item.hasTemplate(ItemTemplateType.Container)) {
 			obj.modifierTypes = [...this.item.system.modifierTypes]
 			obj.childTypes = [...this.item.system.childTypes]
+		}
+		if (this.item.hasTemplate(ItemTemplateType.Replacement)) {
+			obj.replacements = this.item.system.nameableReplacements
 		}
 		return obj
 	}
@@ -968,6 +973,7 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 	protected override async _renderFrame(options: ApplicationRenderOptions): Promise<HTMLElement> {
 		const frame = await super._renderFrame(options)
 
+		// if (this.item.isOwned && this.isEditable) {
 		if (this.isEditable) {
 			const toggleLabel = game.i18n.localize("GURPS.Sheets.ToggleMode")
 			const toggleIcon = this._mode === this.constructor.MODES.PLAY ? "fa-solid fa-lock" : "fa-solid fa-unlock"
