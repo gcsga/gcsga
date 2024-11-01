@@ -2,7 +2,7 @@ import { gid } from "@data"
 import fields = foundry.data.fields
 import { BaseFeature, BaseFeatureSchema } from "./base-feature.ts"
 import { feature } from "@util"
-import { createButton } from "@module/applications/helpers.ts"
+import { createButton, createDummyElement } from "@module/applications/helpers.ts"
 import { getAttributeChoices } from "../attribute/helpers.ts"
 
 function getCostReductionChoices() {
@@ -54,17 +54,16 @@ class CostReduction extends BaseFeature<CostReductionSchema> {
 		}
 	}
 
-	override toFormElement(): HTMLElement {
+	override toFormElement(enabled: boolean): HTMLElement {
 		const element = document.createElement("li")
 		const prefix = `system.features.${this.index}`
 
-		const temporaryInput = this.schema.fields.type.toInput({
-			name: `${prefix}.id`,
-			value: this.type,
-			readonly: true,
-		}) as HTMLElement
-		temporaryInput.style.setProperty("display", "none")
-		element.append(temporaryInput)
+		element.append(createDummyElement(`${prefix}.temporary`, this.temporary))
+		if (!enabled) {
+			element.append(createDummyElement(`${prefix}.type`, this.type))
+			element.append(createDummyElement(`${prefix}.attribute`, this.attribute))
+			element.append(createDummyElement(`${prefix}.percentage`, this.percentage))
+		}
 
 		const rowElement = document.createElement("div")
 		rowElement.classList.add("form-fields")
@@ -77,35 +76,39 @@ class CostReduction extends BaseFeature<CostReductionSchema> {
 					action: "deleteFeature",
 					index: this.index.toString(),
 				},
+				disabled: !enabled,
 			}),
 		)
 
 		rowElement.append(
 			foundry.applications.fields.createSelectInput({
-				name: `${prefix}.type`,
+				name: enabled ? `${prefix}.type` : "",
 				value: this.type,
 				dataset: {
 					selector: "feature-type",
 					index: this.index.toString(),
 				},
 				localize: true,
-				options: this._getTypeChoices(),
+				options: this.getTypeChoices(),
+				disabled: !enabled,
 			}),
 		)
 
 		rowElement.append(
 			this.schema.fields.attribute.toInput({
-				name: `${prefix}.attribute`,
+				name: enabled ? `${prefix}.attribute` : "",
 				value: this.attribute,
 				localize: true,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 
 		rowElement.append(
 			this.schema.fields.percentage.toInput({
-				name: `${prefix}.percentage`,
+				name: enabled ? `${prefix}.percentage` : "",
 				value: this.percentage.toString(),
 				localize: true,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 

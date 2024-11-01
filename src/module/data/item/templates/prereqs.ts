@@ -18,6 +18,7 @@ class PrereqTemplate extends ItemDataModel<PrereqTemplateSchema> {
 						all: true,
 						when_tl: { compare: NumericComparison.Option.AnyNumber, qualifier: 0 },
 						prereqs: [],
+						has: null,
 					},
 				],
 			}),

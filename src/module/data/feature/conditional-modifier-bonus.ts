@@ -2,6 +2,7 @@ import fields = foundry.data.fields
 import { BaseFeature, BaseFeatureSchema } from "./base-feature.ts"
 import { feature } from "@util"
 import { Nameable } from "@module/util/index.ts"
+import { createDummyElement } from "@module/applications/helpers.ts"
 
 class ConditionalModifierBonus extends BaseFeature<ConditionalModifierBonusSchema> {
 	static override TYPE = feature.Type.ConditionalModifierBonus
@@ -19,18 +20,23 @@ class ConditionalModifierBonus extends BaseFeature<ConditionalModifierBonusSchem
 		}
 	}
 
-	override toFormElement(): HTMLElement {
+	override toFormElement(enabled: boolean): HTMLElement {
 		const prefix = `system.features.${this.index}`
-		const element = super.toFormElement()
+		const element = super.toFormElement(enabled)
+
+		if (!enabled) {
+			element.append(createDummyElement(`${prefix}.situation`, this.situation))
+		}
 
 		const rowElement = document.createElement("div")
 		rowElement.classList.add("form-fields", "secondary")
 
 		rowElement.append(
 			this.schema.fields.situation.toInput({
-				name: `${prefix}.situation`,
+				name: enabled ? `${prefix}.situation` : "",
 				value: this.situation,
 				localize: true,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 

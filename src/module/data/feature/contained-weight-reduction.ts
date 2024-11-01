@@ -1,4 +1,4 @@
-import { createButton } from "@module/applications/helpers.ts"
+import { createButton, createDummyElement } from "@module/applications/helpers.ts"
 import { BaseFeature, BaseFeatureSchema } from "./base-feature.ts"
 import { Int, Weight, feature } from "@util"
 import { SheetSettings } from "../sheet-settings.ts"
@@ -38,17 +38,16 @@ class ContainedWeightReduction extends BaseFeature<ContainedWeightReductionSchem
 		return Weight.format(w)
 	}
 
-	override toFormElement(): HTMLElement {
+	override toFormElement(enabled: boolean): HTMLElement {
 		const element = document.createElement("li")
 		const prefix = `system.features.${this.index}`
 
-		const temporaryInput = this.schema.fields.type.toInput({
-			name: `${prefix}.id`,
-			value: this.type,
-			readonly: true,
-		}) as HTMLElement
-		temporaryInput.style.setProperty("display", "none")
-		element.append(temporaryInput)
+		element.append(createDummyElement(`${prefix}.temporary`, this.temporary))
+		if (!enabled) {
+			element.append(createDummyElement(`${prefix}.type`, this.type))
+			element.append(createDummyElement(`${prefix}.amount`, this.amount))
+			element.append(createDummyElement(`${prefix}.reduction`, this.reduction))
+		}
 
 		const rowElement = document.createElement("div")
 		rowElement.classList.add("form-fields")
@@ -61,26 +60,28 @@ class ContainedWeightReduction extends BaseFeature<ContainedWeightReductionSchem
 					action: "deleteFeature",
 					index: this.index.toString(),
 				},
+				disabled: !enabled,
 			}),
 		)
 
 		rowElement.append(
 			foundry.applications.fields.createSelectInput({
-				name: `${prefix}.type`,
+				name: enabled ? `${prefix}.type` : "",
 				value: this.type,
 				dataset: {
 					selector: "feature-type",
 					index: this.index.toString(),
 				},
 				localize: true,
-				options: this._getTypeChoices(),
+				options: this.getTypeChoices(),
+				disabled: !enabled,
 			}),
 		)
 
 		const settings = SheetSettings.for(this.parent.actor)
 		rowElement.append(
 			this.schema.fields.reduction.toInput({
-				name: `${prefix}.reduction`,
+				name: enabled ? `${prefix}.reduction` : "",
 				value: this.isPercentageReduction
 					? this.reduction
 					: Weight.format(
@@ -88,6 +89,7 @@ class ContainedWeightReduction extends BaseFeature<ContainedWeightReductionSchem
 							settings.default_weight_units,
 						),
 				localize: true,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 

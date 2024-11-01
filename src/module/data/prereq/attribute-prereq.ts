@@ -7,7 +7,7 @@ import { NumericComparison, TooltipGURPS } from "@util"
 import { ActorInst } from "../actor/helpers.ts"
 import { NumericCriteriaField } from "../item/fields/numeric-criteria-field.ts"
 import { getAttributeChoices } from "../attribute/helpers.ts"
-import { BooleanSelectField } from "../item/fields/boolean-select-field.ts"
+import { createDummyElement } from "@module/applications/helpers.ts"
 
 class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
 	static override TYPE = prereq.Type.Attribute
@@ -77,15 +77,6 @@ class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
 
 		return {
 			...super.defineSchema(),
-			has: new BooleanSelectField({
-				required: true,
-				nullable: false,
-				choices: {
-					true: "GURPS.Item.Prereqs.FIELDS.Has.Choices.true",
-					false: "GURPS.Item.Prereqs.FIELDS.Has.Choices.false",
-				},
-				initial: true,
-			}),
 			which: new fields.StringField({
 				required: true,
 				nullable: false,
@@ -142,11 +133,18 @@ class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
 		return satisfied
 	}
 
-	override toFormElement(): HTMLElement {
+	override toFormElement(enabled: boolean): HTMLElement {
 		const prefix = `system.prereqs.${this.index}`
 
 		// Root element
-		const element = super.toFormElement()
+		const element = super.toFormElement(enabled)
+
+		if (!enabled) {
+			element.append(createDummyElement(`${prefix}.which`, this.which))
+			element.append(createDummyElement(`${prefix}.combined_with`, this.combined_with))
+			element.append(createDummyElement(`${prefix}.qualifier.compare`, this.qualifier.compare))
+			element.append(createDummyElement(`${prefix}.qualifier.qualifier`, this.qualifier.qualifier))
+		}
 
 		const rowElement = document.createElement("div")
 		rowElement.classList.add("form-fields", "secondary")
@@ -154,32 +152,36 @@ class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
 		// Which
 		rowElement.append(
 			this.schema.fields.which.toInput({
-				name: `${prefix}.which`,
+				name: enabled ? `${prefix}.which` : "",
 				value: this.which,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 
 		// Combined With
 		rowElement.append(
 			this.schema.fields.combined_with.toInput({
-				name: `${prefix}.combined_with`,
+				name: enabled ? `${prefix}.combined_with` : "",
 				value: this.combined_with,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 
 		// Compare
 		rowElement.append(
 			this.schema.fields.qualifier.fields.compare.toInput({
-				name: `${prefix}.qualifier.compare`,
+				name: enabled ? `${prefix}.qualifier.compare` : "",
 				value: this.qualifier.compare,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 
 		// Qualifier
 		rowElement.append(
 			this.schema.fields.qualifier.fields.qualifier.toInput({
-				name: `${prefix}.qualifier.qualifier`,
+				name: enabled ? `${prefix}.qualifier.qualifier` : "",
 				value: this.qualifier.qualifier.toString(),
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 
@@ -194,7 +196,6 @@ class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
 interface AttributePrereq extends BasePrereq<AttributePrereqSchema>, ModelPropsFromSchema<AttributePrereqSchema> {}
 
 type AttributePrereqSchema = BasePrereqSchema & {
-	has: BooleanSelectField<boolean, boolean, true, false, true>
 	which: fields.StringField<string, string, true, false, true>
 	combined_with: fields.StringField<string, string, true, false, true>
 	qualifier: NumericCriteriaField<true, false, true>

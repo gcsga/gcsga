@@ -5,8 +5,7 @@ import { NumericComparison, TooltipGURPS } from "@util"
 import { ItemType } from "@module/data/constants.ts"
 import { ItemGURPS2 } from "@module/documents/item.ts"
 import { NumericCriteriaField } from "../item/fields/numeric-criteria-field.ts"
-import { BooleanSelectField } from "../item/fields/boolean-select-field.ts"
-import { createButton } from "@module/applications/helpers.ts"
+import { createButton, createDummyElement } from "@module/applications/helpers.ts"
 
 class ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema> {
 	static override TYPE = prereq.Type.ContainedQuantity
@@ -14,15 +13,6 @@ class ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema> 
 	static override defineSchema(): ContainedQuantityPrereqSchema {
 		return {
 			...super.defineSchema(),
-			has: new BooleanSelectField({
-				required: true,
-				nullable: false,
-				choices: {
-					true: "GURPS.Item.Prereqs.FIELDS.Has.Choices.true",
-					false: "GURPS.Item.Prereqs.FIELDS.Has.Choices.false",
-				},
-				initial: true,
-			}),
 			qualifier: new NumericCriteriaField({
 				required: true,
 				nullable: false,
@@ -64,20 +54,18 @@ class ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema> 
 		return satisfied
 	}
 
-	override toFormElement(): HTMLElement {
-		const element = document.createElement("li")
+	override toFormElement(enabled: boolean): HTMLElement {
 		const prefix = `system.prereqs.${this.index}`
+
+		const element = document.createElement("li")
 		// Root element
 		element.classList.add("prereq")
 
-		const idInput = this.schema.fields.id.toInput({
-			name: `${prefix}.id`,
-			value: this.id,
-			readonly: true,
-		}) as HTMLElement
-		idInput.style.setProperty("display", "none")
-
-		element.append(idInput)
+		element.append(createDummyElement(`${prefix}.id`, this.id))
+		if (!enabled) {
+			element.append(createDummyElement(`${prefix}.qualifier.compare`, this.qualifier.compare))
+			element.append(createDummyElement(`${prefix}.qualifier.qualifier`, this.qualifier.qualifier))
+		}
 
 		const rowElement = document.createElement("div")
 		rowElement.classList.add("form-fields")
@@ -90,6 +78,7 @@ class ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema> 
 					action: "deletePrereq",
 					id: this.id,
 				},
+				disabled: !enabled,
 			}),
 		)
 
@@ -98,6 +87,7 @@ class ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema> 
 				name: `${prefix}.has`,
 				value: (this as any).has,
 				localize: true,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 		const typeField = this.schema.fields.type
@@ -112,6 +102,7 @@ class ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema> 
 					index: this.index.toString(),
 				},
 				localize: true,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 
@@ -120,12 +111,14 @@ class ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema> 
 				name: `${prefix}.qualifier.compare`,
 				value: this.qualifier.compare,
 				localize: true,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 		rowElement.append(
 			this.schema.fields.qualifier.fields.qualifier.toInput({
 				name: `${prefix}.qualifier.qualifier`,
 				value: this.qualifier.qualifier.toString(),
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 
@@ -142,7 +135,6 @@ interface ContainedQuantityPrereq
 		ModelPropsFromSchema<ContainedQuantityPrereqSchema> {}
 
 type ContainedQuantityPrereqSchema = BasePrereqSchema & {
-	has: BooleanSelectField<boolean, boolean, true, false, true>
 	qualifier: NumericCriteriaField<true, false, true>
 }
 

@@ -4,10 +4,11 @@ import { ActorGURPS2 } from "@module/documents/actor.ts"
 import { ActorTemplateType } from "@module/data/actor/types.ts"
 import { Nameable } from "@module/util/index.ts"
 import { ItemTemplateType } from "../types.ts"
-import { createButton } from "@module/applications/helpers.ts"
+import { createButton, createDummyElement } from "@module/applications/helpers.ts"
 import { getAttributeChoices } from "../../attribute/helpers.ts"
 import { ItemDataModel } from "../abstract.ts"
 import fields = foundry.data.fields
+import { ItemGURPS2 } from "@module/documents/item.ts"
 
 const SKILL_BASED_DEFAULT_TYPES: Set<string> = new Set([gid.Skill, gid.Parry, gid.Block])
 
@@ -44,16 +45,21 @@ class SkillDefault extends foundry.abstract.DataModel<ItemDataModel, SkillDefaul
 		return SKILL_BASED_DEFAULT_TYPES.has(this.type) ?? false
 	}
 
+	get item(): ItemGURPS2 {
+		return this.parent.parent
+	}
+
 	get index(): number {
 		if (!this.parent.hasTemplate(ItemTemplateType.Default)) return -1
 		return this.parent.defaults.indexOf(this)
 	}
 
 	get element(): Handlebars.SafeString {
-		return new Handlebars.SafeString(this.toFormElement().outerHTML)
+		const enabled: boolean = (this.item.sheet as any).editable
+		return new Handlebars.SafeString(this.toFormElement(enabled).outerHTML)
 	}
 
-	toFormElement(): HTMLElement {
+	toFormElement(enabled: boolean): HTMLElement {
 		const element = document.createElement("li")
 		const prefix = `system.defaults.${this.index}`
 
@@ -71,6 +77,18 @@ class SkillDefault extends foundry.abstract.DataModel<ItemDataModel, SkillDefaul
 			return { value, label }
 		})
 
+		if (!enabled) {
+			element.append(createDummyElement(`${prefix}.type`, this.type))
+			element.append(createDummyElement(`${prefix}.modifier`, this.modifier))
+			element.append(createDummyElement(`${prefix}.level`, this.level))
+			element.append(createDummyElement(`${prefix}.adjusted_level`, this.adjusted_level))
+			element.append(createDummyElement(`${prefix}.points`, this.points))
+
+			if (this.name !== null) element.append(createDummyElement(`${prefix}.name`, this.name))
+			if (this.specialization !== null)
+				element.append(createDummyElement(`${prefix}.specialization`, this.specialization))
+		}
+
 		const rowElement = document.createElement("div")
 		rowElement.classList.add("form-fields")
 
@@ -82,21 +100,23 @@ class SkillDefault extends foundry.abstract.DataModel<ItemDataModel, SkillDefaul
 					action: "deleteDefault",
 					index: this.index.toString(),
 				},
+				disabled: !enabled,
 			}),
 		)
 
 		rowElement.append(
 			foundry.applications.fields.createSelectInput({
-				name: `${prefix}.type`,
+				name: enabled ? `${prefix}.type` : "",
 				value: this.type,
 				localize: true,
 				options: choices,
+				disabled: !enabled,
 			}),
 		)
 
 		rowElement.append(
 			this.schema.fields.name.toInput({
-				name: `${prefix}.name`,
+				name: enabled ? `${prefix}.name` : "",
 				value: this.name ?? "",
 				localize: true,
 				placeholder: game.i18n.localize("GURPS.Item.Defaults.ToggleableName"),
@@ -106,7 +126,7 @@ class SkillDefault extends foundry.abstract.DataModel<ItemDataModel, SkillDefaul
 
 		rowElement.append(
 			this.schema.fields.specialization.toInput({
-				name: `${prefix}.specialization`,
+				name: enabled ? `${prefix}.specialization` : "",
 				value: this.specialization ?? "",
 				localize: true,
 				placeholder: game.i18n.localize("GURPS.Item.Defaults.ToggleableSpecialization"),
@@ -116,7 +136,7 @@ class SkillDefault extends foundry.abstract.DataModel<ItemDataModel, SkillDefaul
 
 		rowElement.append(
 			this.schema.fields.modifier.toInput({
-				name: `${prefix}.modifier`,
+				name: enabled ? `${prefix}.modifier` : "",
 				value: this.modifier.signedString(),
 			}) as HTMLElement,
 		)

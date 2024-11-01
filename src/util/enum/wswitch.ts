@@ -54,4 +54,11 @@ export namespace wswitch {
 		Type.TwoHandedUnready,
 		Type.MusketRest,
 	]
+
+	export const TypesChoices: Readonly<Record<Type, string>> = Object.freeze(
+		Types.reduce((acc: Record<string, string>, c: Type) => {
+			acc[c] = `GURPS.Enum.wswitch.${c}.Name`
+			return acc
+		}, {}) as Record<Type, string>,
+	)
 }

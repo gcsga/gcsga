@@ -4,6 +4,7 @@ interface CreateButtonOptions {
 	icon: string[]
 	label: string
 	data: Record<string, string>
+	disabled: boolean
 }
 
 function createButton(options: Partial<CreateButtonOptions>): HTMLButtonElement {
@@ -27,7 +28,19 @@ function createButton(options: Partial<CreateButtonOptions>): HTMLButtonElement 
 		}
 	}
 
+	if (options.disabled) button.setAttribute("disabled", "")
+
 	return button
 }
 
-export { createButton }
+function createDummyElement(name: string, value: string | number | boolean): HTMLInputElement {
+	const element = foundry.applications.fields.createTextInput({
+		name,
+		value: String(value),
+		readonly: true,
+	})
+	element.style.setProperty("display", "none")
+	return element
+}
+
+export { createButton, createDummyElement }

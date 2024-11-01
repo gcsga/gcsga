@@ -4,8 +4,8 @@ import { ActorType, ItemType } from "@module/data/constants.ts"
 import { ItemGURPS2 } from "@module/documents/item.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { ActorInst } from "../actor/helpers.ts"
-import { BooleanSelectField } from "../item/fields/boolean-select-field.ts"
 import { WeightCriteriaField } from "../item/fields/weight-criteria-field.ts"
+import { createDummyElement } from "@module/applications/helpers.ts"
 
 class ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema> {
 	static override TYPE = prereq.Type.ContainedWeight
@@ -13,15 +13,6 @@ class ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema> {
 	static override defineSchema(): ContainedWeightPrereqSchema {
 		return {
 			...super.defineSchema(),
-			has: new BooleanSelectField({
-				required: true,
-				nullable: false,
-				choices: {
-					true: "GURPS.Item.Prereqs.FIELDS.Has.Choices.true",
-					false: "GURPS.Item.Prereqs.FIELDS.Has.Choices.false",
-				},
-				initial: true,
-			}),
 			qualifier: new WeightCriteriaField({
 				required: true,
 				nullable: false,
@@ -57,11 +48,16 @@ class ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema> {
 		return satisfied
 	}
 
-	override toFormElement(): HTMLElement {
+	override toFormElement(enabled: boolean): HTMLElement {
 		const prefix = `system.prereqs.${this.index}`
 
 		// Root element
-		const element = super.toFormElement()
+		const element = super.toFormElement(enabled)
+
+		if (!enabled) {
+			element.append(createDummyElement(`${prefix}.qualifier.compare`, this.qualifier.compare))
+			element.append(createDummyElement(`${prefix}.qualifier.qualifier`, this.qualifier.qualifier))
+		}
 
 		// Name
 		const rowElement = document.createElement("div")
@@ -71,12 +67,14 @@ class ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema> {
 				name: `${prefix}.qualifier.compare`,
 				value: this.qualifier.compare,
 				localize: true,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 		rowElement.append(
 			this.schema.fields.qualifier.fields.qualifier.toInput({
 				name: `${prefix}.qualifier.qualifier`,
 				value: this.qualifier.qualifier,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 		element.append(rowElement)
@@ -92,7 +90,6 @@ interface ContainedWeightPrereq
 		ModelPropsFromSchema<ContainedWeightPrereqSchema> {}
 
 type ContainedWeightPrereqSchema = BasePrereqSchema & {
-	has: BooleanSelectField<boolean, boolean, true, false, true>
 	qualifier: WeightCriteriaField<true, false, true>
 }
 

@@ -4,6 +4,7 @@ import { stlimit } from "@util/enum/stlimit.ts"
 import { getAttributeChoices } from "../attribute/helpers.ts"
 import { BaseFeature, BaseFeatureSchema } from "./base-feature.ts"
 import fields = foundry.data.fields
+import { createDummyElement } from "@module/applications/helpers.ts"
 
 class AttributeBonus extends BaseFeature<AttributeBonusSchema> {
 	static override TYPE = feature.Type.AttributeBonus
@@ -49,9 +50,14 @@ class AttributeBonus extends BaseFeature<AttributeBonusSchema> {
 		return stlimit.Option.None
 	}
 
-	override toFormElement(): HTMLElement {
+	override toFormElement(enabled: boolean): HTMLElement {
 		const prefix = `system.features.${this.index}`
-		const element = super.toFormElement()
+		const element = super.toFormElement(enabled)
+
+		if (!enabled) {
+			element.append(createDummyElement(`${prefix}.attribute`, this.attribute))
+			element.append(createDummyElement(`${prefix}.limitation`, this.limitation))
+		}
 
 		const attributeChoices = Object.entries(
 			getAttributeChoices(this.parent.actor, this.attribute, "GURPS.Item.Features.FIELDS.Attribute.Attribute", {
@@ -72,18 +78,19 @@ class AttributeBonus extends BaseFeature<AttributeBonusSchema> {
 
 		rowElement.append(
 			foundry.applications.fields.createSelectInput({
-				name: `${prefix}.attribute`,
+				name: enabled ? `${prefix}.attribute` : "",
 				value: this.attribute,
 				localize: true,
 				options: attributeChoices,
+				disabled: !enabled,
 			}),
 		)
 
 		rowElement.append(
 			this.schema.fields.limitation.toInput({
-				name: `${prefix}.limitation`,
+				name: enabled ? `${prefix}.limitation` : "",
 				value: this.attribute === gid.Strength ? this.limitation : stlimit.Option.None,
-				disabled: this.attribute !== gid.Strength,
+				disabled: !enabled || this.attribute !== gid.Strength,
 				localize: true,
 			}) as HTMLElement,
 		)

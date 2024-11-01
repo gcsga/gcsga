@@ -6,6 +6,7 @@ import { BaseFeature, BaseFeatureSchema } from "./base-feature.ts"
 import { StringArrayField } from "../item/fields/string-array-field.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { equalFold } from "../item/components/index.ts"
+import { createDummyElement } from "@module/applications/helpers.ts"
 
 class DRBonus extends BaseFeature<DRBonusSchema> {
 	static override TYPE = feature.Type.DRBonus
@@ -26,7 +27,6 @@ class DRBonus extends BaseFeature<DRBonusSchema> {
 
 	override addToTooltip(tooltip: TooltipGURPS | null): void {
 		if (tooltip !== null) {
-			this._normalize()
 			tooltip.push("\n")
 			tooltip.push(this.parentName)
 			tooltip.push(
@@ -39,6 +39,25 @@ class DRBonus extends BaseFeature<DRBonusSchema> {
 		}
 	}
 
+	static override cleanData(
+		source?: Partial<SourceFromSchema<DRBonusSchema>>,
+		options?: Record<string, unknown> | undefined,
+	): SourceFromSchema<DRBonusSchema> {
+		if (source) {
+			for (const location of source.locations ?? []) {
+				if (equalFold(location, gid.All)) {
+					source.locations = [gid.All]
+					break
+				}
+			}
+			let specialization = source?.specialization?.trim() ?? ""
+			if (specialization === "" || equalFold(specialization, gid.All)) specialization = gid.All
+			source.specialization = specialization
+		}
+
+		return super.cleanData(source, options) as SourceFromSchema<DRBonusSchema>
+	}
+
 	get locationOptions(): { key: string; value: string }[] {
 		const settings = SheetSettings.for(this.parent.actor)
 		const locations: { key: string; value: string }[] = []
@@ -49,23 +68,16 @@ class DRBonus extends BaseFeature<DRBonusSchema> {
 		return locations.sort((a, b) => (a.value > b.value ? 1 : a.value < b.value ? -1 : 0))
 	}
 
-	private _normalize(): void {
-		for (const [index, location] of this.locations.entries()) {
-			const newLocation = location.trim()
-			if (equalFold(newLocation, gid.All)) {
-				this.locations = [gid.All]
-				break
-			}
-			this.locations[index] = location
-		}
-		let s = this.specialization?.trim() ?? ""
-		if (s === "" || equalFold(s, gid.All)) s = gid.All
-		this.specialization = s
-	}
-
-	override toFormElement(): HTMLElement {
+	override toFormElement(enabled: boolean): HTMLElement {
 		const prefix = `system.features.${this.index}`
-		const element = super.toFormElement()
+		const element = super.toFormElement(enabled)
+
+		if (!enabled) {
+			for (const location of this.locations) {
+				element.append(createDummyElement(`${prefix}.locations`, location))
+			}
+			element.append(createDummyElement(`${prefix}.specialization`, this.specialization))
+		}
 
 		const options = this.locationOptions
 
@@ -76,7 +88,7 @@ class DRBonus extends BaseFeature<DRBonusSchema> {
 
 		rowElement1.append(
 			foundry.applications.fields.createSelectInput({
-				name: `${prefix}.locations`,
+				name: enabled ? `${prefix}.locations` : "",
 				value: this.locations[0] === gid.All ? gid.All : "",
 				localize: true,
 				options: [
@@ -89,9 +101,9 @@ class DRBonus extends BaseFeature<DRBonusSchema> {
 						label: "GURPS.Item.Features.FIELDS.DRBonus.Locations.Some",
 					},
 				],
+				disabled: !enabled,
 			}),
 		)
-
 		element.append(rowElement1)
 
 		if (this.locations[0] !== gid.All) {
@@ -100,18 +112,14 @@ class DRBonus extends BaseFeature<DRBonusSchema> {
 
 			for (const option of options) {
 				const label = document.createElement("label")
-				label.append(
-					foundry.applications.fields.createCheckboxInput({
-						name: "",
-						dataset: {
-							action: "toggleDrBonusLocation",
-							index: this.index.toString(),
-							location: option.key,
-						},
-						value: this.locations.includes(option.key),
-					}),
-				)
+				const checkbox = foundry.applications.fields.createCheckboxInput({
+					name: enabled ? `${prefix}.locations` : "",
+					value: this.locations.includes(option.key),
+					disabled: !enabled,
+				})
+				checkbox.setAttribute("value", option.key)
 				label.innerHTML += option.value
+				label.append(checkbox)
 				rowElement2.append(label)
 			}
 
@@ -124,9 +132,10 @@ class DRBonus extends BaseFeature<DRBonusSchema> {
 
 		rowElement3.append(
 			this.schema.fields.specialization.toInput({
-				name: `${prefix}.specialization`,
+				name: enabled ? `${prefix}.specialization` : "",
 				value: this.specialization,
 				localize: true,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 

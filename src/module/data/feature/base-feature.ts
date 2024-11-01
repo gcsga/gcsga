@@ -1,4 +1,4 @@
-import { createButton } from "@module/applications/helpers.ts"
+import { createButton, createDummyElement } from "@module/applications/helpers.ts"
 import { ItemDataModel } from "@module/data/item/abstract.ts"
 import { ItemType } from "@module/data/constants.ts"
 import { ItemTemplateType } from "@module/data/item/types.ts"
@@ -85,16 +85,6 @@ abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema
 		return (this.parent as any).features.indexOf(this as unknown as Feature)
 	}
 
-	// get levels(): number HTMLElemene/ 	return this.leveledAmount.level
-	// }
-	//
-	// set levels(level: number) {
-	// 	if (!this.leveledAmount) {
-	// 		this.leveledAmount = new LeveledAmount(this._source)
-	// 	}
-	// 	this.leveledAmount.level = level
-	// }
-
 	get parentName(): string {
 		if (!this.owner) return LocalizeGURPS.translations.gurps.misc.unknown
 		if (this.owner instanceof ActiveEffectGURPS) return this.owner.name
@@ -120,10 +110,11 @@ abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema
 	}
 
 	get element(): Handlebars.SafeString {
-		return new Handlebars.SafeString(this.toFormElement().outerHTML)
+		const enabled: boolean = (this.parent.parent.sheet as any).editable
+		return new Handlebars.SafeString(this.toFormElement(enabled).outerHTML)
 	}
 
-	protected _getTypeChoices(): { value: string; label: string }[] {
+	getTypeChoices(): { value: string; label: string }[] {
 		const choices =
 			!(this.parent instanceof ItemDataModel) || this.parent.isOfType(ItemType.EquipmentContainer)
 				? feature.TypesChoices
@@ -163,17 +154,16 @@ abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema
 		return amt
 	}
 
-	toFormElement(): HTMLElement {
-		const element = document.createElement("li")
+	toFormElement(enabled: boolean): HTMLElement {
 		const prefix = `system.features.${this.index}`
+		const element = document.createElement("li")
 
-		const temporaryInput = this.schema.fields.type.toInput({
-			name: `${prefix}.id`,
-			value: this.type,
-			readonly: true,
-		}) as HTMLElement
-		temporaryInput.style.setProperty("display", "none")
-		element.append(temporaryInput)
+		element.append(createDummyElement(`${prefix}.temporary`, this.temporary))
+		if (!enabled) {
+			element.append(createDummyElement(`${prefix}.type`, this.type))
+			element.append(createDummyElement(`${prefix}.amount`, this.amount))
+			element.append(createDummyElement(`${prefix}.per_level`, this.per_level))
+		}
 
 		const rowElement = document.createElement("div")
 		rowElement.classList.add("form-fields")
@@ -186,36 +176,40 @@ abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema
 					action: "deleteFeature",
 					index: this.index.toString(),
 				},
+				disabled: !enabled,
 			}),
 		)
 
 		rowElement.append(
 			foundry.applications.fields.createSelectInput({
-				name: `${prefix}.type`,
+				name: enabled ? `${prefix}.type` : "",
 				value: this.type,
 				dataset: {
 					selector: "feature-type",
 					index: this.index.toString(),
 				},
 				localize: true,
-				options: this._getTypeChoices(),
+				options: this.getTypeChoices(),
+				disabled: !enabled,
 			}),
 		)
 
 		rowElement.append(
 			this.schema.fields.amount.toInput({
-				name: `${prefix}.amount`,
+				name: enabled ? `${prefix}.amount` : "",
 				value: this.amount.toString(),
 				localize: true,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 
 		const perLevelLabelElement = document.createElement("label")
 		perLevelLabelElement.append(
 			this.schema.fields.per_level.toInput({
-				name: `${prefix}.per_level`,
+				name: enabled ? `${prefix}.per_level` : "",
 				value: this.per_level,
 				localize: true,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 		perLevelLabelElement.innerHTML += game.i18n.localize(this.schema.fields.per_level.options.label ?? "")

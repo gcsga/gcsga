@@ -9,8 +9,7 @@ import { ItemGURPS2 } from "@module/documents/item.ts"
 import { ActorInst } from "../actor/helpers.ts"
 import { NumericCriteriaField } from "../item/fields/numeric-criteria-field.ts"
 import { StringCriteriaField } from "../item/fields/string-criteria-field.ts"
-import { BooleanSelectField } from "../item/fields/boolean-select-field.ts"
-import { createButton } from "@module/applications/helpers.ts"
+import { createButton, createDummyElement } from "@module/applications/helpers.ts"
 
 class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 	static override TYPE = prereq.Type.Spell
@@ -20,15 +19,6 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 
 		return {
 			...super.defineSchema(),
-			has: new BooleanSelectField({
-				required: true,
-				nullable: false,
-				choices: {
-					true: "GURPS.Item.Prereqs.FIELDS.Has.Choices.true",
-					false: "GURPS.Item.Prereqs.FIELDS.Has.Choices.false",
-				},
-				initial: true,
-			}),
 			sub_type: new fields.StringField({
 				required: true,
 				nullable: false,
@@ -136,20 +126,21 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 		return satisfied
 	}
 
-	override toFormElement(): HTMLElement {
-		const element = document.createElement("li")
+	override toFormElement(enabled: boolean): HTMLElement {
 		const prefix = `system.prereqs.${this.index}`
-		// Root element
+
+		const element = document.createElement("li")
 		element.classList.add("prereq")
 
-		const idInput = this.schema.fields.id.toInput({
-			name: `${prefix}.id`,
-			value: this.id,
-			readonly: true,
-		}) as HTMLElement
-		idInput.style.setProperty("display", "none")
-
-		element.append(idInput)
+		element.append(createDummyElement(`${prefix}.id`, this.id))
+		if (!enabled) {
+			element.append(createDummyElement(`${prefix}.type`, this.type))
+			element.append(createDummyElement(`${prefix}.sub_type`, this.sub_type))
+			element.append(createDummyElement(`${prefix}.quantity.compare`, this.quantity.compare))
+			element.append(createDummyElement(`${prefix}.quantity.qualifier`, this.quantity.qualifier))
+			element.append(createDummyElement(`${prefix}.qualifier.compare`, this.qualifier.compare))
+			element.append(createDummyElement(`${prefix}.qualifier.qualifier`, this.qualifier.qualifier))
+		}
 
 		// Quantity
 		const rowElement1 = document.createElement("div")
@@ -162,6 +153,7 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 					action: "deletePrereq",
 					id: this.id,
 				},
+				disabled: !enabled,
 			}),
 		)
 		rowElement1.append(
@@ -169,6 +161,7 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 				name: `${prefix}.has`,
 				value: (this as any).has,
 				localize: true,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 		rowElement1.append(
@@ -176,12 +169,14 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 				name: `${prefix}.quantity.compare`,
 				value: this.quantity.compare,
 				localize: true,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 		rowElement1.append(
 			this.schema.fields.quantity.fields.qualifier.toInput({
 				name: `${prefix}.quantity.qualifier`,
 				value: this.quantity.qualifier.toString(),
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 		const typeField = this.schema.fields.type
@@ -195,6 +190,7 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 					index: this.index.toString(),
 				},
 				localize: true,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 		element.append(rowElement1)
@@ -207,6 +203,7 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 				name: `${prefix}.sub_type`,
 				value: this.sub_type,
 				localize: true,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 		rowElement2.append(
@@ -214,12 +211,14 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 				name: `${prefix}.qualifier.compare`,
 				value: this.qualifier.compare,
 				localize: true,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 		rowElement2.append(
 			this.schema.fields.qualifier.fields.qualifier.toInput({
 				name: `${prefix}.qualifier.qualifier`,
 				value: this.qualifier.qualifier,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 		element.append(rowElement2)
@@ -241,7 +240,6 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 interface SpellPrereq extends BasePrereq<SpellPrereqSchema>, ModelPropsFromSchema<SpellPrereqSchema> {}
 
 export type SpellPrereqSchema = BasePrereqSchema & {
-	has: BooleanSelectField<boolean, boolean, true, false, true>
 	sub_type: fields.StringField<spellcmp.Type, spellcmp.Type, true, false, true>
 	quantity: NumericCriteriaField<true, false, true>
 	qualifier: StringCriteriaField<true, false, true>

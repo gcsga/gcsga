@@ -5,9 +5,10 @@ import { ActorInst } from "../actor/helpers.ts"
 import { ActorType } from "../constants.ts"
 import { PrereqInstances } from "./types.ts"
 import fields = foundry.data.fields
-import { createButton } from "@module/applications/helpers.ts"
+import { createButton, createDummyElement } from "@module/applications/helpers.ts"
 import { ItemTemplateType } from "../item/types.ts"
 import { ItemDataModel } from "../item/abstract.ts"
+import { BooleanSelectField } from "../item/fields/boolean-select-field.ts"
 
 abstract class BasePrereq<TSchema extends BasePrereqSchema = BasePrereqSchema> extends foundry.abstract.DataModel<
 	ItemDataModel,
@@ -33,6 +34,15 @@ abstract class BasePrereq<TSchema extends BasePrereqSchema = BasePrereqSchema> e
 				choices: prereq.TypesChoices,
 				initial: this.TYPE,
 			}),
+			has: new BooleanSelectField({
+				required: true,
+				nullable: true,
+				choices: {
+					true: "GURPS.Item.Prereqs.FIELDS.Has.Choices.true",
+					false: "GURPS.Item.Prereqs.FIELDS.Has.Choices.false",
+				},
+				initial: true,
+			}),
 		}
 	}
 
@@ -56,26 +66,26 @@ abstract class BasePrereq<TSchema extends BasePrereqSchema = BasePrereqSchema> e
 	}
 
 	get element(): Handlebars.SafeString {
-		return new Handlebars.SafeString(this.toFormElement().outerHTML)
+		const enabled: boolean = (this.item.sheet as any).editable
+		return new Handlebars.SafeString(this.toFormElement(enabled).outerHTML)
 	}
 
 	constructor(data: DeepPartial<SourceFromSchema<TSchema>>, options?: PrereqConstructionOptions) {
 		super(data, options)
 	}
 
-	toFormElement(): HTMLElement {
-		const element = document.createElement("li")
+	toFormElement(enabled: boolean): HTMLElement {
 		const prefix = `system.prereqs.${this.index}`
-		// Root element
+
+		const element = document.createElement("li")
 		element.classList.add("prereq")
 
-		const idInput = this.schema.fields.id.toInput({
-			name: `${prefix}.id`,
-			value: this.id,
-			readonly: true,
-		}) as HTMLElement
-		idInput.style.setProperty("display", "none")
-		element.append(idInput)
+		element.append(createDummyElement(`${prefix}.id`, this.id))
+		if (!enabled) {
+			element.append(createDummyElement(`${prefix}.type`, this.type))
+
+			if (this.has !== null) element.append(createDummyElement(`${prefix}.has`, this.has))
+		}
 
 		const rowElement = document.createElement("div")
 		rowElement.classList.add("form-fields")
@@ -88,28 +98,35 @@ abstract class BasePrereq<TSchema extends BasePrereqSchema = BasePrereqSchema> e
 					action: "deletePrereq",
 					id: this.id,
 				},
+				disabled: !enabled,
 			}),
 		)
 
 		rowElement.append(
-			(this.schema.fields as any).has.toInput({
-				name: `${prefix}.has`,
-				value: (this as any).has,
+			foundry.applications.fields.createSelectInput({
+				name: enabled ? `${prefix}.has` : "",
+				value: String(this.has),
+				options: [
+					{ value: "true", label: "GURPS.Item.Prereqs.FIELDS.Has.Choices.true" },
+					{ value: "false", label: "GURPS.Item.Prereqs.FIELDS.Has.Choices.false" },
+				],
 				localize: true,
-			}) as HTMLElement,
+				disabled: !enabled,
+			}),
 		)
 
 		const typeField = this.schema.fields.type
 		;(typeField as any).choices = prereq.TypesWithoutListChoices
 		rowElement.append(
 			typeField.toInput({
-				name: `${prefix}.type`,
+				name: enabled ? `${prefix}.type` : "",
 				value: this.type,
 				dataset: {
 					selector: "prereq-type",
 					index: this.index.toString(),
 				},
 				localize: true,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 
@@ -137,6 +154,7 @@ interface BasePrereq<TSchema extends BasePrereqSchema>
 type BasePrereqSchema = {
 	id: fields.StringField<string, string, true, false, true>
 	type: fields.StringField<prereq.Type, prereq.Type, true, false, true>
+	has: BooleanSelectField<boolean, boolean, true, true, true>
 }
 
 interface PrereqConstructionOptions extends DataModelConstructionOptions<ItemDataModel> {}

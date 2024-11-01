@@ -153,7 +153,11 @@
 						"Usage": "and whose usage {value}",
 						"Level": "and whose relative skill level {value}",
 						"PerDie": "per die",
-						"Percent": "as a %"
+						"Percent": "as a %",
+						"SwitchTypeValue": {
+							"true": "to true",
+							"false": "to false"
+						}
 					},
 					"CostReduction": {
 						"Attribute": "{value}",
@@ -619,6 +623,33 @@
 					"x": { "Name": "x" },
 					"cf": { "Name": "CF" }
 				}
+			},
+			"wswitch": {
+				"can_block": { "Name": "Can Block" },
+				"can_parry": { "Name": "Can Parry" },
+				"close_combat": { "Name": "Close Combat" },
+				"fencing": { "Name": "Fencing" },
+				"full_auto_1": { "Name": "Fully Automatic (Mode 1)" },
+				"full_auto_2": { "Name": "Fully Automatic (Mode 2)" },
+				"bipod": { "Name": "Has Bipod" },
+				"controlled_bursts_1": { "Name": "High-cyclic Controlled Bursts (Mode 1)" },
+				"controlled_bursts_2": { "Name": "High-cyclic Controlled Bursts (Mode 2)" },
+				"jet": { "Name": "Jet" },
+				"mounted": { "Name": "Mounted" },
+				"muscle_powered": { "Name": "Muscle Powered" },
+				"range_in_miles": { "Name": "Range In Miles" },
+				"change_requires_ready": { "Name": "Reach Change Requires Ready" },
+				"reload_time_is_per_shot": { "Name": "Reload Time Is Per Shot" },
+				"retracting_stock": { "Name": "Retracting Stock" },
+				"two_handed": { "Name": "Two-handed" },
+				"thrown": { "Name": "Thrown" },
+				"unbalanced": { "Name": "Unbalanced" },
+				"two_handed_unready": { "Name": "Two-handed and Unready After Attack" },
+				"musket_rest": { "Name": "Uses a Musket Rest" }
+			},
+			"wswitch_value": {
+				"true": { "Name": "to true" },
+				"false": { "Name": "to false" }
 			},
 			"emweight": {
 				"Example": "Accepted value formats: {value}",

@@ -1,6 +1,5 @@
-import { HOOKS, ItemType, SYSTEM_NAME, gid } from "@module/data/constants.ts"
+import { HOOKS, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
 import { AttributeBonus } from "@module/data/feature/attribute-bonus.ts"
-import { DRBonusSchema } from "@module/data/feature/dr-bonus.ts"
 import { FeatureTypes } from "@module/data/feature/types.ts"
 import { ItemTemplateType } from "@module/data/item/types.ts"
 import { AttributePrereq } from "@module/data/prereq/index.ts"
@@ -33,6 +32,12 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 
 	get dragDrop(): DragDrop[] {
 		return this.#dragDrop
+	}
+
+	/* -------------------------------------------- */
+
+	get editable(): boolean {
+		return this.isEditable && this._mode === this.constructor.MODES.EDIT
 	}
 
 	/* -------------------------------------------- */
@@ -82,7 +87,6 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			deletePrereq: this.#onDeletePrereq,
 			addFeature: this.#onAddFeature,
 			deleteFeature: this.#onDeleteFeature,
-			toggleDrBonusLocation: this.#onToggleDrBonusLocation,
 			addDefault: this.#onAddDefault,
 			deleteDefault: this.#onDeleteDefault,
 			toggleMode: this.#onToggleMode,
@@ -641,45 +645,8 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 
 	/* -------------------------------------------- */
 
-	static async #onToggleDrBonusLocation(this: ItemSheetGURPS, event: Event): Promise<void> {
-		event.preventDefault()
-		event.stopImmediatePropagation()
-
-		const element = event.target as HTMLSelectElement
-		const index = parseInt(element.dataset.index ?? "")
-		if (isNaN(index)) return
-		const locationId = element.dataset.location ?? ""
-
-		const item = this.item
-		if (!item.hasTemplate(ItemTemplateType.Feature)) return
-		const bonus = item.system.toObject().features[index] as SourceFromSchema<DRBonusSchema>
-		if (bonus.locations.includes(locationId)) bonus.locations = bonus.locations.filter(e => e !== locationId)
-		else bonus.locations.push(locationId)
-
-		await this.item.update({ [`system.features.${index}`]: bonus })
-	}
-
-	/* -------------------------------------------- */
-
 	protected override _onRender(context: object, options: ApplicationRenderOptions): void {
 		super._onRender(context, options)
-		// // Create SortableJS handlers
-		// htmlQueryAll(this.element, "ul.item-list").forEach(list => {
-		// 	const options: Sortable.Options = {
-		// 		...SORTABLE_BASE_OPTIONS,
-		// 		scroll: this.element,
-		// 		setData: async (dataTransfer, dragEl) => {
-		// 			const item = await (this.item.system as any).allContents.get(dragEl.dataset.itemId, {
-		// 				strict: true,
-		// 			})
-		// 			dataTransfer.setData("text/plain", JSON.stringify({ ...item.toDragData() }))
-		// 		},
-		// 		onMove: event => this.#onMoveItem(event),
-		// 		onEnd: event => this.#onDropItem(event),
-		// 	}
-		// 	new Sortable(list as HTMLElement, options)
-		// })
-
 		if (options.isFirstRender) {
 			const prereqTypeFields = this.element.querySelectorAll("[data-selector='prereq-type'")
 			for (const input of prereqTypeFields) {
@@ -694,12 +661,6 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 
 		this.element.classList.add(this.item.type)
 		this.#dragDrop.forEach(d => d.bind(this.element))
-
-		// if (options.isFirstRender) {
-		// 	new ContextMenuGURPS(this.element, "[data-item-id]", [], {
-		// 		onOpen: this._onOpenItemContextMenu.bind(this),
-		// 	})
-		// }
 
 		for (const list of this.element.querySelectorAll("div.items-section")) {
 			let alternate = false
@@ -746,7 +707,7 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			detailsParts: context.detailsParts ?? [],
 			embedsParts: context.embedsParts ?? [],
 			headerFilter: context.headerFilter ?? "",
-			editable: this.isEditable && this._mode === this.constructor.MODES.EDIT,
+			editable: this.editable,
 			ELEMENTS: ELEMENTS,
 		}
 		if (this.item.hasTemplate(ItemTemplateType.Container)) {
@@ -877,13 +838,6 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 	): Promise<void> {
 		event.preventDefault()
 		event.stopImmediatePropagation()
-
-		for (const key of Object.keys(formData.object)) {
-			if (key.endsWith("locations")) {
-				const value = formData.object[key] === gid.All ? [gid.All] : []
-				formData.object[key] = value
-			}
-		}
 
 		if (
 			this.item.type === ItemType.Trait ||

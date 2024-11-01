@@ -7,7 +7,7 @@ import { ActorInst } from "../actor/helpers.ts"
 import { Nameable } from "@module/util/index.ts"
 import { NumericCriteriaField } from "../item/fields/numeric-criteria-field.ts"
 import { StringCriteriaField } from "../item/fields/string-criteria-field.ts"
-import { BooleanSelectField } from "../item/fields/boolean-select-field.ts"
+import { createDummyElement } from "@module/applications/helpers.ts"
 
 class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 	static override TYPE = prereq.Type.Skill
@@ -15,15 +15,6 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 	static override defineSchema(): SkillPrereqSchema {
 		return {
 			...super.defineSchema(),
-			has: new BooleanSelectField({
-				required: true,
-				nullable: false,
-				choices: {
-					true: "GURPS.Item.Prereqs.FIELDS.Has.Choices.true",
-					false: "GURPS.Item.Prereqs.FIELDS.Has.Choices.false",
-				},
-				initial: true,
-			}),
 			name: new StringCriteriaField({
 				required: true,
 				nullable: false,
@@ -103,11 +94,20 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 		return satisfied
 	}
 
-	override toFormElement(): HTMLElement {
+	override toFormElement(enabled: boolean): HTMLElement {
 		const prefix = `system.prereqs.${this.index}`
 
 		// Root element
-		const element = super.toFormElement()
+		const element = super.toFormElement(enabled)
+
+		if (!enabled) {
+			element.append(createDummyElement(`${prefix}.name.compare`, this.name.compare))
+			element.append(createDummyElement(`${prefix}.name.qualifier`, this.name.qualifier))
+			element.append(createDummyElement(`${prefix}.specialization.compare`, this.specialization.compare))
+			element.append(createDummyElement(`${prefix}.specialization.qualifier`, this.specialization.qualifier))
+			element.append(createDummyElement(`${prefix}.level.compare`, this.level.compare))
+			element.append(createDummyElement(`${prefix}.level.qualifier`, this.level.qualifier))
+		}
 
 		// Name
 		const rowElement1 = document.createElement("div")
@@ -117,12 +117,14 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 				name: `${prefix}.name.compare`,
 				value: this.name.compare,
 				localize: true,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 		rowElement1.append(
 			this.schema.fields.name.fields.qualifier.toInput({
 				name: `${prefix}.name.qualifier`,
 				value: this.name.qualifier,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 		element.append(rowElement1)
@@ -135,12 +137,14 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 				name: `${prefix}.specialization.compare`,
 				value: this.specialization.compare,
 				localize: true,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 		rowElement2.append(
 			this.schema.fields.specialization.fields.qualifier.toInput({
 				name: `${prefix}.specialization.qualifier`,
 				value: this.specialization.qualifier,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 		element.append(rowElement2)
@@ -153,12 +157,14 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 				name: `${prefix}.level.compare`,
 				value: this.level.compare,
 				localize: true,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 		rowElement3.append(
 			this.schema.fields.level.fields.qualifier.toInput({
 				name: `${prefix}.level.qualifier`,
 				value: this.level.qualifier.toString(),
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 		element.append(rowElement3)
@@ -175,7 +181,6 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 interface SkillPrereq extends BasePrereq<SkillPrereqSchema>, ModelPropsFromSchema<SkillPrereqSchema> {}
 
 type SkillPrereqSchema = BasePrereqSchema & {
-	has: BooleanSelectField<boolean, boolean, true, false, true>
 	name: StringCriteriaField<true, false, true>
 	level: NumericCriteriaField<true, false, true>
 	specialization: StringCriteriaField<true, false, true>

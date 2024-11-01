@@ -3,6 +3,7 @@ import { StringComparison, feature, skillsel } from "@util"
 import { BaseFeature, BaseFeatureSchema } from "./base-feature.ts"
 import { Nameable } from "@module/util/index.ts"
 import { StringCriteriaField } from "../item/fields/string-criteria-field.ts"
+import { createDummyElement } from "@module/applications/helpers.ts"
 
 class SkillBonus extends BaseFeature<SkillBonusSchema> {
 	static override TYPE = feature.Type.SkillBonus
@@ -40,9 +41,19 @@ class SkillBonus extends BaseFeature<SkillBonusSchema> {
 		}
 	}
 
-	override toFormElement(): HTMLElement {
+	override toFormElement(enabled: boolean): HTMLElement {
 		const prefix = `system.features.${this.index}`
-		const element = super.toFormElement()
+		const element = super.toFormElement(enabled)
+
+		if (!enabled) {
+			element.append(createDummyElement(`${prefix}.selection_type`, this.selection_type))
+			element.append(createDummyElement(`${prefix}.name.compare`, this.name.compare))
+			element.append(createDummyElement(`${prefix}.name.qualifier`, this.name.qualifier))
+			element.append(createDummyElement(`${prefix}.specialization.compare`, this.specialization.compare))
+			element.append(createDummyElement(`${prefix}.specialization.qualifier`, this.specialization.qualifier))
+			element.append(createDummyElement(`${prefix}.tags.compare`, this.tags.compare))
+			element.append(createDummyElement(`${prefix}.tags.qualifier`, this.tags.qualifier))
+		}
 
 		const rowElement1 = document.createElement("div")
 		rowElement1.classList.add("form-fields", "secondary")
@@ -52,25 +63,27 @@ class SkillBonus extends BaseFeature<SkillBonusSchema> {
 		// Selection Type
 		rowElement1.append(
 			this.schema.fields.selection_type.toInput({
-				name: `${prefix}.selection_type`,
+				name: enabled ? `${prefix}.selection_type` : "",
 				value: this.selection_type,
 				localize: true,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 		// Name
 		rowElement1.append(
 			this.schema.fields.name.fields.compare.toInput({
-				name: `${prefix}.name.compare`,
+				name: enabled ? `${prefix}.name.compare` : "",
 				value: this.name.compare,
 				localize: true,
-				disabled: this.selection_type === skillsel.Type.ThisWeapon,
+				disabled: !enabled || this.selection_type === skillsel.Type.ThisWeapon,
 			}) as HTMLElement,
 		)
 		rowElement1.append(
 			this.schema.fields.name.fields.qualifier.toInput({
-				name: `${prefix}.name.qualifier`,
+				name: enabled ? `${prefix}.name.qualifier` : "",
 				value: this.name.qualifier,
 				disabled:
+					!enabled ||
 					this.selection_type === skillsel.Type.ThisWeapon ||
 					this.name.compare === StringComparison.Option.AnyString,
 			}) as HTMLElement,
@@ -90,17 +103,18 @@ class SkillBonus extends BaseFeature<SkillBonusSchema> {
 		})
 		rowElement2.append(
 			foundry.applications.fields.createSelectInput({
-				name: `${prefix}.specialization.compare`,
+				name: enabled ? `${prefix}.specialization.compare` : "",
 				value: this.specialization.compare,
 				localize: true,
 				options: this.selection_type === skillsel.Type.Name ? specializationOptions : usageOptions,
+				disabled: !enabled,
 			}),
 		)
 		rowElement2.append(
 			this.schema.fields.specialization.fields.qualifier.toInput({
-				name: `${prefix}.specialization.qualifier`,
+				name: enabled ? `${prefix}.specialization.qualifier` : "",
 				value: this.specialization.qualifier,
-				disabled: this.specialization.compare === StringComparison.Option.AnyString,
+				disabled: !enabled || this.specialization.compare === StringComparison.Option.AnyString,
 			}) as HTMLElement,
 		)
 		element.append(rowElement2)
@@ -112,16 +126,17 @@ class SkillBonus extends BaseFeature<SkillBonusSchema> {
 
 			rowElement3.append(
 				this.schema.fields.tags.fields.compare.toInput({
-					name: `${prefix}.tags.compare`,
+					name: enabled ? `${prefix}.tags.compare` : "",
 					value: this.tags.compare,
 					localize: true,
+					disabled: !enabled,
 				}) as HTMLElement,
 			)
 			rowElement3.append(
 				this.schema.fields.tags.fields.qualifier.toInput({
-					name: `${prefix}.tags.qualifier`,
+					name: enabled ? `${prefix}.tags.qualifier` : "",
 					value: this.tags.qualifier,
-					disabled: this.tags.compare === StringComparison.Option.AnyString,
+					disabled: !enabled || this.tags.compare === StringComparison.Option.AnyString,
 				}) as HTMLElement,
 			)
 			element.append(rowElement3)

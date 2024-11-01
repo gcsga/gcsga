@@ -2,6 +2,7 @@ import fields = foundry.data.fields
 import { gid } from "@data"
 import { BaseFeature, BaseFeatureSchema } from "./base-feature.ts"
 import { feature } from "@util"
+import { createDummyElement } from "@module/applications/helpers.ts"
 
 enum MoveBonusType {
 	Base = "base",
@@ -32,16 +33,21 @@ class MoveBonus extends BaseFeature<MoveBonusSchema> {
 		}
 	}
 
-	override toFormElement(): HTMLElement {
+	override toFormElement(enabled: boolean): HTMLElement {
 		const prefix = `system.features.${this.index}`
-		const element = super.toFormElement()
+		const element = super.toFormElement(enabled)
+
+		if (!enabled) {
+			element.append(createDummyElement(`${prefix}.move_type`, this.move_type))
+			element.append(createDummyElement(`${prefix}.limitation`, this.limitation))
+		}
 
 		const rowElement = document.createElement("div")
 		rowElement.classList.add("form-fields", "secondary")
 
 		rowElement.append(
 			foundry.applications.fields.createSelectInput({
-				name: `${prefix}.attribute`,
+				name: enabled ? `${prefix}.attribute` : "",
 				value: this.move_type,
 				localize: true,
 				options: [
@@ -50,14 +56,16 @@ class MoveBonus extends BaseFeature<MoveBonusSchema> {
 					{ value: gid.Air, label: "AIR" },
 					{ value: gid.Space, label: "SPACE" },
 				],
+				disabled: !enabled,
 			}),
 		)
 
 		rowElement.append(
 			this.schema.fields.limitation.toInput({
-				name: `${prefix}.limitation`,
+				name: enabled ? `${prefix}.limitation` : "",
 				value: this.limitation,
 				localize: true,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 

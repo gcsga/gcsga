@@ -1,4 +1,4 @@
-import { createButton } from "@module/applications/helpers.ts"
+import { createButton, createDummyElement } from "@module/applications/helpers.ts"
 import { VariableResolver, evaluateToNumber } from "@module/util/index.ts"
 import { Length, Weight } from "@util"
 import { AncestryData } from "../ancestry.ts"
@@ -256,13 +256,7 @@ class WeightedStringOption extends foundry.abstract.DataModel<AncestryOptions, W
 		const path = this.path
 		const index = this.index
 
-		const typeField = foundry.applications.fields.createTextInput({
-			name: `${path}.${index}.type`,
-			value: this.type,
-			readonly: true,
-		})
-		typeField.style.setProperty("display", "none")
-		element.append(typeField)
+		element.append(createDummyElement(`${path}.${index}.type`, this.type))
 
 		const rowElement = document.createElement("div")
 		rowElement.classList.add("form-fields")

@@ -3,6 +3,7 @@ import { StringComparison, TooltipGURPS, feature } from "@util"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { BaseFeature, BaseFeatureSchema } from "./base-feature.ts"
 import { StringCriteriaField } from "../item/fields/string-criteria-field.ts"
+import { createDummyElement } from "@module/applications/helpers.ts"
 
 class SkillPointBonus extends BaseFeature<SkillPointBonusSchema> {
 	static override TYPE = feature.Type.SkillPointBonus
@@ -49,9 +50,18 @@ class SkillPointBonus extends BaseFeature<SkillPointBonusSchema> {
 		}
 	}
 
-	override toFormElement(): HTMLElement {
+	override toFormElement(enabled: boolean): HTMLElement {
 		const prefix = `system.features.${this.index}`
-		const element = super.toFormElement()
+		const element = super.toFormElement(enabled)
+
+		if (!enabled) {
+			element.append(createDummyElement(`${prefix}.name.compare`, this.name.compare))
+			element.append(createDummyElement(`${prefix}.name.qualifier`, this.name.qualifier))
+			element.append(createDummyElement(`${prefix}.specialization.compare`, this.specialization.compare))
+			element.append(createDummyElement(`${prefix}.specialization.qualifier`, this.specialization.qualifier))
+			element.append(createDummyElement(`${prefix}.tags.compare`, this.tags.compare))
+			element.append(createDummyElement(`${prefix}.tags.qualifier`, this.tags.qualifier))
+		}
 
 		const rowElement1 = document.createElement("div")
 		rowElement1.classList.add("form-fields", "secondary")
@@ -63,16 +73,17 @@ class SkillPointBonus extends BaseFeature<SkillPointBonusSchema> {
 		// Name
 		rowElement1.append(
 			this.schema.fields.name.fields.compare.toInput({
-				name: `${prefix}.name.compare`,
+				name: enabled ? `${prefix}.name.compare` : "",
 				value: this.name.compare,
 				localize: true,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 		rowElement1.append(
 			this.schema.fields.name.fields.qualifier.toInput({
-				name: `${prefix}.name.qualifier`,
+				name: enabled ? `${prefix}.name.qualifier` : "",
 				value: this.name.qualifier,
-				disabled: this.name.compare === StringComparison.Option.AnyString,
+				disabled: !enabled || this.name.compare === StringComparison.Option.AnyString,
 			}) as HTMLElement,
 		)
 		element.append(rowElement1)
@@ -80,16 +91,17 @@ class SkillPointBonus extends BaseFeature<SkillPointBonusSchema> {
 		// Specialization
 		rowElement2.append(
 			this.schema.fields.specialization.fields.compare.toInput({
-				name: `${prefix}.specialization.compare`,
+				name: enabled ? `${prefix}.specialization.compare` : "",
 				value: this.specialization.compare,
 				localize: true,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 		rowElement2.append(
 			this.schema.fields.specialization.fields.qualifier.toInput({
-				name: `${prefix}.specialization.qualifier`,
+				name: enabled ? `${prefix}.specialization.qualifier` : "",
 				value: this.specialization.qualifier,
-				disabled: this.specialization.compare === StringComparison.Option.AnyString,
+				disabled: !enabled || this.specialization.compare === StringComparison.Option.AnyString,
 			}) as HTMLElement,
 		)
 		element.append(rowElement2)
@@ -97,16 +109,17 @@ class SkillPointBonus extends BaseFeature<SkillPointBonusSchema> {
 		// Tags
 		rowElement3.append(
 			this.schema.fields.tags.fields.compare.toInput({
-				name: `${prefix}.tags.compare`,
+				name: enabled ? `${prefix}.tags.compare` : "",
 				value: this.tags.compare,
 				localize: true,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 		rowElement3.append(
 			this.schema.fields.tags.fields.qualifier.toInput({
-				name: `${prefix}.tags.qualifier`,
+				name: enabled ? `${prefix}.tags.qualifier` : "",
 				value: this.tags.qualifier,
-				disabled: this.tags.compare === StringComparison.Option.AnyString,
+				disabled: !enabled || this.tags.compare === StringComparison.Option.AnyString,
 			}) as HTMLElement,
 		)
 		element.append(rowElement3)

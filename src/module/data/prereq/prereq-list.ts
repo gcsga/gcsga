@@ -10,7 +10,7 @@ import { Prereq } from "./types.ts"
 import { NumericCriteriaField } from "../item/fields/numeric-criteria-field.ts"
 import { StringArrayField } from "../item/fields/string-array-field.ts"
 import { BooleanSelectField } from "../item/fields/boolean-select-field.ts"
-import { createButton } from "@module/applications/helpers.ts"
+import { createButton, createDummyElement } from "@module/applications/helpers.ts"
 
 class PrereqList extends BasePrereq<PrereqListSchema> {
 	static override TYPE = prereq.Type.List
@@ -82,36 +82,15 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 		return satisfied
 	}
 
-	override toFormElement(): HTMLElement {
+	override toFormElement(enabled: boolean): HTMLElement {
 		const element = document.createElement("li")
 		const prefix = `system.prereqs.${this.index}`
 		// Root element
 		element.classList.add("prereq")
 
-		// Disabled, invisible fields
-		const typeInput = this.schema.fields.type.toInput({
-			name: `${prefix}.type`,
-			value: this.type,
-			localize: true,
-			readonly: true,
-		}) as HTMLElement
-		typeInput.style.setProperty("display", "none")
-
-		const idInput = this.schema.fields.id.toInput({
-			name: `${prefix}.id`,
-			value: this.id,
-			readonly: true,
-		}) as HTMLElement
-		idInput.style.setProperty("display", "none")
-
-		const prereqsInput = this.schema.fields.prereqs.toInput({
-			name: `${prefix}.prereqs`,
-			value: this.prereqs.join(", "),
-			readonly: true,
-		}) as HTMLElement
-		prereqsInput.style.setProperty("display", "none")
-
-		element.append(typeInput, idInput, prereqsInput)
+		element.append(createDummyElement(`${prefix}.id`, this.id))
+		element.append(createDummyElement(`${prefix}.type`, this.type))
+		element.append(createDummyElement(`${prefix}.prereqs`, this.prereqs.join(",")))
 
 		const rowElement = document.createElement("div")
 		rowElement.classList.add("form-fields")
@@ -125,6 +104,7 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 					action: "addPrereq",
 					index: this.index.toString(),
 				},
+				disabled: !enabled,
 			}),
 		)
 		rowElement.append(
@@ -135,6 +115,7 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 					action: "addPrereqList",
 					index: this.index.toString(),
 				},
+				disabled: !enabled,
 			}),
 		)
 		if (this.id !== "root") {
@@ -146,6 +127,7 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 						action: "deletePrereq",
 						id: this.id,
 					},
+					disabled: !enabled,
 				}),
 			)
 		}
@@ -155,13 +137,14 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 			this.schema.fields.when_tl.fields.compare.toInput({
 				name: `${prefix}.when_tl.compare`,
 				value: this.when_tl.compare,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 		rowElement.append(
 			this.schema.fields.when_tl.fields.qualifier.toInput({
 				name: `${prefix}.when_tl.qualifier`,
 				value: this.when_tl.qualifier?.toString(),
-				disabled: this.when_tl.compare === NumericComparison.Option.AnyNumber,
+				disabled: !enabled || this.when_tl.compare === NumericComparison.Option.AnyNumber,
 			}) as HTMLElement,
 		)
 
@@ -171,6 +154,7 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 				name: `${prefix}.all`,
 				value: this.all.toString(),
 				localize: true,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 
@@ -183,7 +167,7 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 				const hr = document.createElement("hr")
 				listElement.append(hr)
 			}
-			listElement.append(child.toFormElement())
+			listElement.append(child.toFormElement(enabled))
 		})
 		// listElement.append(...this.children.map(e => e.toFormElement()))
 		element.append(listElement)

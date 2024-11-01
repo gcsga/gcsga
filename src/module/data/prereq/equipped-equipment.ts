@@ -5,7 +5,7 @@ import { ActorType } from "@module/data/constants.ts"
 import { ActorInst } from "../actor/helpers.ts"
 import { Nameable } from "@module/util/index.ts"
 import { StringCriteriaField } from "../item/fields/string-criteria-field.ts"
-import { createButton } from "@module/applications/helpers.ts"
+import { createButton, createDummyElement } from "@module/applications/helpers.ts"
 
 class EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema> {
 	static override TYPE = prereq.Type.EquippedEquipment
@@ -68,23 +68,23 @@ class EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema> 
 		return satisfied
 	}
 
-	override toFormElement(): HTMLElement {
+	override toFormElement(enabled: boolean): HTMLElement {
 		const element = document.createElement("li")
 		const prefix = `system.prereqs.${this.index}`
 		// Root element
 		element.classList.add("prereq")
 
-		const idInput = this.schema.fields.id.toInput({
-			name: `${prefix}.id`,
-			value: this.id,
-			readonly: true,
-		}) as HTMLElement
-		idInput.style.setProperty("display", "none")
-
-		element.append(idInput)
+		element.append(createDummyElement(`${prefix}.id`, this.id))
+		if (!enabled) {
+			element.append(createDummyElement(`${prefix}.type`, this.type))
+			element.append(createDummyElement(`${prefix}.name.compare`, this.name.compare))
+			element.append(createDummyElement(`${prefix}.name.qualifier`, this.name.qualifier))
+			element.append(createDummyElement(`${prefix}.tags.compare`, this.tags.compare))
+			element.append(createDummyElement(`${prefix}.tags.qualifier`, this.tags.qualifier))
+		}
 
 		const rowElement1 = document.createElement("div")
-		rowElement1.classList.add("form-fields", "secondary")
+		rowElement1.classList.add("form-fields")
 
 		rowElement1.append(
 			createButton({
@@ -94,6 +94,7 @@ class EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema> 
 					action: "deletePrereq",
 					id: this.id,
 				},
+				disabled: !enabled,
 			}),
 		)
 
@@ -108,6 +109,7 @@ class EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema> 
 					index: this.index.toString(),
 				},
 				localize: true,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 		element.append(rowElement1)
@@ -119,12 +121,14 @@ class EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema> 
 			this.schema.fields.name.fields.compare.toInput({
 				name: `${prefix}.name.compare`,
 				value: this.name.compare,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 		rowElement2.append(
 			this.schema.fields.name.fields.qualifier.toInput({
 				name: `${prefix}.name.qualifier`,
 				value: this.name.qualifier,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 		element.append(rowElement2)
@@ -136,12 +140,14 @@ class EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema> 
 			this.schema.fields.tags.fields.compare.toInput({
 				name: `${prefix}.tags.compare`,
 				value: this.tags.compare,
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 		rowElement3.append(
 			this.schema.fields.tags.fields.qualifier.toInput({
 				name: `${prefix}.tags.qualifier`,
 				value: this.tags.qualifier.toString(),
+				disabled: !enabled,
 			}) as HTMLElement,
 		)
 		element.append(rowElement3)

@@ -2,6 +2,8 @@
 
 ## Current Tasks
 
+- fix changing att prereq to spell prereq failing validation
+- fix prereq values resetting when fields are disabled
 - Add replacements object to all replaceablestringfields
 - Replace toggleable fields as appropriate for all items, features, Prereqs
   - features (to expand)
