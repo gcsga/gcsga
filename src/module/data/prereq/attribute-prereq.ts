@@ -90,7 +90,7 @@ class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
 				choices: combinedWithChoices.choices,
 				initial: combinedWithChoices.current,
 			}),
-			qualifier: new NumericCriteriaField({
+			total: new NumericCriteriaField({
 				required: true,
 				nullable: false,
 				choices: NumericComparison.CustomOptionsChoices(localizationKey),
@@ -106,7 +106,7 @@ class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
 		let value = actor.system.resolveAttributeCurrent(this.which)
 		if (this.combined_with !== "") value += actor.system.resolveAttributeCurrent(this.combined_with)
 
-		let satisfied = this.qualifier.matches(value)
+		let satisfied = this.total.matches(value)
 		if (!this.has) satisfied = !satisfied
 
 		if (!satisfied && tooltip !== null) {
@@ -117,7 +117,7 @@ class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
 						has: this.hasText,
 						att1: this.which,
 						att2: this.combined_with,
-						qualifier: this.qualifier.toString(),
+						qualifier: this.total.toString(),
 					}),
 				)
 			} else {
@@ -125,7 +125,7 @@ class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
 					LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.Attribute.NotCombinedWith, {
 						has: this.hasText,
 						att1: this.which,
-						qualifier: this.qualifier.toString(),
+						qualifier: this.total.toString(),
 					}),
 				)
 			}
@@ -142,8 +142,8 @@ class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
 		if (!enabled) {
 			element.append(createDummyElement(`${prefix}.which`, this.which))
 			element.append(createDummyElement(`${prefix}.combined_with`, this.combined_with))
-			element.append(createDummyElement(`${prefix}.qualifier.compare`, this.qualifier.compare))
-			element.append(createDummyElement(`${prefix}.qualifier.qualifier`, this.qualifier.qualifier))
+			element.append(createDummyElement(`${prefix}.total.compare`, this.total.compare))
+			element.append(createDummyElement(`${prefix}.total.qualifier`, this.total.qualifier))
 		}
 
 		const rowElement = document.createElement("div")
@@ -169,18 +169,18 @@ class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
 
 		// Compare
 		rowElement.append(
-			this.schema.fields.qualifier.fields.compare.toInput({
-				name: enabled ? `${prefix}.qualifier.compare` : "",
-				value: this.qualifier.compare,
+			this.schema.fields.total.fields.compare.toInput({
+				name: enabled ? `${prefix}.total.compare` : "",
+				value: this.total.compare,
 				disabled: !enabled,
 			}) as HTMLElement,
 		)
 
 		// Qualifier
 		rowElement.append(
-			this.schema.fields.qualifier.fields.qualifier.toInput({
-				name: enabled ? `${prefix}.qualifier.qualifier` : "",
-				value: this.qualifier.qualifier.toString(),
+			this.schema.fields.total.fields.qualifier.toInput({
+				name: enabled ? `${prefix}.total.qualifier` : "",
+				value: this.total.qualifier.toString(),
 				disabled: !enabled,
 			}) as HTMLElement,
 		)
@@ -198,7 +198,7 @@ interface AttributePrereq extends BasePrereq<AttributePrereqSchema>, ModelPropsF
 type AttributePrereqSchema = BasePrereqSchema & {
 	which: fields.StringField<string, string, true, false, true>
 	combined_with: fields.StringField<string, string, true, false, true>
-	qualifier: NumericCriteriaField<true, false, true>
+	total: NumericCriteriaField<true, false, true>
 }
 
 export { AttributePrereq, type AttributePrereqSchema }

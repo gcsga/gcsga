@@ -3,13 +3,7 @@
 ## Current Tasks
 
 - fix changing att prereq to spell prereq failing validation
-- fix prereq values resetting when fields are disabled
 - Add replacements object to all replaceablestringfields
-- Replace toggleable fields as appropriate for all items, features, Prereqs
-  - features (to expand)
-  - prereqs (to expand)
-  - skill defaults
-  - study
 - Restyle input fields and toggleable input fields
 - Implement some input fields being disabled when sheet is not in edit mode
   - exclude points, quantity, enabled/disabled, equipped/unequipped

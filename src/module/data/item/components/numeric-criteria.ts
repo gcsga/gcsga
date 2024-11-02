@@ -18,10 +18,6 @@ class NumericCriteria extends foundry.abstract.DataModel<ItemDataModel, NumericC
 		}
 	}
 
-	constructor(data?: DeepPartial<SourceFromSchema<NumericCriteriaSchema>>) {
-		super(data)
-	}
-
 	matches(n: number): boolean {
 		if (this.qualifier === null) this.qualifier = 0
 		switch (this.compare) {
