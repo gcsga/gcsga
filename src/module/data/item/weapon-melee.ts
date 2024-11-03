@@ -9,6 +9,7 @@ import { CellData, CellDataOptions } from "./components/cell-data.ts"
 import { LocalizeGURPS, TooltipGURPS } from "@util"
 import { SkillDefaultTemplate, SkillDefaultTemplateSchema } from "./templates/defaults.ts"
 import { Nameable } from "@module/util/nameable.ts"
+import { ItemTypes } from "../constants.ts"
 
 class WeaponMeleeData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -29,7 +30,10 @@ class WeaponMeleeData extends ItemDataModel.mixin(
 		}) as WeaponMeleeSchema
 	}
 
-	override cellData(_options: CellDataOptions = {}): Record<string, CellData> {
+	override cellData(options: CellDataOptions = {}): Record<string, CellData> {
+		const { type } = options
+		const isItemSheet = !!type && ItemTypes.includes(type as any)
+
 		function addBuffer(tooltip: string, buffer: TooltipGURPS): string {
 			if (tooltip.length !== 0) {
 				tooltip += "\n\n"
@@ -68,6 +72,7 @@ class WeaponMeleeData extends ItemDataModel.mixin(
 				primary: this.processedName,
 				secondary: this.processedNotes,
 				classList: ["item-name"],
+				condition: !isItemSheet,
 			}),
 			usage: new CellData({
 				primary: this.usageWithReplacements,

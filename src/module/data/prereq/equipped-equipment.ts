@@ -4,8 +4,9 @@ import { LocalizeGURPS, StringComparison, TooltipGURPS } from "@util"
 import { ActorType } from "@module/data/constants.ts"
 import { ActorInst } from "../actor/helpers.ts"
 import { Nameable } from "@module/util/index.ts"
-import { StringCriteriaField } from "../item/fields/string-criteria-field.ts"
 import { createButton, createDummyElement } from "@module/applications/helpers.ts"
+import { ReplaceableStringCriteriaField } from "../item/fields/replaceable-string-criteria-field.ts"
+import { ItemTemplateType } from "../item/types.ts"
 
 class EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema> {
 	static override TYPE = prereq.Type.EquippedEquipment
@@ -13,13 +14,13 @@ class EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema> 
 	static override defineSchema(): EquippedEquipmentPrereqSchema {
 		return {
 			...super.defineSchema(),
-			name: new StringCriteriaField({
+			name: new ReplaceableStringCriteriaField({
 				required: true,
 				nullable: false,
 				choices: StringComparison.CustomOptionsChoices("GURPS.Item.Prereqs.FIELDS.EquippedEquipment.Name"),
 				initial: { compare: StringComparison.Option.IsString, qualifier: "" },
 			}),
-			tags: new StringCriteriaField({
+			tags: new ReplaceableStringCriteriaField({
 				required: true,
 				nullable: false,
 				choices: StringComparison.CustomOptionsChoicesPlural(
@@ -69,9 +70,12 @@ class EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema> 
 	}
 
 	override toFormElement(enabled: boolean): HTMLElement {
-		const element = document.createElement("li")
 		const prefix = `system.prereqs.${this.index}`
-		// Root element
+		const replacements = this.item.hasTemplate(ItemTemplateType.Replacement)
+			? this.item.system.nameableReplacements
+			: new Map()
+
+		const element = document.createElement("li")
 		element.classList.add("prereq")
 
 		element.append(createDummyElement(`${prefix}.id`, this.id))
@@ -102,7 +106,7 @@ class EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema> 
 		;(typeField as any).choices = prereq.TypesWithoutListChoices
 		rowElement1.append(
 			typeField.toInput({
-				name: `${prefix}.type`,
+				name: enabled ? `${prefix}.type` : "",
 				value: this.type,
 				dataset: {
 					selector: "prereq-type",
@@ -119,16 +123,18 @@ class EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema> 
 		rowElement2.classList.add("form-fields", "secondary")
 		rowElement2.append(
 			this.schema.fields.name.fields.compare.toInput({
-				name: `${prefix}.name.compare`,
+				name: enabled ? `${prefix}.name.compare` : "",
 				value: this.name.compare,
 				disabled: !enabled,
 			}) as HTMLElement,
 		)
 		rowElement2.append(
 			this.schema.fields.name.fields.qualifier.toInput({
-				name: `${prefix}.name.qualifier`,
+				name: enabled ? `${prefix}.name.qualifier` : "",
 				value: this.name.qualifier,
 				disabled: !enabled,
+				editable: enabled,
+				replacements,
 			}) as HTMLElement,
 		)
 		element.append(rowElement2)
@@ -138,16 +144,18 @@ class EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema> 
 		rowElement3.classList.add("form-fields")
 		rowElement3.append(
 			this.schema.fields.tags.fields.compare.toInput({
-				name: `${prefix}.tags.compare`,
+				name: enabled ? `${prefix}.tags.compare` : "",
 				value: this.tags.compare,
 				disabled: !enabled,
 			}) as HTMLElement,
 		)
 		rowElement3.append(
 			this.schema.fields.tags.fields.qualifier.toInput({
-				name: `${prefix}.tags.qualifier`,
+				name: enabled ? `${prefix}.tags.qualifier` : "",
 				value: this.tags.qualifier.toString(),
 				disabled: !enabled,
+				editable: enabled,
+				replacements,
 			}) as HTMLElement,
 		)
 		element.append(rowElement3)
@@ -166,8 +174,8 @@ interface EquippedEquipmentPrereq
 		ModelPropsFromSchema<EquippedEquipmentPrereqSchema> {}
 
 type EquippedEquipmentPrereqSchema = BasePrereqSchema & {
-	name: StringCriteriaField<true, false, true>
-	tags: StringCriteriaField<true, false, true>
+	name: ReplaceableStringCriteriaField<true, false, true>
+	tags: ReplaceableStringCriteriaField<true, false, true>
 }
 
 export { EquippedEquipmentPrereq, type EquippedEquipmentPrereqSchema }

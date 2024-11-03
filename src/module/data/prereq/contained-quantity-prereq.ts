@@ -84,7 +84,7 @@ class ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema> 
 
 		rowElement.append(
 			(this.schema.fields as any).has.toInput({
-				name: `${prefix}.has`,
+				name: enabled ? `${prefix}.has` : "",
 				value: (this as any).has,
 				localize: true,
 				disabled: !enabled,
@@ -95,7 +95,7 @@ class ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema> 
 
 		rowElement.append(
 			typeField.toInput({
-				name: `${prefix}.type`,
+				name: enabled ? `${prefix}.type` : "",
 				value: this.type,
 				dataset: {
 					selector: "prereq-type",
@@ -108,7 +108,7 @@ class ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema> 
 
 		rowElement.append(
 			this.schema.fields.qualifier.fields.compare.toInput({
-				name: `${prefix}.qualifier.compare`,
+				name: enabled ? `${prefix}.qualifier.compare` : "",
 				value: this.qualifier.compare,
 				localize: true,
 				disabled: !enabled,
@@ -116,7 +116,7 @@ class ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema> 
 		)
 		rowElement.append(
 			this.schema.fields.qualifier.fields.qualifier.toInput({
-				name: `${prefix}.qualifier.qualifier`,
+				name: enabled ? `${prefix}.qualifier.qualifier` : "",
 				value: this.qualifier.qualifier.toString(),
 				disabled: !enabled,
 			}) as HTMLElement,

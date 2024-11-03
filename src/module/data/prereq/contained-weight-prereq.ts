@@ -64,7 +64,7 @@ class ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema> {
 		rowElement.classList.add("form-fields", "secondary")
 		rowElement.append(
 			this.schema.fields.qualifier.fields.compare.toInput({
-				name: `${prefix}.qualifier.compare`,
+				name: enabled ? `${prefix}.qualifier.compare` : "",
 				value: this.qualifier.compare,
 				localize: true,
 				disabled: !enabled,
@@ -72,7 +72,7 @@ class ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema> {
 		)
 		rowElement.append(
 			this.schema.fields.qualifier.fields.qualifier.toInput({
-				name: `${prefix}.qualifier.qualifier`,
+				name: enabled ? `${prefix}.qualifier.qualifier` : "",
 				value: this.qualifier.qualifier,
 				disabled: !enabled,
 			}) as HTMLElement,

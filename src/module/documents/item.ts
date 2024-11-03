@@ -93,8 +93,8 @@ class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extend
 		if (foundry.utils.hasProperty(changed, "system.container")) {
 			;(options as any).formerContainer = (await this.container)?.uuid
 		}
-
-		return await this.system._preUpdate?.(changed, options, user)
+		//
+		// return await this.system._preUpdate?.(changed, options, user)
 	}
 
 	/* -------------------------------------------- */

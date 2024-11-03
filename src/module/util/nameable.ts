@@ -10,7 +10,7 @@ interface NameableApplier extends NameableAccesser, NameableFiller {
 	applyNameableKeys(m: Map<string, string>): void
 }
 
-function extract(str: string, m: Map<string, string>, existing: Map<string, string>): void {
+function extract(str: string, m: Map<string, string | null>, existing: Map<string, string>): void {
 	for (const key of [...str.matchAll(/@([^@]+)@/g)].map(e => e[1])) {
 		if (existing.has(key)) m.set(key, existing.get(key)!)
 		else m.set(key, key)
@@ -49,15 +49,15 @@ function reduce(needed: Map<string, string>, replacements: Map<string, string>):
 }
 
 function isFiller(e: unknown): e is NameableFiller {
-	return typeof e === "object" && e !== null && Object.hasOwn(e, "fillWithNameableKeys")
+	return typeof e === "object" && e !== null && "fillWithNameableKeys" in e
 }
 
 function isAccesser(e: unknown): e is NameableAccesser {
-	return typeof e === "object" && e !== null && Object.hasOwn(e, "nameableReplacements")
+	return typeof e === "object" && e !== null && "nameableReplacements" in e
 }
 
 function isApplier(e: unknown): e is NameableApplier {
-	return typeof e === "object" && e !== null && Object.hasOwn(e, "applyNameableKeys")
+	return typeof e === "object" && e !== null && "applyNameableKeys" in e
 }
 
 export const Nameable = {

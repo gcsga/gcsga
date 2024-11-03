@@ -6,8 +6,8 @@ import { ItemGURPS2 } from "@module/documents/item.ts"
 import { ActorInst } from "../actor/helpers.ts"
 import { Nameable } from "@module/util/index.ts"
 import { NumericCriteriaField } from "../item/fields/numeric-criteria-field.ts"
-import { StringCriteriaField } from "../item/fields/string-criteria-field.ts"
 import { createDummyElement } from "@module/applications/helpers.ts"
+import { ReplaceableStringCriteriaField } from "../item/fields/replaceable-string-criteria-field.ts"
 
 class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 	static override TYPE = prereq.Type.Skill
@@ -15,7 +15,7 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 	static override defineSchema(): SkillPrereqSchema {
 		return {
 			...super.defineSchema(),
-			name: new StringCriteriaField({
+			name: new ReplaceableStringCriteriaField({
 				required: true,
 				nullable: false,
 				initial: {
@@ -31,7 +31,7 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 					qualifier: 0,
 				},
 			}),
-			specialization: new StringCriteriaField({
+			specialization: new ReplaceableStringCriteriaField({
 				required: true,
 				nullable: false,
 				initial: {
@@ -114,7 +114,7 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 		rowElement1.classList.add("form-fields", "secondary")
 		rowElement1.append(
 			this.schema.fields.name.fields.compare.toInput({
-				name: `${prefix}.name.compare`,
+				name: enabled ? `${prefix}.name.compare` : "",
 				value: this.name.compare,
 				localize: true,
 				disabled: !enabled,
@@ -122,7 +122,7 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 		)
 		rowElement1.append(
 			this.schema.fields.name.fields.qualifier.toInput({
-				name: `${prefix}.name.qualifier`,
+				name: enabled ? `${prefix}.name.qualifier` : "",
 				value: this.name.qualifier,
 				disabled: !enabled,
 			}) as HTMLElement,
@@ -134,7 +134,7 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 		rowElement2.classList.add("form-fields", "secondary")
 		rowElement2.append(
 			this.schema.fields.specialization.fields.compare.toInput({
-				name: `${prefix}.specialization.compare`,
+				name: enabled ? `${prefix}.specialization.compare` : "",
 				value: this.specialization.compare,
 				localize: true,
 				disabled: !enabled,
@@ -142,7 +142,7 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 		)
 		rowElement2.append(
 			this.schema.fields.specialization.fields.qualifier.toInput({
-				name: `${prefix}.specialization.qualifier`,
+				name: enabled ? `${prefix}.specialization.qualifier` : "",
 				value: this.specialization.qualifier,
 				disabled: !enabled,
 			}) as HTMLElement,
@@ -154,7 +154,7 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 		rowElement3.classList.add("form-fields", "secondary")
 		rowElement3.append(
 			this.schema.fields.level.fields.compare.toInput({
-				name: `${prefix}.level.compare`,
+				name: enabled ? `${prefix}.level.compare` : "",
 				value: this.level.compare,
 				localize: true,
 				disabled: !enabled,
@@ -162,7 +162,7 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 		)
 		rowElement3.append(
 			this.schema.fields.level.fields.qualifier.toInput({
-				name: `${prefix}.level.qualifier`,
+				name: enabled ? `${prefix}.level.qualifier` : "",
 				value: this.level.qualifier.toString(),
 				disabled: !enabled,
 			}) as HTMLElement,
@@ -181,9 +181,9 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 interface SkillPrereq extends BasePrereq<SkillPrereqSchema>, ModelPropsFromSchema<SkillPrereqSchema> {}
 
 type SkillPrereqSchema = BasePrereqSchema & {
-	name: StringCriteriaField<true, false, true>
+	name: ReplaceableStringCriteriaField<true, false, true>
 	level: NumericCriteriaField<true, false, true>
-	specialization: StringCriteriaField<true, false, true>
+	specialization: ReplaceableStringCriteriaField<true, false, true>
 }
 
 export { SkillPrereq, type SkillPrereqSchema }

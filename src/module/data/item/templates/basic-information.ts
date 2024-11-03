@@ -72,8 +72,8 @@ interface BasicInformationTemplate
 
 type BasicInformationTemplateSchema = {
 	container: fields.ForeignDocumentField<string>
-	name: ToggleableStringField<string, string, true, false, true>
-	notes: ToggleableStringField<string, string, true, false, true>
+	name: ReplaceableStringField<string, string, true, false, true>
+	notes: ReplaceableStringField<string, string, true, false, true>
 	tags: StringArrayField<true, false, true>
 	vtt_notes: ToggleableStringField<string, string, true, false, true>
 	reference: ToggleableStringField<string, string, true, false, true>

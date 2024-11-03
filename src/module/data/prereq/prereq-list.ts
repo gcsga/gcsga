@@ -135,14 +135,14 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 		// When TL
 		rowElement.append(
 			this.schema.fields.when_tl.fields.compare.toInput({
-				name: `${prefix}.when_tl.compare`,
+				name: enabled ? `${prefix}.when_tl.compare` : "",
 				value: this.when_tl.compare,
 				disabled: !enabled,
 			}) as HTMLElement,
 		)
 		rowElement.append(
 			this.schema.fields.when_tl.fields.qualifier.toInput({
-				name: `${prefix}.when_tl.qualifier`,
+				name: enabled ? `${prefix}.when_tl.qualifier` : "",
 				value: this.when_tl.qualifier?.toString(),
 				disabled: !enabled || this.when_tl.compare === NumericComparison.Option.AnyNumber,
 			}) as HTMLElement,
@@ -151,7 +151,7 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 		// All
 		rowElement.append(
 			this.schema.fields.all.toInput({
-				name: `${prefix}.all`,
+				name: enabled ? `${prefix}.all` : "",
 				value: this.all.toString(),
 				localize: true,
 				disabled: !enabled,

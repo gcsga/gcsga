@@ -14,7 +14,7 @@
 		{{#if editable}}
 		<input type="text" name="name" class="document-name josefin-sans-regular" value="{{item.name}}" />
 		{{else}}
-		<div class="document-name josefin-sans-regular">{{item.name}}</div>
+		<div class="document-name josefin-sans-regular">{{system.nameWithReplacements}}</div>
 		{{/if}}
 		<div class="document-type josefin-sans-regular">{{localize (concat "TYPES.Item." item.type)}}</div>
 	</div>

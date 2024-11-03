@@ -1,8 +1,11 @@
 # Refactor Notes
 
+## Bugs
+
+- source data retains unused replacement values
+
 ## Current Tasks
 
-- fix changing att prereq to spell prereq failing validation
 - Add replacements object to all replaceablestringfields
 - Restyle input fields and toggleable input fields
 - Implement some input fields being disabled when sheet is not in edit mode

@@ -388,6 +388,7 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 	/* -------------------------------------------- */
 
 	_getTabs(): Record<string, Partial<ApplicationTab>> {
+		console.log("_getTabs")
 		let tabs: Record<string, Partial<ApplicationTab>> = {
 			description: {
 				id: "description",
@@ -414,8 +415,19 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 				label: "GURPS.Sheets.Item.Tabs.Replacements",
 			},
 		}
-		if (!this.item.hasTemplate(ItemTemplateType.Replacement) || this.item.system.nameableReplacements.size === 0)
+		if (this.item.hasTemplate(ItemTemplateType.Replacement)) {
+			const replacements = this.item.system.nameableReplacements
+			console.log(replacements)
+			// for (const key of replacements.keys()) {
+			// 	if (key.startsWith("-=")) replacements.delete(key)
+			// }
+			if (replacements.size === 0) delete tabs.replacements
+		} else {
 			delete tabs.replacements
+		}
+		// console.log(this.item.system.nameableReplacements.size)
+		// if (!this.item.hasTemplate(ItemTemplateType.Replacement) || this.item.system.nameableReplacements.size === 0)
+		// 	delete tabs.replacements
 
 		if (!this.item.hasTemplate(ItemTemplateType.Container)) delete tabs.embeds
 
@@ -715,7 +727,12 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			obj.childTypes = [...this.item.system.childTypes]
 		}
 		if (this.item.hasTemplate(ItemTemplateType.Replacement)) {
-			obj.replacements = this.item.system.nameableReplacements
+			const replacements = this.item.system.nameableReplacements
+			// for (const key of replacements.keys()) {
+			// 	if (key.startsWith("-=")) replacements.delete(key)
+			// }
+			// console.log(replacements)
+			obj.replacements = replacements
 		}
 		return obj
 	}

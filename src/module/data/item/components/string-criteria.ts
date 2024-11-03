@@ -1,10 +1,12 @@
-import { ItemDataModel } from "@module/data/item/abstract.ts"
-import { Nameable } from "../../../util/nameable.ts"
+import { Nameable } from "@module/util/nameable.ts"
 import { StringComparison } from "@util/enum/string-comparison.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import fields = foundry.data.fields
 
-class StringCriteria extends foundry.abstract.DataModel<ItemDataModel, StringCriteriaSchema> {
+class StringCriteria<TSchema extends StringCriteriaSchema = StringCriteriaSchema> extends foundry.abstract.DataModel<
+	foundry.abstract.DataModel,
+	TSchema
+> {
 	static override defineSchema(): StringCriteriaSchema {
 		const fields = foundry.data.fields
 		return {
@@ -109,9 +111,7 @@ class StringCriteria extends foundry.abstract.DataModel<ItemDataModel, StringCri
 	}
 }
 
-interface StringCriteria
-	extends foundry.abstract.DataModel<ItemDataModel, StringCriteriaSchema>,
-		ModelPropsFromSchema<StringCriteriaSchema> {}
+interface StringCriteria extends ModelPropsFromSchema<StringCriteriaSchema> {}
 
 type StringCriteriaSchema = {
 	compare: fields.StringField<StringComparison.Option, StringComparison.Option, true, false, true>
@@ -128,4 +128,4 @@ function includesFold(s: string, t: string): boolean {
 	return s.toLowerCase().includes(t.toLowerCase())
 }
 
-export { StringCriteria, type StringCriteriaSchema, equalFold, includesFold }
+export { StringCriteria, equalFold, includesFold, type StringCriteriaSchema }

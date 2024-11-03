@@ -158,7 +158,7 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 		)
 		rowElement1.append(
 			(this.schema.fields as any).has.toInput({
-				name: `${prefix}.has`,
+				name: enabled ? `${prefix}.has` : "",
 				value: (this as any).has,
 				localize: true,
 				disabled: !enabled,
@@ -166,7 +166,7 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 		)
 		rowElement1.append(
 			this.schema.fields.quantity.fields.compare.toInput({
-				name: `${prefix}.quantity.compare`,
+				name: enabled ? `${prefix}.quantity.compare` : "",
 				value: this.quantity.compare,
 				localize: true,
 				disabled: !enabled,
@@ -174,7 +174,7 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 		)
 		rowElement1.append(
 			this.schema.fields.quantity.fields.qualifier.toInput({
-				name: `${prefix}.quantity.qualifier`,
+				name: enabled ? `${prefix}.quantity.qualifier` : "",
 				value: this.quantity.qualifier.toString(),
 				disabled: !enabled,
 			}) as HTMLElement,
@@ -183,7 +183,7 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 		;(typeField as any).choices = prereq.TypesWithoutListChoices
 		rowElement1.append(
 			typeField.toInput({
-				name: `${prefix}.type`,
+				name: enabled ? `${prefix}.type` : "",
 				value: this.type,
 				dataset: {
 					selector: "prereq-type",
@@ -200,7 +200,7 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 		rowElement2.classList.add("form-fields", "secondary")
 		rowElement2.append(
 			this.schema.fields.sub_type.toInput({
-				name: `${prefix}.sub_type`,
+				name: enabled ? `${prefix}.sub_type` : "",
 				value: this.sub_type,
 				localize: true,
 				disabled: !enabled,
@@ -208,7 +208,7 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 		)
 		rowElement2.append(
 			this.schema.fields.qualifier.fields.compare.toInput({
-				name: `${prefix}.qualifier.compare`,
+				name: enabled ? `${prefix}.qualifier.compare` : "",
 				value: this.qualifier.compare,
 				localize: true,
 				disabled: !enabled,
@@ -216,7 +216,7 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 		)
 		rowElement2.append(
 			this.schema.fields.qualifier.fields.qualifier.toInput({
-				name: `${prefix}.qualifier.qualifier`,
+				name: enabled ? `${prefix}.qualifier.qualifier` : "",
 				value: this.qualifier.qualifier,
 				disabled: !enabled,
 			}) as HTMLElement,

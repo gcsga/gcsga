@@ -350,15 +350,13 @@ class SkillData extends ItemDataModel.mixin(
 		this._fillWithNameableKeysFromEmbeds(m, existing)
 	}
 
-	protected async _fillWithNameableKeysFromEmbeds(
-		m: Map<string, string>,
-		existing: Map<string, string>,
-	): Promise<void> {
-		const weapons = await this.weapons
+	protected _fillWithNameableKeysFromEmbeds(m: Map<string, string>, existing: Map<string, string>): void {
+		const weapons = this.weapons
 
-		for (const weapon of weapons) {
-			weapon.system.fillWithNameableKeys(m, existing)
-		}
+		if (!(weapons instanceof Promise))
+			for (const weapon of weapons) {
+				weapon.system.fillWithNameableKeys(m, existing)
+			}
 	}
 
 	/** Calculates level, relative level, and relevant tooltip based on current state of

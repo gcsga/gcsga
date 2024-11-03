@@ -8,6 +8,12 @@ class ToggleableStringField<
 	TNullable extends boolean = false,
 	THasInitial extends boolean = true,
 > extends fields.StringField<TSourceProp, TModelProp, TRequired, TNullable, THasInitial> {
+	override toInput(
+		config?: (ToggleableFormInputConfig<string> & { replacements?: Map<string, string> }) | undefined,
+	): HTMLElement | HTMLCollection {
+		return super.toInput(config)
+	}
+
 	protected override _toInput(
 		config?: (ToggleableFormInputConfig<string> & Partial<SelectInputConfig>) | undefined,
 	): HTMLElement | HTMLCollection {

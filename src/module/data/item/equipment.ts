@@ -90,21 +90,6 @@ class EquipmentData extends ItemDataModel.mixin(
 		this._fillWithNameableKeysFromFeatures(m, existing)
 		this._fillWithNameableKeysFromEmbeds(m, existing)
 	}
-
-	protected override async _fillWithNameableKeysFromPrereqs(
-		m: Map<string, string>,
-		existing: Map<string, string>,
-	): Promise<void> {
-		const modifiers = await this.allModifiers
-		const weapons = await this.weapons
-
-		for (const modifier of modifiers) {
-			modifier.system.fillWithNameableKeys(m, modifier.system.nameableReplacements)
-		}
-		for (const weapon of weapons) {
-			weapon.system.fillWithNameableKeys(m, existing)
-		}
-	}
 }
 
 interface EquipmentData {

@@ -93,7 +93,8 @@ section[data-tab="embeds"] {
 	// 	}
 	// }
 
-	.item-header.item-name {
+	.item-header.item-name,
+	.item-header.item-usage {
 		padding-left: 0.3rem;
 	}
 
@@ -111,7 +112,8 @@ section[data-tab="embeds"] {
 			border-right: 0;
 		}
 
-		&.item-name {
+		&.item-name,
+		&.item-usage {
 			flex: 1;
 			display: flex;
 			flex-wrap: wrap;

@@ -26,7 +26,12 @@ class AbstractWeaponTemplate extends ItemDataModel<AbstractWeaponTemplateSchema>
 	}
 
 	get processedName(): string {
-		return this.parent.name
+		const container = this.parent.container
+		if (!(container instanceof Promise) && container !== null) {
+			if (container.hasTemplate(ItemTemplateType.BasicInformation)) return container.system.nameWithReplacements
+			return container.name
+		}
+		return ""
 	}
 
 	get processedNotes(): string {
@@ -302,12 +307,20 @@ class AbstractWeaponTemplate extends ItemDataModel<AbstractWeaponTemplateSchema>
 	/** Replacements */
 	get usageWithReplacements(): string {
 		if (!this.hasTemplate(ItemTemplateType.BasicInformation)) return ""
-		return Nameable.apply(this.name, this.nameableReplacements)
+		return Nameable.apply(this.parent.name, this.nameableReplacements)
 	}
 
 	get usageNotesWithReplacements(): string {
 		if (!this.hasTemplate(ItemTemplateType.BasicInformation)) return ""
 		return Nameable.apply(this.notes, this.nameableReplacements)
+	}
+
+	override async prepareBaseData(): Promise<void> {
+		super.prepareBaseData()
+		const container = await this.parent.container
+		if (container?.hasTemplate(ItemTemplateType.Replacement)) {
+			await container.system.prepareNameableKeys()
+		}
 	}
 }
 

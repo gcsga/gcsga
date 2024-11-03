@@ -120,7 +120,7 @@ class ItemDataModel<TSchema extends ItemDataSchema = ItemDataSchema> extends Sys
 		_data: Partial<this["_source"]>,
 		_options: DatabaseCreateOperation<ItemGURPS2["parent"]>,
 		_userId: string,
-	) {
+	): void {
 		this._renderContainers()
 	}
 
@@ -130,13 +130,13 @@ class ItemDataModel<TSchema extends ItemDataSchema = ItemDataSchema> extends Sys
 		_changed: Partial<this["_source"]>,
 		options: ItemDatabaseUpdateOperation<ItemGURPS2["parent"]>,
 		_userId: string,
-	) {
+	): void {
 		this._renderContainers({ formerContainer: options.formerContainer })
 	}
 
 	/* -------------------------------------------- */
 
-	override _onDelete(_options: DatabaseDeleteOperation<ItemGURPS2["parent"]>, _userId: string) {
+	override _onDelete(_options: DatabaseDeleteOperation<ItemGURPS2["parent"]>, _userId: string): void {
 		this._renderContainers()
 	}
 

@@ -309,19 +309,19 @@ class TraitContainerData extends ItemDataModel.mixin(
 		this._fillWithNameableKeysFromEmbeds(m, existing)
 	}
 
-	protected async _fillWithNameableKeysFromEmbeds(
-		m: Map<string, string>,
-		existing: Map<string, string>,
-	): Promise<void> {
-		const modifiers = await this.allModifiers
-		const weapons = await this.weapons
+	protected _fillWithNameableKeysFromEmbeds(m: Map<string, string>, existing: Map<string, string>): void {
+		const modifiers = this.allModifiers
+		const weapons = this.weapons
 
-		for (const modifier of modifiers) {
-			modifier.system.fillWithNameableKeys(m, modifier.system.nameableReplacements)
-		}
-		for (const weapon of weapons) {
-			weapon.system.fillWithNameableKeys(m, existing)
-		}
+		if (!(modifiers instanceof Promise))
+			for (const modifier of modifiers) {
+				modifier.system.fillWithNameableKeys(m, modifier.system.nameableReplacements)
+			}
+
+		if (!(weapons instanceof Promise))
+			for (const weapon of weapons) {
+				weapon.system.fillWithNameableKeys(m, existing)
+			}
 	}
 }
 

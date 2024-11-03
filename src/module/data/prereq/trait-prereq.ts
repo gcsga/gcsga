@@ -100,7 +100,7 @@ class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 		rowElement1.classList.add("form-fields", "secondary")
 		rowElement1.append(
 			this.schema.fields.name.fields.compare.toInput({
-				name: `${prefix}.name.compare`,
+				name: enabled ? `${prefix}.name.compare` : "",
 				value: this.name.compare,
 				localize: true,
 				disabled: !enabled,
@@ -108,7 +108,7 @@ class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 		)
 		rowElement1.append(
 			this.schema.fields.name.fields.qualifier.toInput({
-				name: `${prefix}.name.qualifier`,
+				name: enabled ? `${prefix}.name.qualifier` : "",
 				value: this.name.qualifier,
 				disabled: !enabled,
 			}) as HTMLElement,
@@ -120,7 +120,7 @@ class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 		rowElement2.classList.add("form-fields", "secondary")
 		rowElement2.append(
 			this.schema.fields.notes.fields.compare.toInput({
-				name: `${prefix}.notes.compare`,
+				name: enabled ? `${prefix}.notes.compare` : "",
 				value: this.notes.compare,
 				localize: true,
 				disabled: !enabled,
@@ -128,7 +128,7 @@ class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 		)
 		rowElement2.append(
 			this.schema.fields.notes.fields.qualifier.toInput({
-				name: `${prefix}.notes.qualifier`,
+				name: enabled ? `${prefix}.notes.qualifier` : "",
 				value: this.notes.qualifier,
 				disabled: !enabled,
 			}) as HTMLElement,
@@ -140,7 +140,7 @@ class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 		rowElement3.classList.add("form-fields", "secondary")
 		rowElement3.append(
 			this.schema.fields.level.fields.compare.toInput({
-				name: `${prefix}.level.compare`,
+				name: enabled ? `${prefix}.level.compare` : "",
 				value: this.level.compare,
 				localize: true,
 				disabled: !enabled,
@@ -148,7 +148,7 @@ class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 		)
 		rowElement3.append(
 			this.schema.fields.level.fields.qualifier.toInput({
-				name: `${prefix}.level.qualifier`,
+				name: enabled ? `${prefix}.level.qualifier` : "",
 				value: this.level.qualifier.toString(),
 				disabled: !enabled,
 			}) as HTMLElement,
