@@ -80,6 +80,14 @@
 					"Reference Highlight": { "Name": "Reference Higlight" }
 				}
 			},
+			"Study": {
+				"DetailsLegend": "Study",
+				"TotalBefore": "Studied {current} of {total} hours (",
+				"TotalAfter": ") for 1 point",
+				"FIELDS": {
+					"Note": "Note"
+				}
+			},
 			"Prereqs": {
 				"DetailsLegend": "Prerequisites",
 				"FIELDS": {
@@ -602,6 +610,48 @@
 				"total": { "Name": "to cost", "Alt": "" },
 				"base_only": { "Name": "to base cost only", "Alt": "(base only)" },
 				"levels_only": { "Name": "to leveled cost only", "Alt": "(levels only)" }
+			},
+			"study": {
+				"Type": {
+					"self": {
+						"Name": "Self-Taught",
+						"Limitations": [
+							"Maximum of 12 hours per day with no job",
+							"Maximum of 8 hours per day with a part-time job",
+							"Maximum of 4 hours per day with a full-time job"
+						]
+					},
+					"job": {
+						"Name": "On-the-Job Training",
+						"Limitations": [
+							"Maximum of 8 hours per day with a full-time job",
+							"Maximum of 4 hours per day with a part-time job"
+						]
+					},
+					"teacher": {
+						"Name": "Professional Teacher",
+						"Limitations": [
+							"Maximum of 8 hours per day",
+							"The teacher must have the Teaching skill at 12+",
+							"The teacher must have the skill/spell/trait being taught at the same or higher level than you, or have as many or more points spent in it as you do"
+						]
+					},
+					"intensive": {
+						"Name": "Intensive Training",
+						"Limitations": [
+							"Maximum of 16 hours per day",
+							"The teacher must have the Teaching skill at 12+",
+							"The teacher must have the skill/spell/trait being taught at a higher level than you and have more points spent in it than you do"
+						]
+					}
+				},
+				"Level": {
+					"200": "Standard",
+					"180": "Reduction for Talent level 1",
+					"160": "Reduction for Talent level 2",
+					"140": "Reduction for Talent level 3",
+					"120": "Reduction for Talent level 4"
+				}
 			},
 			"emcost": {
 				"Example": "Accepted value formats: {value}",

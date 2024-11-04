@@ -41,7 +41,12 @@ class TraitData extends ItemDataModel.mixin(
 	static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
 
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
-		context.detailsParts = ["gurps.details-trait", "gurps.details-prereqs", "gurps.details-features"]
+		context.detailsParts = [
+			"gurps.details-trait",
+			"gurps.details-prereqs",
+			"gurps.details-features",
+			"gurps.details-study",
+		]
 		context.embedsParts = ["gurps.embeds-weapon-melee", "gurps.embeds-weapon-ranged", "gurps.embeds-trait-modifier"]
 	}
 

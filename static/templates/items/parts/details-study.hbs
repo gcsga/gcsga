@@ -1,0 +1,25 @@
+<fieldset class="details-study">
+	<legend>{{localize "GURPS.Item.Study.DetailsLegend"}}</legend>
+	<div class="form-fields">
+		<span>{{localize "GURPS.Item.Study.TotalBefore" current=system.studyCurrent total=system.studyTotal }}</span>
+		{{formInput fields.study_hours_needed value=source.study_hours_needed localize=true editable=editable}}
+		<span>{{localize "GURPS.Item.Study.TotalAfter"}}</span>
+	</div>
+	{{#if editable}}
+	<button type="button" data-action="addStudyEntry"><i class="fa-regular fa-plus"></i></button>
+	{{else}}
+	<button type="button" data-action="addStudyEntry" disabled><i class="fa-regular fa-plus"></i></button>
+	{{/if}}
+	<ul>
+		<!-- Iterate over features -->
+		{{#each system.study as |studyEntry|}}
+		<!-- Gap between entries -->
+		{{#unless @first}}
+		<hr />
+		{{/unless}}
+		<!-- Generated feature partial -->
+		{{studyEntry.element}}
+		<!-- End Loop -->
+		{{/each}}
+	</ul>
+</fieldset>

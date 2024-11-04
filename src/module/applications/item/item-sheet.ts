@@ -7,7 +7,7 @@ import { PrereqList, PrereqListSchema } from "@module/data/prereq/prereq-list.ts
 import { PrereqTypes } from "@module/data/prereq/types.ts"
 import { SkillDefault } from "@module/data/item/components/skill-default.ts"
 import { ItemGURPS2 } from "@module/documents/item.ts"
-import { feature, prereq } from "@util/enum/index.ts"
+import { feature, prereq, study } from "@util/enum/index.ts"
 import { generateId } from "@util/misc.ts"
 import { ActiveEffectGURPS } from "@module/documents/active-effect.ts"
 import { MaybePromise } from "@module/data/types.ts"
@@ -15,6 +15,7 @@ import { Weight } from "@util/weight.ts"
 import { SheetSettings } from "@module/data/sheet-settings.ts"
 import { ItemCell } from "@module/data/item/components/cell-data.ts"
 import { ELEMENTS } from "../components/index.ts"
+import { Study } from "@module/data/study.ts"
 
 const { api, sheets } = foundry.applications
 
@@ -89,6 +90,8 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			deleteFeature: this.#onDeleteFeature,
 			addDefault: this.#onAddDefault,
 			deleteDefault: this.#onDeleteDefault,
+			addStudyEntry: this.#onAddStudyEntry,
+			deleteStudyEntry: this.#onDeleteStudyEntry,
 			toggleMode: this.#onToggleMode,
 			toggleCheckbox: this.#onToggleCheckbox,
 			toggleDropdown: this.#onToggleDropdown,
@@ -600,6 +603,8 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		await this.item.update({ "system.defaults": defaults })
 	}
 
+	/* -------------------------------------------- */
+
 	static async #onDeleteDefault(this: ItemSheetGURPS, event: Event): Promise<void> {
 		event.preventDefault()
 		event.stopImmediatePropagation()
@@ -614,6 +619,39 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		defaults.splice(index, 1)
 
 		await this.item.update({ "system.defaults": defaults })
+	}
+
+	/* -------------------------------------------- */
+
+	static async #onAddStudyEntry(this: ItemSheetGURPS, event: Event): Promise<void> {
+		event.preventDefault()
+		event.stopImmediatePropagation()
+
+		const item = this.item
+		if (!item.hasTemplate(ItemTemplateType.Study)) return
+
+		const studyEntries = item.system.toObject().study
+		studyEntries.push(new Study({ type: study.Type.Self }).toObject())
+
+		await this.item.update({ "system.study": studyEntries })
+	}
+
+	/* -------------------------------------------- */
+
+	static async #onDeleteStudyEntry(this: ItemSheetGURPS, event: Event): Promise<void> {
+		event.preventDefault()
+		event.stopImmediatePropagation()
+
+		const element = event.target as HTMLElement
+		const index = parseInt(element.dataset.index ?? "")
+		if (isNaN(index)) return
+		const item = this.item
+		if (!item.hasTemplate(ItemTemplateType.Study)) return
+
+		const studyEntries = item.system.toObject().study
+		studyEntries.splice(index, 1)
+
+		await this.item.update({ "system.study": studyEntries })
 	}
 
 	/* -------------------------------------------- */

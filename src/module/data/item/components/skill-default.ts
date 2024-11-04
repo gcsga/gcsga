@@ -61,7 +61,7 @@ class SkillDefault extends foundry.abstract.DataModel<ItemDataModel, SkillDefaul
 	}
 
 	toFormElement(enabled: boolean): HTMLElement {
-		const prefix = `system.defaults.${this.index}`
+		const prefix = `system.study.${this.index}`
 
 		const element = document.createElement("li")
 
@@ -70,7 +70,7 @@ class SkillDefault extends foundry.abstract.DataModel<ItemDataModel, SkillDefaul
 			: new Map()
 
 		const choices = Object.entries(
-			getAttributeChoices(this.parent.actor, this.type, "GURPS.Item.Defaults.ToggleableAttribute", {
+			getAttributeChoices(this.parent.actor, this.type, "GURPS.Item.Defaults.Fields.Attribute", {
 				blank: false,
 				ten: true,
 				size: false,

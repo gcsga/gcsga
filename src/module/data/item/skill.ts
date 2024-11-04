@@ -67,6 +67,7 @@ class SkillData extends ItemDataModel.mixin(
 			"gurps.details-prereqs",
 			"gurps.details-features",
 			"gurps.details-defaults",
+			"gurps.details-study",
 		]
 		context.embedsParts = ["gurps.embeds-weapon-melee", "gurps.embeds-weapon-ranged"]
 	}

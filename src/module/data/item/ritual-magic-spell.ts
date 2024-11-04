@@ -29,7 +29,7 @@ class RitualMagicSpellData extends ItemDataModel.mixin(
 	static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
 
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
-		context.detailsParts = ["gurps.details-ritual-magic-spell", "gurps.details-prereqs"]
+		context.detailsParts = ["gurps.details-ritual-magic-spell", "gurps.details-prereqs", "gurps.details-study"]
 		context.embedsParts = ["gurps.embeds-weapon-melee", "gurps.embeds-weapon-ranged"]
 	}
 
