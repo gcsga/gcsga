@@ -2,8 +2,8 @@ import { Nameable } from "@module/util/index.ts"
 import { StringComparison, TooltipGURPS, feature } from "@util"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { BaseFeature, BaseFeatureSchema } from "./base-feature.ts"
-import { StringCriteriaField } from "../item/fields/string-criteria-field.ts"
 import { createDummyElement } from "@module/applications/helpers.ts"
+import { ReplaceableStringCriteriaField } from "../item/fields/replaceable-string-criteria-field.ts"
 
 class SkillPointBonus extends BaseFeature<SkillPointBonusSchema> {
 	static override TYPE = feature.Type.SkillPointBonus
@@ -11,20 +11,20 @@ class SkillPointBonus extends BaseFeature<SkillPointBonusSchema> {
 	static override defineSchema(): SkillPointBonusSchema {
 		return {
 			...super.defineSchema(),
-			name: new StringCriteriaField({
+			name: new ReplaceableStringCriteriaField({
 				required: true,
 				nullable: false,
 				choices: StringComparison.CustomOptionsChoices("GURPS.Item.Features.FIELDS.SkillPointBonus.Name"),
 				initial: { compare: StringComparison.Option.IsString, qualifier: "" },
 			}),
-			specialization: new StringCriteriaField({
+			specialization: new ReplaceableStringCriteriaField({
 				required: true,
 				nullable: false,
 				choices: StringComparison.CustomOptionsChoices(
 					"GURPS.Item.Features.FIELDS.SkillPointBonus.Specialization",
 				),
 			}),
-			tags: new StringCriteriaField({
+			tags: new ReplaceableStringCriteriaField({
 				required: true,
 				nullable: false,
 				choices: StringComparison.CustomOptionsChoicesPlural(
@@ -53,6 +53,7 @@ class SkillPointBonus extends BaseFeature<SkillPointBonusSchema> {
 	override toFormElement(enabled: boolean): HTMLElement {
 		const prefix = `system.features.${this.index}`
 		const element = super.toFormElement(enabled)
+		const replacements = this.nameableReplacements
 
 		if (!enabled) {
 			element.append(createDummyElement(`${prefix}.name.compare`, this.name.compare))
@@ -84,6 +85,7 @@ class SkillPointBonus extends BaseFeature<SkillPointBonusSchema> {
 				name: enabled ? `${prefix}.name.qualifier` : "",
 				value: this.name.qualifier,
 				disabled: !enabled || this.name.compare === StringComparison.Option.AnyString,
+				replacements,
 			}) as HTMLElement,
 		)
 		element.append(rowElement1)
@@ -102,6 +104,7 @@ class SkillPointBonus extends BaseFeature<SkillPointBonusSchema> {
 				name: enabled ? `${prefix}.specialization.qualifier` : "",
 				value: this.specialization.qualifier,
 				disabled: !enabled || this.specialization.compare === StringComparison.Option.AnyString,
+				replacements,
 			}) as HTMLElement,
 		)
 		element.append(rowElement2)
@@ -120,6 +123,7 @@ class SkillPointBonus extends BaseFeature<SkillPointBonusSchema> {
 				name: enabled ? `${prefix}.tags.qualifier` : "",
 				value: this.tags.qualifier,
 				disabled: !enabled || this.tags.compare === StringComparison.Option.AnyString,
+				replacements,
 			}) as HTMLElement,
 		)
 		element.append(rowElement3)
@@ -137,9 +141,9 @@ class SkillPointBonus extends BaseFeature<SkillPointBonusSchema> {
 interface SkillPointBonus extends BaseFeature<SkillPointBonusSchema>, ModelPropsFromSchema<SkillPointBonusSchema> {}
 
 type SkillPointBonusSchema = BaseFeatureSchema & {
-	name: StringCriteriaField<true, false, true>
-	specialization: StringCriteriaField<true, false, true>
-	tags: StringCriteriaField<true, false, true>
+	name: ReplaceableStringCriteriaField<true, false, true>
+	specialization: ReplaceableStringCriteriaField<true, false, true>
+	tags: ReplaceableStringCriteriaField<true, false, true>
 }
 
 export { SkillPointBonus, type SkillPointBonusSchema }

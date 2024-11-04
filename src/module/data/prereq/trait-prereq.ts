@@ -3,9 +3,9 @@ import { LocalizeGURPS, NumericComparison, StringComparison, TooltipGURPS, prere
 import { ActorType } from "@module/data/constants.ts"
 import { ActorInst } from "../actor/helpers.ts"
 import { NumericCriteriaField } from "../item/fields/numeric-criteria-field.ts"
-import { StringCriteriaField } from "../item/fields/string-criteria-field.ts"
 import { Nameable } from "@module/util/nameable.ts"
 import { createDummyElement } from "@module/applications/helpers.ts"
+import { ReplaceableStringCriteriaField } from "../item/fields/replaceable-string-criteria-field.ts"
 
 class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 	static override TYPE = prereq.Type.Trait
@@ -13,7 +13,7 @@ class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 	static override defineSchema(): TraitPrereqSchema {
 		return {
 			...super.defineSchema(),
-			name: new StringCriteriaField({
+			name: new ReplaceableStringCriteriaField({
 				required: true,
 				nullable: false,
 				choices: StringComparison.CustomOptionsChoices("GURPS.Item.Prereqs.FIELDS.Trait.Name"),
@@ -31,7 +31,7 @@ class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 					qualifier: 0,
 				},
 			}),
-			notes: new StringCriteriaField({
+			notes: new ReplaceableStringCriteriaField({
 				required: true,
 				nullable: false,
 				choices: StringComparison.CustomOptionsChoices("GURPS.Item.Prereqs.FIELDS.Trait.Notes"),
@@ -82,6 +82,7 @@ class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 
 	override toFormElement(enabled: boolean): HTMLElement {
 		const prefix = `system.prereqs.${this.index}`
+		const replacements = this.nameableReplacements
 
 		// Root element
 		const element = super.toFormElement(enabled)
@@ -111,6 +112,7 @@ class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 				name: enabled ? `${prefix}.name.qualifier` : "",
 				value: this.name.qualifier,
 				disabled: !enabled,
+				replacements,
 			}) as HTMLElement,
 		)
 		element.append(rowElement1)
@@ -131,6 +133,7 @@ class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 				name: enabled ? `${prefix}.notes.qualifier` : "",
 				value: this.notes.qualifier,
 				disabled: !enabled,
+				replacements,
 			}) as HTMLElement,
 		)
 		element.append(rowElement2)
@@ -167,9 +170,9 @@ class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 interface TraitPrereq extends BasePrereq<TraitPrereqSchema>, ModelPropsFromSchema<TraitPrereqSchema> {}
 
 type TraitPrereqSchema = BasePrereqSchema & {
-	name: StringCriteriaField<true, false, true>
+	name: ReplaceableStringCriteriaField<true, false, true>
 	level: NumericCriteriaField<true, false, true>
-	notes: StringCriteriaField<true, false, true>
+	notes: ReplaceableStringCriteriaField<true, false, true>
 }
 
 export { TraitPrereq, type TraitPrereqSchema }

@@ -114,6 +114,12 @@ abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema
 		return new Handlebars.SafeString(this.toFormElement(enabled).outerHTML)
 	}
 
+	get nameableReplacements(): Map<string, string> {
+		return this.parent instanceof ItemDataModel && this.parent.hasTemplate(ItemTemplateType.Replacement)
+			? this.parent.nameableReplacements
+			: new Map()
+	}
+
 	getTypeChoices(): { value: string; label: string }[] {
 		const choices =
 			!(this.parent instanceof ItemDataModel) || this.parent.isOfType(ItemType.EquipmentContainer)

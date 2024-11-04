@@ -1,18 +1,16 @@
-import fields = foundry.data.fields
 import { BaseFeature, BaseFeatureSchema } from "./base-feature.ts"
 import { feature } from "@util"
 import { Nameable } from "@module/util/index.ts"
 import { createDummyElement } from "@module/applications/helpers.ts"
+import { ReplaceableStringField } from "../fields/replaceable-string-field.ts"
 
 class ConditionalModifierBonus extends BaseFeature<ConditionalModifierBonusSchema> {
 	static override TYPE = feature.Type.ConditionalModifierBonus
 
 	static override defineSchema(): ConditionalModifierBonusSchema {
-		const fields = foundry.data.fields
-
 		return {
 			...super.defineSchema(),
-			situation: new fields.StringField({
+			situation: new ReplaceableStringField({
 				required: true,
 				nullable: false,
 				initial: game.i18n.localize("gurps.feature.conditional_modifier"),
@@ -23,6 +21,7 @@ class ConditionalModifierBonus extends BaseFeature<ConditionalModifierBonusSchem
 	override toFormElement(enabled: boolean): HTMLElement {
 		const prefix = `system.features.${this.index}`
 		const element = super.toFormElement(enabled)
+		const replacements = this.nameableReplacements
 
 		if (!enabled) {
 			element.append(createDummyElement(`${prefix}.situation`, this.situation))
@@ -37,6 +36,7 @@ class ConditionalModifierBonus extends BaseFeature<ConditionalModifierBonusSchem
 				value: this.situation,
 				localize: true,
 				disabled: !enabled,
+				replacements,
 			}) as HTMLElement,
 		)
 
@@ -55,7 +55,7 @@ interface ConditionalModifierBonus
 		ModelPropsFromSchema<ConditionalModifierBonusSchema> {}
 
 type ConditionalModifierBonusSchema = BaseFeatureSchema & {
-	situation: fields.StringField<string, string, true, false, true>
+	situation: ReplaceableStringField<string, string, true, false, true>
 }
 
 export { ConditionalModifierBonus, type ConditionalModifierBonusSchema }

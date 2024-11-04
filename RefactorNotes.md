@@ -6,7 +6,6 @@
 
 ## Current Tasks
 
-- Add replacements object to all replaceablestringfields
 - Restyle input fields and toggleable input fields
 - Implement some input fields being disabled when sheet is not in edit mode
   - exclude points, quantity, enabled/disabled, equipped/unequipped

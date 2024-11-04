@@ -1,18 +1,16 @@
-import fields = foundry.data.fields
 import { BaseFeature, BaseFeatureSchema } from "./base-feature.ts"
 import { feature } from "@util"
 import { Nameable } from "@module/util/index.ts"
 import { createDummyElement } from "@module/applications/helpers.ts"
+import { ReplaceableStringField } from "../fields/replaceable-string-field.ts"
 
 class ReactionBonus extends BaseFeature<ReactionBonusSchema> {
 	static override TYPE = feature.Type.ReactionBonus
 
 	static override defineSchema(): ReactionBonusSchema {
-		const fields = foundry.data.fields
-
 		return {
 			...super.defineSchema(),
-			situation: new fields.StringField({
+			situation: new ReplaceableStringField({
 				required: true,
 				nullable: false,
 				initial: game.i18n.localize("gurps.feature.reaction_bonus"),
@@ -23,6 +21,7 @@ class ReactionBonus extends BaseFeature<ReactionBonusSchema> {
 	override toFormElement(enabled: boolean): HTMLElement {
 		const prefix = `system.features.${this.index}`
 		const element = super.toFormElement(enabled)
+		const replacements = this.nameableReplacements
 
 		if (!enabled) {
 			element.append(createDummyElement(`${prefix}.situation`, this.situation))
@@ -37,6 +36,7 @@ class ReactionBonus extends BaseFeature<ReactionBonusSchema> {
 				value: this.situation,
 				localize: true,
 				disabled: !enabled,
+				replacements,
 			}) as HTMLElement,
 		)
 
@@ -53,7 +53,7 @@ class ReactionBonus extends BaseFeature<ReactionBonusSchema> {
 interface ReactionBonus extends BaseFeature<ReactionBonusSchema>, ModelPropsFromSchema<ReactionBonusSchema> {}
 
 type ReactionBonusSchema = BaseFeatureSchema & {
-	situation: fields.StringField<string, string, true, false, true>
+	situation: ReplaceableStringField<string, string, true, false, true>
 }
 
 export { ReactionBonus, type ReactionBonusSchema }

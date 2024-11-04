@@ -2,7 +2,7 @@
 	<legend>{{localize "GURPS.Item.Skill.DetailsLegend"}}</legend>
 
 	<!-- Notes -->
-	{{formField fields.notes value=source.notes localize=true editable=editable}}
+	{{formField fields.notes value=source.notes localize=true editable=editable replacements=replacements}}
 
 	<!-- Tags -->
 	{{formField fields.tags value=source.tags localize=true editable=editable}}
@@ -18,11 +18,11 @@
 			{{#if system.default.skillBased}}
 			<!-- Name -->
 			{{formInput fields.default.fields.name value=source.default.name placeholder=(localize
-			"GURPS.Item.Technique.FIELDS.Default.Skill") localize=true}}
+			"GURPS.Item.Technique.FIELDS.Default.Skill") localize=true editable=editable replacements=replacements}}
 
 			<!-- Specialization -->
 			{{formInput fields.default.fields.specialization value=source.default.specialization placeholder=(localize
-			"GURPS.Item.Technique.FIELDS.Default.Specialization") }}
+			"GURPS.Item.Technique.FIELDS.Default.Specialization") editable=editable replacements=replacements}}
 			<!-- End If -->
 			{{/if}}
 

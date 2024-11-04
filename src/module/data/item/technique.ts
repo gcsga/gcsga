@@ -1,5 +1,4 @@
 import { ItemDataModel } from "./abstract.ts"
-import fields = foundry.data.fields
 import { PrereqTemplate, PrereqTemplateSchema } from "./templates/prereqs.ts"
 import { ContainerTemplate, ContainerTemplateSchema } from "./templates/container.ts"
 import { FeatureTemplate, FeatureTemplateSchema } from "./templates/features.ts"
@@ -28,6 +27,8 @@ import { SkillDefaultField } from "./fields/skill-default-field.ts"
 import { getAttributeChoices } from "../attribute/helpers.ts"
 import { MaybePromise } from "../types.ts"
 import { Nameable } from "@module/util/nameable.ts"
+import { ToggleableBooleanField } from "../fields/toggleable-boolean-field.ts"
+import { ToggleableNumberField } from "../fields/toggleable-number-field.ts"
 
 class TechniqueData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -103,13 +104,13 @@ class TechniqueData extends ItemDataModel.mixin(
 				nullable: true,
 			}),
 			// defaults: new fields.ArrayField(new fields.EmbeddedDataField(SkillDefault)),
-			limit: new fields.NumberField({
+			limit: new ToggleableNumberField({
 				required: true,
 				nullable: true,
 				integer: true,
 				initial: null,
 			}),
-			limited: new fields.BooleanField({
+			limited: new ToggleableBooleanField({
 				required: true,
 				nullable: false,
 				initial: false,
@@ -340,8 +341,8 @@ type TechniqueSchema = BasicInformationTemplateSchema &
 	AbstractSkillTemplateSchema & {
 		default: SkillDefaultField<true, false, true>
 		defaulted_from: SkillDefaultField<true, false, true>
-		limit: fields.NumberField<number, number, true, true, true>
-		limited: fields.BooleanField<boolean, boolean, true, false, true>
+		limit: ToggleableNumberField<number, number, true, true, true>
+		limited: ToggleableBooleanField<boolean, boolean, true, false, true>
 	}
 
 export { TechniqueData, type TechniqueSchema }

@@ -65,6 +65,10 @@ abstract class BasePrereq<TSchema extends BasePrereqSchema = BasePrereqSchema> e
 		return LocalizeGURPS.translations.GURPS.Prereq.DoesNotHave
 	}
 
+	get nameableReplacements(): Map<string, string> {
+		return this.item.hasTemplate(ItemTemplateType.Replacement) ? this.item.system.nameableReplacements : new Map()
+	}
+
 	get element(): Handlebars.SafeString {
 		const enabled: boolean = (this.item.sheet as any).editable
 		return new Handlebars.SafeString(this.toFormElement(enabled).outerHTML)

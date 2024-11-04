@@ -1,10 +1,10 @@
 import { difficulty } from "@util"
-import fields = foundry.data.fields
 import { ItemDataModel } from "@module/data/item/abstract.ts"
 import { ItemType, gid } from "@module/data/constants.ts"
 import { getAttributeChoices } from "@module/data/attribute/helpers.ts"
 import { ActorGURPS2 } from "@module/documents/actor.ts"
 import { SheetSettings } from "@module/data/sheet-settings.ts"
+import { ToggleableStringField } from "@module/data/fields/toggleable-string-fields.ts"
 
 class AttributeDifficulty extends foundry.abstract.DataModel<ItemDataModel, AttributeDifficultySchema> {
 	constructor(
@@ -30,8 +30,6 @@ class AttributeDifficulty extends foundry.abstract.DataModel<ItemDataModel, Attr
 	}
 
 	static override defineSchema(): AttributeDifficultySchema {
-		const fields = foundry.data.fields
-
 		const attributeChoices = getAttributeChoices(null, gid.Dexterity, "GURPS.AttributeDifficulty.AttributeKey", {
 			blank: false,
 			ten: true,
@@ -43,7 +41,7 @@ class AttributeDifficulty extends foundry.abstract.DataModel<ItemDataModel, Attr
 		}).choices
 
 		return {
-			attribute: new fields.StringField({
+			attribute: new ToggleableStringField({
 				required: true,
 				nullable: false,
 				blank: true,
@@ -51,7 +49,7 @@ class AttributeDifficulty extends foundry.abstract.DataModel<ItemDataModel, Attr
 				initial: gid.Dexterity,
 				label: "GURPS.AttributeDifficulty.FIELDS.Attribute.Name",
 			}),
-			difficulty: new fields.StringField({
+			difficulty: new ToggleableStringField({
 				required: true,
 				nullable: false,
 				blank: false,
@@ -82,8 +80,8 @@ interface AttributeDifficulty
 		ModelPropsFromSchema<AttributeDifficultySchema> {}
 
 type AttributeDifficultySchema = {
-	attribute: fields.StringField<string, string, true, false, true>
-	difficulty: fields.StringField<difficulty.Level, difficulty.Level, true, false, true>
+	attribute: ToggleableStringField<string, string, true, false, true>
+	difficulty: ToggleableStringField<difficulty.Level, difficulty.Level, true, false, true>
 }
 
 export { AttributeDifficulty, type AttributeDifficultySchema }

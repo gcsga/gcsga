@@ -1,9 +1,9 @@
 import { Nameable } from "@module/util/index.ts"
 import { StringComparison, feature, spellmatch } from "@util"
-import { StringCriteriaField } from "../item/fields/string-criteria-field.ts"
 import { BaseFeature, BaseFeatureSchema } from "./base-feature.ts"
 import fields = foundry.data.fields
 import { createDummyElement } from "@module/applications/helpers.ts"
+import { ReplaceableStringCriteriaField } from "../item/fields/replaceable-string-criteria-field.ts"
 
 class SpellPointBonus extends BaseFeature<SpellPointBonusSchema> {
 	static override TYPE = feature.Type.SpellPointBonus
@@ -20,12 +20,12 @@ class SpellPointBonus extends BaseFeature<SpellPointBonusSchema> {
 				choices: spellmatch.TypesChoices,
 				initial: spellmatch.Type.AllColleges,
 			}),
-			name: new StringCriteriaField({
+			name: new ReplaceableStringCriteriaField({
 				required: true,
 				nullable: false,
 				initial: { compare: StringComparison.Option.IsString, qualifier: "" },
 			}),
-			tags: new StringCriteriaField({
+			tags: new ReplaceableStringCriteriaField({
 				required: true,
 				nullable: false,
 				choices: StringComparison.CustomOptionsChoicesPlural(
@@ -43,6 +43,7 @@ class SpellPointBonus extends BaseFeature<SpellPointBonusSchema> {
 	override toFormElement(enabled: boolean): HTMLElement {
 		const prefix = `system.features.${this.index}`
 		const element = super.toFormElement(enabled)
+		const replacements = this.nameableReplacements
 
 		if (!enabled) {
 			element.append(createDummyElement(`${prefix}.match`, this.match))
@@ -83,6 +84,7 @@ class SpellPointBonus extends BaseFeature<SpellPointBonusSchema> {
 					!enabled ||
 					this.name.compare === StringComparison.Option.AnyString ||
 					this.match === spellmatch.Type.AllColleges,
+				replacements,
 			}) as HTMLElement,
 		)
 		element.append(rowElement1)
@@ -101,6 +103,7 @@ class SpellPointBonus extends BaseFeature<SpellPointBonusSchema> {
 				name: enabled ? `${prefix}.tags.qualifier` : "",
 				value: this.tags.qualifier,
 				disabled: !enabled || this.tags.compare === StringComparison.Option.AnyString,
+				replacements,
 			}) as HTMLElement,
 		)
 		element.append(rowElement2)
@@ -120,8 +123,8 @@ interface SpellPointBonus extends BaseFeature<SpellPointBonusSchema>, ModelProps
 
 type SpellPointBonusSchema = BaseFeatureSchema & {
 	match: fields.StringField<spellmatch.Type, spellmatch.Type, true, false, true>
-	name: StringCriteriaField<true, false, true>
-	tags: StringCriteriaField<true, false, true>
+	name: ReplaceableStringCriteriaField<true, false, true>
+	tags: ReplaceableStringCriteriaField<true, false, true>
 }
 
 export { SpellPointBonus, type SpellPointBonusSchema }

@@ -4,11 +4,11 @@ import { BaseFeature, BaseFeatureSchema } from "./base-feature.ts"
 import { ItemType } from "@module/data/constants.ts"
 import { Nameable } from "@module/util/index.ts"
 import { AbstractWeaponTemplate } from "@module/data/item/templates/abstract-weapon.ts"
-import { StringCriteriaField } from "../item/fields/string-criteria-field.ts"
 import { NumericCriteriaField } from "../item/fields/numeric-criteria-field.ts"
 import { createButton, createDummyElement } from "@module/applications/helpers.ts"
 import { BooleanSelectField } from "../item/fields/boolean-select-field.ts"
 import { ActiveEffectGURPS } from "@module/documents/active-effect.ts"
+import { ReplaceableStringCriteriaField } from "../item/fields/replaceable-string-criteria-field.ts"
 
 class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 	declare dieCount: number
@@ -55,12 +55,12 @@ class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 				choices: wsel.TypesChoices,
 				initial: wsel.Type.WithRequiredSkill,
 			}),
-			name: new StringCriteriaField({
+			name: new ReplaceableStringCriteriaField({
 				required: true,
 				nullable: false,
 				initial: { compare: StringComparison.Option.IsString, qualifier: "" },
 			}),
-			specialization: new StringCriteriaField({
+			specialization: new ReplaceableStringCriteriaField({
 				required: true,
 				nullable: false,
 				choices: StringComparison.CustomOptionsChoices("GURPS.Item.Features.FIELDS.WeaponBonus.Specialization"),
@@ -71,12 +71,12 @@ class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 				choices: NumericComparison.CustomOptionsChoices("GURPS.Item.Features.FIELDS.WeaponBonus.Level"),
 				initial: { compare: NumericComparison.Option.AtLeastNumber, qualifier: 0 },
 			}),
-			usage: new StringCriteriaField({
+			usage: new ReplaceableStringCriteriaField({
 				required: true,
 				nullable: false,
 				choices: StringComparison.CustomOptionsChoices("GURPS.Item.Features.FIELDS.WeaponBonus.Usage"),
 			}),
-			tags: new StringCriteriaField({
+			tags: new ReplaceableStringCriteriaField({
 				required: true,
 				nullable: false,
 				choices: StringComparison.CustomOptionsChoicesPlural(
@@ -317,6 +317,7 @@ class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 
 	private _getFormElementFilters(enabled: boolean): HTMLElement[] {
 		const prefix = `system.features.${this.index}`
+		const replacements = this.nameableReplacements
 
 		const rowElement1 = document.createElement("div")
 		rowElement1.classList.add("form-fields", "secondary")
@@ -354,6 +355,7 @@ class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 					!enabled ||
 					this.selection_type === wsel.Type.ThisWeapon ||
 					this.name.compare === StringComparison.Option.AnyString,
+				replacements,
 			}) as HTMLElement,
 		)
 
@@ -371,6 +373,7 @@ class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 				name: enabled ? `${prefix}.specialization.qualifier` : "",
 				value: this.specialization.qualifier,
 				disabled: !enabled || this.specialization.compare === StringComparison.Option.AnyString,
+				replacements,
 			}) as HTMLElement,
 		)
 
@@ -388,6 +391,7 @@ class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 				name: enabled ? `${prefix}.usage.qualifier` : "",
 				value: this.usage.qualifier,
 				disabled: !enabled || this.usage.compare === StringComparison.Option.AnyString,
+				replacements,
 			}) as HTMLElement,
 		)
 
@@ -405,6 +409,7 @@ class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 				name: enabled ? `${prefix}.tags.qualifier` : "",
 				value: this.tags.qualifier,
 				disabled: !enabled || this.tags.compare === StringComparison.Option.AnyString,
+				replacements,
 			}) as HTMLElement,
 		)
 
@@ -452,11 +457,11 @@ type WeaponBonusSchema = BaseFeatureSchema & {
 	switch_type: fields.StringField<string, wswitch.Type, true, true>
 	switch_type_value: BooleanSelectField<boolean, boolean, true, true, true>
 	selection_type: fields.StringField<wsel.Type, wsel.Type, true, false, true>
-	name: StringCriteriaField<true, false, true>
-	specialization: StringCriteriaField<true, false, true>
+	name: ReplaceableStringCriteriaField<true, false, true>
+	specialization: ReplaceableStringCriteriaField<true, false, true>
 	level: NumericCriteriaField<true, false, true>
-	usage: StringCriteriaField<true, false, true>
-	tags: StringCriteriaField<true, false, true>
+	usage: ReplaceableStringCriteriaField<true, false, true>
+	tags: ReplaceableStringCriteriaField<true, false, true>
 	amount: fields.NumberField<number, number, true, false>
 	// leveled: fields.BooleanField<boolean, boolean, true, false, true>
 	per_die: fields.BooleanField<boolean, boolean, true, false, true>

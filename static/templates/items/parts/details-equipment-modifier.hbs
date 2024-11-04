@@ -2,10 +2,10 @@
 	<legend>{{localize "GURPS.Item.EquipmentModifier.DetailsLegend"}}</legend>
 
 	<!-- Notes -->
-	{{formField fields.notes value=source.notes localize=true}}
+	{{formField fields.notes value=source.notes localize=true editable=editable replacements=replacements}}
 
 	<!-- Tech Level-->
-	{{formField fields.tech_level value=source.tech_level localize=true}}
+	{{formField fields.tech_level value=source.tech_level localize=true editable=editable}}
 
 	<!-- Enabled -->
 	<div class="form-group">
@@ -58,8 +58,8 @@
 	</div>
 
 	<!-- Tags -->
-	{{formField fields.tags value=source.tags localize=true}}
+	{{formField fields.tags value=source.tags localize=true editable=editable}}
 
 	<!-- Reference -->
-	{{formField fields.reference value=source.reference localize=true}}
+	{{formField fields.reference value=source.reference localize=true editable=editable}}
 </fieldset>

@@ -2,7 +2,8 @@
 	<legend>{{localize "GURPS.Item.Skill.DetailsLegend"}}</legend>
 
 	<!-- Specialization -->
-	{{formField fields.specialization value=source.specialization localize=true editable=editable}}
+	{{formField fields.specialization value=source.specialization localize=true editable=editable
+	replacements=replacements}}
 
 	<!-- Tech Level -->
 	<div class="form-group">
@@ -22,7 +23,7 @@
 	</div>
 
 	<!-- Notes -->
-	{{formField fields.notes value=source.notes localize=true editable=editable}}
+	{{formField fields.notes value=source.notes localize=true editable=editable replacements=replacements}}
 
 	<!-- Tags -->
 	{{formField fields.tags value=source.tags localize=true editable=editable}}

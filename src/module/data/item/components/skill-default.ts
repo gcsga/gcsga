@@ -1,4 +1,4 @@
-import { ActorType, SkillDefaultType, gid } from "@data"
+import { ActorType, SkillDefaultType, ToggleableNumberField, ToggleableStringField, gid } from "@data"
 import { LocalizeGURPS, StringBuilder } from "@util"
 import { ActorGURPS2 } from "@module/documents/actor.ts"
 import { ActorTemplateType } from "@module/data/actor/types.ts"
@@ -9,6 +9,7 @@ import { getAttributeChoices } from "../../attribute/helpers.ts"
 import { ItemDataModel } from "../abstract.ts"
 import fields = foundry.data.fields
 import { ItemGURPS2 } from "@module/documents/item.ts"
+import { ReplaceableStringField } from "@module/data/fields/replaceable-string-field.ts"
 
 const SKILL_BASED_DEFAULT_TYPES: Set<string> = new Set([gid.Skill, gid.Parry, gid.Block])
 
@@ -16,13 +17,13 @@ class SkillDefault extends foundry.abstract.DataModel<ItemDataModel, SkillDefaul
 	static override defineSchema(): SkillDefaultSchema {
 		const fields = foundry.data.fields
 		return {
-			type: new fields.StringField({
+			type: new ToggleableStringField({
 				required: true,
 				initial: gid.Dexterity,
 			}),
-			name: new fields.StringField({ required: true, nullable: true, initial: null }),
-			specialization: new fields.StringField({ required: true, nullable: true, initial: null }),
-			modifier: new fields.NumberField({ integer: true, required: true, nullable: false, initial: 0 }),
+			name: new ReplaceableStringField({ required: true, nullable: true, initial: null }),
+			specialization: new ReplaceableStringField({ required: true, nullable: true, initial: null }),
+			modifier: new ToggleableNumberField({ integer: true, required: true, nullable: false, initial: 0 }),
 			level: new fields.NumberField({ required: true, nullable: false, initial: 0 }),
 			adjusted_level: new fields.NumberField({ required: true, nullable: false, initial: 0 }),
 			points: new fields.NumberField({ required: true, nullable: false, initial: 0 }),
@@ -60,8 +61,13 @@ class SkillDefault extends foundry.abstract.DataModel<ItemDataModel, SkillDefaul
 	}
 
 	toFormElement(enabled: boolean): HTMLElement {
-		const element = document.createElement("li")
 		const prefix = `system.defaults.${this.index}`
+
+		const element = document.createElement("li")
+
+		const replacements = this.item.hasTemplate(ItemTemplateType.Replacement)
+			? this.item.system.nameableReplacements
+			: new Map()
 
 		const choices = Object.entries(
 			getAttributeChoices(this.parent.actor, this.type, "GURPS.Item.Defaults.ToggleableAttribute", {
@@ -121,6 +127,7 @@ class SkillDefault extends foundry.abstract.DataModel<ItemDataModel, SkillDefaul
 				localize: true,
 				placeholder: game.i18n.localize("GURPS.Item.Defaults.ToggleableName"),
 				disabled: !SKILL_BASED_DEFAULT_TYPES.has(this.type),
+				replacements,
 			}) as HTMLElement,
 		)
 
@@ -131,6 +138,7 @@ class SkillDefault extends foundry.abstract.DataModel<ItemDataModel, SkillDefaul
 				localize: true,
 				placeholder: game.i18n.localize("GURPS.Item.Defaults.ToggleableSpecialization"),
 				disabled: !SKILL_BASED_DEFAULT_TYPES.has(this.type),
+				replacements,
 			}) as HTMLElement,
 		)
 
@@ -309,10 +317,10 @@ interface SkillDefault
 		ModelPropsFromSchema<SkillDefaultSchema> {}
 
 type SkillDefaultSchema = {
-	type: fields.StringField<SkillDefaultType, SkillDefaultType, true, false, true>
-	name: fields.StringField<string, string, true, true, true>
-	specialization: fields.StringField<string, string, true, true, true>
-	modifier: fields.NumberField<number, number, true, false, true>
+	type: ToggleableStringField<SkillDefaultType, SkillDefaultType, true, false, true>
+	name: ReplaceableStringField<string, string, true, true, true>
+	specialization: ReplaceableStringField<string, string, true, true, true>
+	modifier: ToggleableNumberField<number, number, true, false, true>
 	level: fields.NumberField<number, number, true, false, true>
 	adjusted_level: fields.NumberField<number, number, true, false, true>
 	points: fields.NumberField<number, number, true, false, true>

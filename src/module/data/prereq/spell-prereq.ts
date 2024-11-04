@@ -8,8 +8,8 @@ import { Nameable } from "@module/util/index.ts"
 import { ItemGURPS2 } from "@module/documents/item.ts"
 import { ActorInst } from "../actor/helpers.ts"
 import { NumericCriteriaField } from "../item/fields/numeric-criteria-field.ts"
-import { StringCriteriaField } from "../item/fields/string-criteria-field.ts"
 import { createButton, createDummyElement } from "@module/applications/helpers.ts"
+import { ReplaceableStringCriteriaField } from "../item/fields/replaceable-string-criteria-field.ts"
 
 class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 	static override TYPE = prereq.Type.Spell
@@ -44,7 +44,7 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 					qualifier: 0,
 				},
 			}),
-			qualifier: new StringCriteriaField({
+			qualifier: new ReplaceableStringCriteriaField({
 				required: true,
 				nullable: false,
 				choices: StringComparison.OptionsChoices,
@@ -128,6 +128,7 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 
 	override toFormElement(enabled: boolean): HTMLElement {
 		const prefix = `system.prereqs.${this.index}`
+		const replacements = this.nameableReplacements
 
 		const element = document.createElement("li")
 		element.classList.add("prereq")
@@ -219,6 +220,7 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 				name: enabled ? `${prefix}.qualifier.qualifier` : "",
 				value: this.qualifier.qualifier,
 				disabled: !enabled,
+				replacements,
 			}) as HTMLElement,
 		)
 		element.append(rowElement2)
@@ -242,6 +244,6 @@ interface SpellPrereq extends BasePrereq<SpellPrereqSchema>, ModelPropsFromSchem
 export type SpellPrereqSchema = BasePrereqSchema & {
 	sub_type: fields.StringField<spellcmp.Type, spellcmp.Type, true, false, true>
 	quantity: NumericCriteriaField<true, false, true>
-	qualifier: StringCriteriaField<true, false, true>
+	qualifier: ReplaceableStringCriteriaField<true, false, true>
 }
 export { SpellPrereq }

@@ -2,8 +2,8 @@ import fields = foundry.data.fields
 import { StringComparison, feature, skillsel } from "@util"
 import { BaseFeature, BaseFeatureSchema } from "./base-feature.ts"
 import { Nameable } from "@module/util/index.ts"
-import { StringCriteriaField } from "../item/fields/string-criteria-field.ts"
 import { createDummyElement } from "@module/applications/helpers.ts"
+import { ReplaceableStringCriteriaField } from "../item/fields/replaceable-string-criteria-field.ts"
 
 class SkillBonus extends BaseFeature<SkillBonusSchema> {
 	static override TYPE = feature.Type.SkillBonus
@@ -20,17 +20,17 @@ class SkillBonus extends BaseFeature<SkillBonusSchema> {
 				choices: skillsel.TypesChoices,
 				initial: skillsel.Type.Name,
 			}),
-			name: new StringCriteriaField({
+			name: new ReplaceableStringCriteriaField({
 				required: true,
 				nullable: false,
 				initial: { compare: StringComparison.Option.IsString, qualifier: "" },
 			}),
-			specialization: new StringCriteriaField({
+			specialization: new ReplaceableStringCriteriaField({
 				required: true,
 				nullable: false,
 				choices: StringComparison.CustomOptionsChoices("GURPS.Item.Features.FIELDS.SkillBonus.Specialization"),
 			}),
-			tags: new StringCriteriaField({
+			tags: new ReplaceableStringCriteriaField({
 				required: true,
 				nullable: false,
 				choices: StringComparison.CustomOptionsChoicesPlural(
@@ -44,6 +44,7 @@ class SkillBonus extends BaseFeature<SkillBonusSchema> {
 	override toFormElement(enabled: boolean): HTMLElement {
 		const prefix = `system.features.${this.index}`
 		const element = super.toFormElement(enabled)
+		const replacements = this.nameableReplacements
 
 		if (!enabled) {
 			element.append(createDummyElement(`${prefix}.selection_type`, this.selection_type))
@@ -86,6 +87,7 @@ class SkillBonus extends BaseFeature<SkillBonusSchema> {
 					!enabled ||
 					this.selection_type === skillsel.Type.ThisWeapon ||
 					this.name.compare === StringComparison.Option.AnyString,
+				replacements,
 			}) as HTMLElement,
 		)
 		element.append(rowElement1)
@@ -115,6 +117,7 @@ class SkillBonus extends BaseFeature<SkillBonusSchema> {
 				name: enabled ? `${prefix}.specialization.qualifier` : "",
 				value: this.specialization.qualifier,
 				disabled: !enabled || this.specialization.compare === StringComparison.Option.AnyString,
+				replacements,
 			}) as HTMLElement,
 		)
 		element.append(rowElement2)
@@ -137,6 +140,7 @@ class SkillBonus extends BaseFeature<SkillBonusSchema> {
 					name: enabled ? `${prefix}.tags.qualifier` : "",
 					value: this.tags.qualifier,
 					disabled: !enabled || this.tags.compare === StringComparison.Option.AnyString,
+					replacements,
 				}) as HTMLElement,
 			)
 			element.append(rowElement3)
@@ -158,9 +162,9 @@ interface SkillBonus extends BaseFeature<SkillBonusSchema>, ModelPropsFromSchema
 
 type SkillBonusSchema = BaseFeatureSchema & {
 	selection_type: fields.StringField<skillsel.Type, skillsel.Type, true, false, true>
-	name: StringCriteriaField<true, false, true>
-	specialization: StringCriteriaField<true, false, true>
-	tags: StringCriteriaField<true, false, true>
+	name: ReplaceableStringCriteriaField<true, false, true>
+	specialization: ReplaceableStringCriteriaField<true, false, true>
+	tags: ReplaceableStringCriteriaField<true, false, true>
 }
 
 export { SkillBonus, type SkillBonusSchema }

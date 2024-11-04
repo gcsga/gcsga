@@ -15,6 +15,7 @@ import { Nameable } from "@module/util/index.ts"
 import { MaybePromise } from "../types.ts"
 import { ItemTemplateType } from "./types.ts"
 import { ToggleableBooleanField, ToggleableNumberField, ToggleableStringField } from "../fields/index.ts"
+import { ReplaceableStringField } from "../fields/replaceable-string-field.ts"
 
 class TraitContainerData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -47,7 +48,7 @@ class TraitContainerData extends ItemDataModel.mixin(
 				idOnly: true,
 				label: "GURPS.Item.TraitContainer.FIELDS.Ancestry.Name",
 			}),
-			userdesc: new ToggleableStringField({
+			userdesc: new ReplaceableStringField({
 				required: true,
 				nullable: false,
 				initial: "",
@@ -56,14 +57,14 @@ class TraitContainerData extends ItemDataModel.mixin(
 			cr: new ToggleableNumberField({
 				required: true,
 				nullable: false,
-				choices: selfctrl.RollsChoices,
+				choices: selfctrl.RollsChoices(),
 				initial: selfctrl.Roll.NoCR,
 				label: "GURPS.Item.Trait.FIELDS.Cr.Name",
 			}),
 			cr_adj: new ToggleableStringField({
 				required: true,
 				nullable: false,
-				choices: selfctrl.AdjustmentsChoices,
+				choices: selfctrl.AdjustmentsChoices(),
 				initial: selfctrl.Adjustment.NoCRAdj,
 				label: "GURPS.Item.Trait.FIELDS.CrAdj.Name",
 			}),
@@ -335,7 +336,7 @@ type TraitContainerSchema = BasicInformationTemplateSchema &
 	ContainerTemplateSchema &
 	ReplacementTemplateSchema & {
 		ancestry: fields.ForeignDocumentField<string, true, true, true>
-		userdesc: ToggleableStringField<string, string, true, false, true>
+		userdesc: ReplaceableStringField<string, string, true, false, true>
 		cr: ToggleableNumberField<selfctrl.Roll, selfctrl.Roll, true, false, true>
 		cr_adj: ToggleableStringField<selfctrl.Adjustment, selfctrl.Adjustment, true, false, true>
 		container_type: ToggleableStringField<container.Type, container.Type, true, false, true>

@@ -14,7 +14,8 @@ import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/repl
 import { StudyTemplate, StudyTemplateSchema } from "./templates/study.ts"
 import { MaybePromise } from "../types.ts"
 import { ActorTemplateType } from "../actor/types.ts"
-import { ToggleableNumberField, ToggleableStringField } from "../fields/index.ts"
+import { ToggleableNumberField } from "../fields/index.ts"
+import { ReplaceableStringField } from "../fields/replaceable-string-field.ts"
 
 class RitualMagicSpellData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -47,7 +48,7 @@ class RitualMagicSpellData extends ItemDataModel.mixin(
 				]),
 				label: "GURPS.Item.Spell.FIELDS.Difficulty.Name",
 			}),
-			base_skill: new ToggleableStringField<string, string, true, false, true>({
+			base_skill: new ReplaceableStringField<string, string, true, false, true>({
 				required: true,
 				nullable: false,
 				initial: "Ritual Magic",
@@ -267,7 +268,7 @@ type RitualMagicSpellSchema = BasicInformationTemplateSchema &
 	ReplacementTemplateSchema &
 	AbstractSkillTemplateSchema &
 	SpellTemplateSchema & {
-		base_skill: ToggleableStringField<string, string, true, false, true>
+		base_skill: ReplaceableStringField<string, string, true, false, true>
 		prereq_count: ToggleableNumberField<number, number, true, false, true>
 	}
 

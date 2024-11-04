@@ -1,5 +1,6 @@
 import { DiceGURPS, DiceSchema } from "@module/data/dice.ts"
 import fields = foundry.data.fields
+import { ToggleableFormInputConfig } from "@module/data/fields/helpers.ts"
 
 class DiceField<
 	TRequired extends boolean = false,
@@ -18,13 +19,19 @@ class DiceField<
 		super(DiceGURPS, options, context)
 	}
 
-	override toInput(config?: FormInputConfig): HTMLElement | HTMLCollection {
+	protected override _toInput(config?: ToggleableFormInputConfig<string>): HTMLElement | HTMLCollection {
 		const name = config?.name ?? this.name
-		return foundry.applications.fields.createTextInput({
+		const input = foundry.applications.fields.createTextInput({
 			...config,
 			name,
 			value: String(config?.value ?? this.parent?.[name]),
 		})
+		if (config && config.editable === false) {
+			const element = document.createElement("span")
+			element.innerHTML = config.value ?? ""
+			return element
+		}
+		return input
 	}
 
 	override clean(

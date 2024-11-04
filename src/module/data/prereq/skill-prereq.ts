@@ -96,6 +96,7 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 
 	override toFormElement(enabled: boolean): HTMLElement {
 		const prefix = `system.prereqs.${this.index}`
+		const replacements = this.nameableReplacements
 
 		// Root element
 		const element = super.toFormElement(enabled)
@@ -125,6 +126,7 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 				name: enabled ? `${prefix}.name.qualifier` : "",
 				value: this.name.qualifier,
 				disabled: !enabled,
+				replacements,
 			}) as HTMLElement,
 		)
 		element.append(rowElement1)
@@ -145,6 +147,7 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 				name: enabled ? `${prefix}.specialization.qualifier` : "",
 				value: this.specialization.qualifier,
 				disabled: !enabled,
+				replacements,
 			}) as HTMLElement,
 		)
 		element.append(rowElement2)
