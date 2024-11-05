@@ -1,7 +1,7 @@
 import { AbstractWeaponTemplate } from "../templates/index.ts"
 import fields = foundry.data.fields
 import { WeaponField } from "./weapon-field.ts"
-import { Int, LocalizeGURPS, StringBuilder, TooltipGURPS, feature, wswitch } from "@util"
+import { Int, StringBuilder, TooltipGURPS, feature, wswitch } from "@util"
 import { ToggleableBooleanField, ToggleableNumberField } from "@module/data/fields/index.ts"
 
 class WeaponShots extends WeaponField<AbstractWeaponTemplate, WeaponShotsSchema> {
@@ -69,7 +69,7 @@ class WeaponShots extends WeaponField<AbstractWeaponTemplate, WeaponShotsSchema>
 	}
 
 	override tooltip(_w: AbstractWeaponTemplate): string {
-		if (this.reloadTimeIsPerShot) return LocalizeGURPS.translations.GURPS.Tooltip.ReloadTimeIsPerShot
+		if (this.reloadTimeIsPerShot) return game.i18n.localize("GURPS.Tooltip.ReloadTimeIsPerShot")
 		return ""
 	}
 

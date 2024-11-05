@@ -1,6 +1,6 @@
 import fields = foundry.data.fields
 import { WeaponField } from "./weapon-field.ts"
-import { LocalizeGURPS, TooltipGURPS, wswitch } from "@util"
+import { TooltipGURPS, wswitch } from "@util"
 import { WeaponROFMode } from "./weapon-rof-mode.ts"
 import { AbstractWeaponTemplate } from "../templates/index.ts"
 import { ToggleableBooleanField } from "@module/data/fields/toggleable-boolean-field.ts"
@@ -47,11 +47,11 @@ class WeaponROF extends WeaponField<AbstractWeaponTemplate, WeaponROFSchema> {
 		const t1 = this.mode1.tooltip(w)
 		const t2 = this.mode2.tooltip(w)
 		if (t1 !== "") {
-			if (t2 !== "") buffer.push(LocalizeGURPS.translations.GURPS.Tooltip.ROFMode1, "\n")
+			if (t2 !== "") buffer.push(game.i18n.localize("GURPS.Tooltip.ROFMode1"), "\n")
 			buffer.push(t1)
 		}
 		if (t2 !== "") {
-			if (t1 !== "") buffer.push(LocalizeGURPS.translations.GURPS.Tooltip.ROFMode2, "\n")
+			if (t1 !== "") buffer.push(game.i18n.localize("GURPS.Tooltip.ROFMode2"), "\n")
 			buffer.push(t2)
 		}
 		return buffer.toString()
@@ -68,13 +68,13 @@ class WeaponROF extends WeaponField<AbstractWeaponTemplate, WeaponROFSchema> {
 			if (tooltip !== null) {
 				if (buf1.length !== 0) {
 					if (buf2.length !== 0) {
-						tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.ROFMode1, "\n")
+						tooltip.push(game.i18n.localize("GURPS.Tooltip.ROFMode1"), "\n")
 					}
 					tooltip.push(buf1.toString())
 				}
 				if (buf2.length !== 0) {
 					if (buf1.length !== 0) {
-						tooltip.push("\n\n", LocalizeGURPS.translations.GURPS.Tooltip.ROFMode2, "\n")
+						tooltip.push("\n\n", game.i18n.localize("GURPS.Tooltip.ROFMode2"), "\n")
 					}
 					tooltip.push(buf2.toString())
 				}

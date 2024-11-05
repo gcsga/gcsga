@@ -1,5 +1,5 @@
 import { ActorType, ItemType, gid } from "../constants.ts"
-import { EvalEmbeddedRegex, LocalizeGURPS, StringBuilder, TooltipGURPS, difficulty, replaceAllStringFunc } from "@util"
+import { EvalEmbeddedRegex, StringBuilder, TooltipGURPS, difficulty, replaceAllStringFunc } from "@util"
 import { ItemInst, SkillLevel } from "./helpers.ts"
 import { AttributeDifficultyField } from "./fields/attribute-difficulty-field.ts"
 import { getAttributeChoices } from "../attribute/helpers.ts"
@@ -97,10 +97,7 @@ class SpellData extends ItemDataModel.mixin(
 	override get processedName(): string {
 		const buffer = new StringBuilder()
 		buffer.push(this.nameWithReplacements)
-		if (this.tech_level_required)
-			buffer.push(
-				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.TechLevelShort, { level: this.tech_level }),
-			)
+		if (this.tech_level_required) buffer.push(game.i18n.format("GURPS.TechLevelShort", { level: this.tech_level }))
 		return buffer.toString()
 	}
 

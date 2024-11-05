@@ -4,7 +4,7 @@ import { DiceGURPS } from "@module/data/dice.ts"
 // import { ItemInst } from "@module/data/item/helpers.ts"
 import { Study } from "@module/data/study.ts"
 // import { ItemGURPS2 } from "@module/document/item.ts"
-import { LocalizeGURPS, localeDate, objectHasKey, rgbToHex, study } from "@util"
+import { localeDate, objectHasKey, rgbToHex, study } from "@util"
 import { pageRef } from "@util/page-ref.ts"
 import { SafeString } from "handlebars"
 // import { ItemSource } from "types/foundry/common/documents/item.js"
@@ -174,7 +174,7 @@ class HandlebarsHelpersGURPS {
 	static ref(a: string): string {
 		if (!a) return ""
 		const references = a.split(",").map(e => {
-			if (e.includes("http")) return [e, LocalizeGURPS.translations.gurps.character.link]
+			if (e.includes("http")) return [e, game.i18n.localize("GURPS.Link")]
 			return [e, e]
 		})
 		const buffer: string[] = []
@@ -395,12 +395,12 @@ class HandlebarsHelpersGURPS {
 	// 	return list.join("; ")
 	// }
 
-	static modifierCost(c: { id: string; value: number }): string {
-		return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.system.modifier_bucket.cost, {
-			value: c.value,
-			id: c.id.toUpperCase(),
-		})
-	}
+	// static modifierCost(c: { id: string; value: number }): string {
+	// 	return game.i18n.format(gurps.system.modifier_bucket.cost, {
+	// 		value: c.value,
+	// 		id: c.id.toUpperCase(),
+	// 	})
+	// }
 
 	// static effective(a: ItemInst<ItemType.Skill> | { effective: number; current: number }): string {
 	// 	if (a instanceof Item) {
@@ -547,7 +547,7 @@ export function registerHandlebarsHelpers(): void {
 		json: HandlebarsHelpersGURPS.json,
 		length: HandlebarsHelpersGURPS.len,
 		md: HandlebarsHelpersGURPS.md,
-		modifierCost: HandlebarsHelpersGURPS.modifierCost,
+		// modifierCost: HandlebarsHelpersGURPS.modifierCost,
 		modifierString: HandlebarsHelpersGURPS.modifierString,
 		notEmpty: HandlebarsHelpersGURPS.notEmpty,
 		// overspent: HandlebarsHelpersGURPS.overspent,

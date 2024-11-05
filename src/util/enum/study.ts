@@ -1,4 +1,3 @@
-import { LocalizeGURPS } from "@util/localize.ts"
 import { StringBuilder } from "@util/string-builder.ts"
 
 export namespace study {
@@ -28,7 +27,12 @@ export namespace study {
 		}
 
 		export function limitations(T: Type): string[] {
-			return [...LocalizeGURPS.translations.gurps.enum.study.type.limitations[T]]
+			switch (T) {
+				case Type.Job:
+					return [0, 1].map(e => `GURPS.Enum.study.Type.${T}.Limitations.${e}`)
+				default:
+					return [0, 1, 2].map(e => `GURPS.Enum.study.Type.${T}.Limitations.${e}`)
+			}
 		}
 
 		export function info(T: Type): string {

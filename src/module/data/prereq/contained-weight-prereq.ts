@@ -1,5 +1,5 @@
 import { BasePrereq, BasePrereqSchema } from "./base-prereq.ts"
-import { LocalizeGURPS, NumericComparison, TooltipGURPS, Weight, prereq } from "@util"
+import { NumericComparison, TooltipGURPS, Weight, prereq } from "@util"
 import { ActorType, ItemType } from "@module/data/constants.ts"
 import { ItemGURPS2 } from "@module/documents/item.ts"
 import { SheetSettings } from "../sheet-settings.ts"
@@ -37,9 +37,9 @@ class ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema> {
 		}
 		if (!this.has) satisfied = !satisfied
 		if (!satisfied && tooltip !== null) {
-			tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.Prefix)
+			tooltip.push(game.i18n.localize("GURPS.Tooltip.Prefix"))
 			tooltip.push(
-				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.ContainedWeight, {
+				game.i18n.format("GURPS.Prereq.ContainedWeight", {
 					has: this.hasText,
 					qualifier: this.qualifier.toString(),
 				}),

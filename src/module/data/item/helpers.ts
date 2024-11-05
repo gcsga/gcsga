@@ -1,7 +1,6 @@
 import { ActorGURPS2 } from "@module/documents/actor.ts"
 import {
 	Int,
-	LocalizeGURPS,
 	StringBuilder,
 	TooltipGURPS,
 	Weight,
@@ -39,9 +38,9 @@ function addTooltipForSkillLevelAdj(
 	buffer: StringBuilder,
 ): void {
 	if (optionChecker(settings.skill_level_adj_display)) {
-		if (level.tooltip !== "" && level.tooltip !== LocalizeGURPS.translations.GURPS.Messages.NoAdditionalModifiers) {
+		if (level.tooltip !== "" && level.tooltip !== game.i18n.localize("GURPS.Messages.NoAdditionalModifiers")) {
 			let levelTooltip = level.tooltip
-			const msg = LocalizeGURPS.translations.GURPS.Messages.IncludesModifiersFrom
+			const msg = game.i18n.localize("GURPS.Messages.IncludesModifiersFrom")
 			if (!levelTooltip.startsWith(msg)) levelTooltip = msg + ":" + levelTooltip
 			if (optionChecker(display.Option.Inline)) {
 				levelTooltip = levelTooltip.replaceAll(/:\n/, ": ").replaceAll(/\n/, ", ")

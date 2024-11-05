@@ -1,4 +1,3 @@
-import { LocalizeGURPS } from "@util/localize.ts"
 import fields = foundry.data.fields
 import { TooltipGURPS, feature } from "@util"
 import { gid } from "@module/data/constants.ts"
@@ -30,8 +29,7 @@ class DRBonus extends BaseFeature<DRBonusSchema> {
 			tooltip.push("\n")
 			tooltip.push(this.parentName)
 			tooltip.push(
-				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.feature.dr_bonus, {
-					// level: this.leveledAmount.format(false),
+				game.i18n.format("GURPS.Feature.DRBonus", {
 					level: this.format(false),
 					type: this.specialization ?? gid.All,
 				}),

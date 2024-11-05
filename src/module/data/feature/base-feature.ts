@@ -6,7 +6,6 @@ import { ActiveEffectGURPS } from "@module/documents/active-effect.ts"
 import { type ItemGURPS2 } from "@module/documents/item.ts"
 import { TooltipGURPS } from "@util"
 import { feature } from "@util/enum/feature.ts"
-import { LocalizeGURPS } from "@util/localize.ts"
 import type { Feature, FeatureInstances } from "./types.ts"
 import fields = foundry.data.fields
 import { EffectDataModel } from "../active-effect/abstract.ts"
@@ -86,17 +85,15 @@ abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema
 	}
 
 	get parentName(): string {
-		if (!this.owner) return LocalizeGURPS.translations.gurps.misc.unknown
+		if (!this.owner) return "Unknown"
 		if (this.owner instanceof ActiveEffectGURPS) return this.owner.name
 
-		if (!this.owner.hasTemplate(ItemTemplateType.BasicInformation))
-			return LocalizeGURPS.translations.gurps.misc.unknown
+		if (!this.owner.hasTemplate(ItemTemplateType.BasicInformation)) return "Unknown"
 		const owner = this.owner.system.nameWithReplacements
 		if (!this.subOwner) return owner
 		if (this.subOwner instanceof ActiveEffectGURPS) return this.subOwner.name
 
-		if (!this.subOwner.hasTemplate(ItemTemplateType.BasicInformation))
-			return LocalizeGURPS.translations.gurps.misc.unknown
+		if (!this.subOwner.hasTemplate(ItemTemplateType.BasicInformation)) return "Unknown"
 		return `${owner} (${this.subOwner.system.nameWithReplacements})`
 	}
 
@@ -153,7 +150,7 @@ abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema
 			adjustedAmt += "%"
 		}
 		if (this.per_level)
-			return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.feature.weapon_bonus.per_level, {
+			return game.i18n.format("GURPS.Feature.WeaponBonus.PerLevel", {
 				total: adjustedAmt,
 				base: amt,
 			})

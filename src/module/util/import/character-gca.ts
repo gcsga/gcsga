@@ -1,5 +1,5 @@
 // import { ActorFlags, ActorType, ManeuverID, SETTINGS, SYSTEM_NAME } from "@data"
-// import { Length, LocalizeGURPS, StringBuilder, Weight, display, getCurrentTime, progression } from "@util"
+// import { Length, StringBuilder, Weight, display, getCurrentTime, progression } from "@util"
 // import { GCABody, GCABodyItem, GCACharacter } from "./data-gca.ts"
 // import { GCAItemImporter } from "./item-gca.ts"
 // import { GCAParser } from "./parse-gca.ts"
@@ -67,7 +67,7 @@
 // 		items.push(...GCAItemImporter.importTemplates(data))
 //
 // 		const name =
-// 			systemData.profile?.name ?? document.name ?? LocalizeGURPS.translations.TYPES.Actor[ActorType.Character]
+// 			systemData.profile?.name ?? document.name ?? translations.TYPES.Actor[ActorType.Character]
 //
 // 		const actorData: DeepPartial<ActorSource> = {
 // 			name,

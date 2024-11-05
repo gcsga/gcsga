@@ -9,12 +9,10 @@ export namespace display {
 	export namespace Option {
 		export function toString(O: Option): string {
 			return `GURPS.Enum.display.${O}.Name`
-			// return LocalizeGURPS.translations.gurps.enum.display[O]
 		}
 
 		export function toAltString(O: Option): string {
 			return `GURPS.Enum.display.${O}.Hint`
-			// return LocalizeGURPS.translations.gurps.enum.display[O]
 		}
 
 		export function isInline(O: Option): boolean {

@@ -1,6 +1,6 @@
 // import { ActorFlags, ActorType, ManeuverID, SETTINGS, SYSTEM_NAME } from "@data"
 // import { ManeuverManager } from "@system/maneuver-manager.ts"
-// import { Length, LocalizeGURPS, Weight, getCurrentTime } from "@util"
+// import { Length, Weight, getCurrentTime } from "@util"
 // import { display } from "@util/enum/display.ts"
 // import { progression } from "@util/enum/progression.ts"
 // import { GCACharacterImporter } from "./character-gca.ts"
@@ -60,8 +60,8 @@
 //
 // 		if (!GCS_FILE_VERSIONS.includes(data.version)) {
 // 			if (data.version < Math.min(...GCS_FILE_VERSIONS))
-// 				return CharacterImporter.throwError(LocalizeGURPS.translations.gurps.error.import.format_old)
-// 			else return CharacterImporter.throwError(LocalizeGURPS.translations.gurps.error.import.format_new)
+// 				return CharacterImporter.throwError(.translations.gurps.error.import.format_old)
+// 			else return CharacterImporter.throwError(.translations.gurps.error.import.format_new)
 // 		}
 //
 // 		const systemData: Partial<SourceFromSchema<CharacterSchema>> = {
@@ -99,7 +99,7 @@
 // 		items.push(...ItemImporter.importItems(data.other_equipment, { other: true, fileVersion: data.version }))
 // 		items.push(...ItemImporter.importItems(data.notes, { fileVersion: data.version }))
 //
-// 		const name = data.profile?.name ?? document.name ?? LocalizeGURPS.translations.TYPES.Actor[ActorType.Character]
+// 		const name = data.profile?.name ?? document.name ?? translations.TYPES.Actor[ActorType.Character]
 //
 // 		const actorData: DeepPartial<ActorSource> = {
 // 			name,

@@ -1,4 +1,4 @@
-import { LocalizeGURPS, study } from "@util"
+import { study } from "@util"
 import fields = foundry.data.fields
 import { StudyTemplate } from "@module/data/item/templates/study.ts"
 import { ItemGURPS2 } from "@module/documents/item.ts"
@@ -20,7 +20,7 @@ class Study<TParent extends StudyTemplate = StudyTemplate> extends foundry.abstr
 			hours = 0
 			if (!force) return ""
 		}
-		return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.study.studied_alt, {
+		return game.i18n.format("GURPS.Study.Studied.Alt", {
 			hours,
 			total: needed,
 		})

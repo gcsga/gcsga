@@ -1,6 +1,5 @@
 // import { SETTINGS, SYSTEM_NAME } from "@data"
 // import { htmlQuery, htmlQueryAll } from "@util/dom.ts"
-// import { LocalizeGURPS } from "@util/localize.ts"
 // import * as R from "remeda"
 //
 // abstract class SettingsMenuGURPS extends FormApplication {
@@ -161,7 +160,7 @@
 // 	protected override _getHeaderButtons(): ApplicationHeaderButton[] {
 // 		const buttons: ApplicationHeaderButton[] = [
 // 			{
-// 				label: LocalizeGURPS.translations.gurps.settings.reset_all,
+// 				label: translations.gurps.settings.reset_all,
 // 				icon: "gcs-reset",
 // 				class: "reset-all",
 // 				onclick: event => this._onResetAll(event),
@@ -311,7 +310,7 @@
 // // 	protected override _getHeaderButtons(): ApplicationHeaderButton[] {
 // // 		const buttons: ApplicationHeaderButton[] = [
 // // 			{
-// // 				label: LocalizeGURPS.translations.gurps.settings.reset_all,
+// // 				label: translations.gurps.settings.reset_all,
 // // 				icon: "gcs-reset",
 // // 				class: "reset-all",
 // // 				onclick: event => this._onResetAll(event),

@@ -20,7 +20,7 @@ class RulerGURPS extends Ruler<Token, UserGURPS> {
 		// const mod = RulerGURPS.getRangeMod(yards)
 
 		// 	game.gurps.modifierList.setRangeMod({
-		// 		id: LocalizeGURPS.format(LocalizeGURPS.translations.gurps.modifier.speed.range, {
+		// 		id: game.i18n.format(translations.gurps.modifier.speed.range, {
 		// 			distance: `${Math.round(totalDistance * 100) / 100} ${units}`,
 		// 		}),
 		// 		modifier: mod,

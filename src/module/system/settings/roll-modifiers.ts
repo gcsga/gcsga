@@ -1,7 +1,7 @@
 // import { SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
 // import { PartialSettingsData, SettingsMenuGURPS } from "./menu.ts"
 // import { RollModifier } from "@module/data/types.ts"
-// import { DnD, LocalizeGURPS } from "@util"
+// import { DnD  } from "@util"
 //
 // type ConfigGURPSListName = (typeof RollModifierSettings.SETTINGS)[number]
 //
@@ -58,7 +58,7 @@
 // 			`${this.namespace}.modifiers`,
 // 		) as RollModifier[]
 // 		modifiers.push({
-// 			id: LocalizeGURPS.translations.gurps.settings.roll_modifiers.default,
+// 			id: .translations.gurps.settings.roll_modifiers.default,
 // 			modifier: 0,
 // 		})
 // 		game.settings.set(SYSTEM_NAME, `${this.namespace}.modifiers`, modifiers)

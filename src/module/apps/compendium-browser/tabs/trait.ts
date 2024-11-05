@@ -4,7 +4,6 @@
 // import { CompendiumBrowserTab } from "./base.ts"
 // import { CompendiumBrowserIndexData, TraitFilters } from "./data.ts"
 // import { TraitContainerGURPS, TraitGURPS } from "@item"
-// import { LocalizeGURPS } from "@util"
 //
 // export class CompendiumBrowserTraitTab extends CompendiumBrowserTab {
 // 	tabName: ContentTabName = TabName.Trait
@@ -56,7 +55,7 @@
 // 				if (item.type === ItemType.Trait || item.type === ItemType.TraitContainer) {
 // 					if (!this.hasAllIndexFields(item, indexFields)) {
 // 						console.warn(
-// 							`${LocalizeGURPS.translations.TYPES.Item[item.type]} '${
+// 							`${translations.TYPES.Item[item.type]} '${
 // 								item.name
 // 							}' does not have all required data fields. Consider unselecting pack '${
 // 								pack.metadata.label

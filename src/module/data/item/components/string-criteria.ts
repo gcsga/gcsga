@@ -1,6 +1,5 @@
 import { Nameable } from "@module/util/nameable.ts"
 import { StringComparison } from "@util/enum/string-comparison.ts"
-import { LocalizeGURPS } from "@util/localize.ts"
 import fields = foundry.data.fields
 
 class StringCriteria<TSchema extends StringCriteriaSchema = StringCriteriaSchema> extends foundry.abstract.DataModel<
@@ -81,7 +80,7 @@ class StringCriteria<TSchema extends StringCriteriaSchema = StringCriteriaSchema
 			case StringComparison.Option.DoesNotContainString:
 			case StringComparison.Option.DoesNotStartWithString:
 			case StringComparison.Option.DoesNotEndWithString:
-				return LocalizeGURPS.translations.gurps.string_criteria.alt_string[this.compare]
+				return game.i18n.localize(`GURPS.StringCriteria.${this.compare}.Alt`)
 			default:
 				return this.toString()
 		}
@@ -89,8 +88,8 @@ class StringCriteria<TSchema extends StringCriteriaSchema = StringCriteriaSchema
 
 	describe(qualifier: string): string {
 		if (this.compare === StringComparison.Option.AnyString)
-			return LocalizeGURPS.translations.GURPS.Enum.StringComparison[this.compare].Tooltip
-		return LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Enum.StringComparison[this.compare].Tooltip, {
+			return game.i18n.localize(`GURPS.Enum.StringComparison[this.compare].Tooltip`)
+		return game.i18n.format(`GURPS.Enum.StringComparison[this.compare].Tooltip`, {
 			qualifier,
 		})
 	}
@@ -98,16 +97,16 @@ class StringCriteria<TSchema extends StringCriteriaSchema = StringCriteriaSchema
 	describeWithPrefix(prefix: string, notPrefix: string, qualifier: string): string {
 		let info = ""
 		if (prefix === notPrefix)
-			info = LocalizeGURPS.format(prefix, {
-				value: LocalizeGURPS.translations.GURPS.Enum.StringComparison[this.compare].Tooltip,
+			info = game.i18n.format(prefix, {
+				value: game.i18n.localize(`GURPS.Enum.StringComparison.${this.compare}.Tooltip`),
 			})
 		else {
-			info = LocalizeGURPS.format(notPrefix, {
-				value: LocalizeGURPS.translations.GURPS.Enum.StringComparison[this.compare].Tooltip,
+			info = game.i18n.format(notPrefix, {
+				value: game.i18n.localize(`GURPS.Enum.StringComparison.${this.compare}.Tooltip`),
 			})
 		}
 		if (this.compare === StringComparison.Option.AnyString) return info
-		return LocalizeGURPS.format(info, { qualifier })
+		return game.i18n.format(info, { qualifier })
 	}
 }
 

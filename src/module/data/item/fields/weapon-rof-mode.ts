@@ -1,5 +1,5 @@
 import fields = foundry.data.fields
-import { Int, LocalizeGURPS, StringBuilder, TooltipGURPS, feature, wswitch } from "@util"
+import { Int, StringBuilder, TooltipGURPS, feature, wswitch } from "@util"
 import { WeaponField } from "./weapon-field.ts"
 import { AbstractWeaponTemplate } from "../templates/index.ts"
 import { ToggleableBooleanField, ToggleableNumberField } from "@module/data/fields/index.ts"
@@ -68,16 +68,16 @@ class WeaponROFMode extends WeaponField<AbstractWeaponTemplate, WeaponROFModeSch
 		if (this.secondaryProjectiles > 0) {
 			const shotsText =
 				this.shotsPerAttack === 1
-					? LocalizeGURPS.translations.GURPS.Weapon.ShotsSingular
-					: LocalizeGURPS.translations.GURPS.Weapon.ShotsPlural
+					? game.i18n.localize("GURPS.Weapon.ShotsSingular")
+					: game.i18n.localize("GURPS.Weapon.ShotsPlural")
 
 			const projectilesText =
 				this.secondaryProjectiles === 1
-					? LocalizeGURPS.translations.GURPS.Weapon.ProjectilesSingular
-					: LocalizeGURPS.translations.GURPS.Weapon.ProjectilesPlural
+					? game.i18n.localize("GURPS.Weapon.ProjectilesSingular")
+					: game.i18n.localize("GURPS.Weapon.ProjectilesPlural")
 
 			tooltip.push(
-				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Tooltip.ROFModeSecondaryProjectiles, {
+				game.i18n.format(game.i18n.localize("GURPS.Tooltip.ROFModeSecondaryProjectiles"), {
 					shotsCount: this.shotsPerAttack,
 					shotsText,
 					projectilesCount: this.secondaryProjectiles,
@@ -88,13 +88,13 @@ class WeaponROFMode extends WeaponField<AbstractWeaponTemplate, WeaponROFModeSch
 
 		if (this.fullAutoOnly)
 			tooltip.appendToNewLine(
-				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Tooltip.ROFModeFullAutoOnly, {
+				game.i18n.format(game.i18n.localize("GURPS.Tooltip.ROFModeFullAutoOnly"), {
 					min: Math.ceil(this.shotsPerAttack / 4),
 				}),
 			)
 
 		if (this.highCyclicControlledBursts)
-			tooltip.appendToNewLine(LocalizeGURPS.translations.GURPS.Tooltip.ROFModeHighCyclicControlledBursts)
+			tooltip.appendToNewLine(game.i18n.localize("GURPS.Tooltip.ROFModeHighCyclicControlledBursts"))
 
 		return tooltip.toString()
 	}

@@ -8,17 +8,7 @@ import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/repl
 import { ActorType, ItemType, gid } from "../constants.ts"
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { AbstractSkillTemplate, AbstractSkillTemplateSchema } from "./templates/abstract-skill.ts"
-import {
-	ErrorGURPS,
-	LocalizeGURPS,
-	StringBuilder,
-	TooltipGURPS,
-	align,
-	cell,
-	difficulty,
-	display,
-	encumbrance,
-} from "@util"
+import { ErrorGURPS, StringBuilder, TooltipGURPS, align, cell, difficulty, display, encumbrance } from "@util"
 import { ItemInst, SkillLevel, addTooltipForSkillLevelAdj, formatRelativeSkill } from "./helpers.ts"
 import { ActorTemplateType } from "../actor/types.ts"
 import { CellData, CellDataOptions } from "./components/cell-data.ts"
@@ -121,7 +111,7 @@ class SkillData extends ItemDataModel.mixin(
 			const tooltip = new TooltipGURPS()
 			const level = this.level
 			if (level.tooltip === "") return ""
-			tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.IncludesModifiersFrom, ":")
+			tooltip.push("GURPS.Tooltip.IncludesModifiersFrom", ":")
 			tooltip.push(level.tooltip)
 			return tooltip.toString()
 		}
@@ -136,7 +126,7 @@ class SkillData extends ItemDataModel.mixin(
 		})
 		if (tooltip.length !== 0) {
 			const pointsTooltip = new TooltipGURPS()
-			pointsTooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.IncludesModifiersFrom, ":")
+			pointsTooltip.push("GURPS.Tooltip.IncludesModifiersFrom", ":")
 			pointsTooltip.push(tooltip.toString())
 			points.tooltip = pointsTooltip.toString()
 		}
@@ -197,7 +187,7 @@ class SkillData extends ItemDataModel.mixin(
 		if (this.difficulty.difficulty !== difficulty.Level.Wildcard) {
 			const defSkill = this.defaultSkill
 			if (defSkill !== null && this.defaulted_from !== null) {
-				return LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.SkillDefault.Notes, {
+				return game.i18n.format("GURPS.SkillDefault.Notes", {
 					name: defSkill.system.processedName,
 					modifier: this.defaulted_from.modifier.signedString(),
 				})
@@ -424,7 +414,7 @@ class SkillData extends ItemDataModel.mixin(
 					level += bonus
 					if (bonus !== 0) {
 						tooltip.push(
-							LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Tooltip.SkillEncumbrance, {
+							game.i18n.format("GURPS.Tooltip.SkillEncumbrance", {
 								amount: bonus.signedString(),
 							}),
 						)

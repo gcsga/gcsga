@@ -34,7 +34,7 @@
 // import { ItemSourceGURPS } from "@item/data/index.ts"
 // import { Feature, Prereq, PrereqListSchema, SkillDefaultSchema, Study, TemplatePickerSchema } from "@system"
 // import {
-// 	LocalizeGURPS,
+//
 // 	affects,
 // 	container,
 // 	difficulty,
@@ -290,7 +290,7 @@
 // 		const newItem: TraitSource = {
 // 			_id: id,
 // 			type: ItemType.Trait,
-// 			name: systemData.name || LocalizeGURPS.translations.TYPES.Item[ItemType.Trait],
+// 			name: systemData.name || translations.TYPES.Item[ItemType.Trait],
 // 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.Trait}.svg`,
 // 			system: systemData,
 // 			effects: [],
@@ -361,7 +361,7 @@
 // 		const newItem: TraitContainerSource = {
 // 			_id: id,
 // 			type: ItemType.TraitContainer,
-// 			name: systemData.name || LocalizeGURPS.translations.TYPES.Item[ItemType.TraitContainer],
+// 			name: systemData.name || translations.TYPES.Item[ItemType.TraitContainer],
 // 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.Trait}.svg`,
 // 			system: systemData,
 // 			effects: [],
@@ -411,7 +411,7 @@
 // 		const newItem: TraitModifierSource = {
 // 			_id: id,
 // 			type: ItemType.TraitModifier,
-// 			name: systemData.name || LocalizeGURPS.translations.TYPES.Item[ItemType.TraitModifier],
+// 			name: systemData.name || translations.TYPES.Item[ItemType.TraitModifier],
 // 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.TraitModifier}.svg`,
 // 			system: systemData,
 // 			effects: [],
@@ -464,7 +464,7 @@
 // 		const newItem: TraitModifierContainerSource = {
 // 			_id: id,
 // 			type: ItemType.TraitModifierContainer,
-// 			name: systemData.name || LocalizeGURPS.translations.TYPES.Item[ItemType.TraitModifierContainer],
+// 			name: systemData.name || translations.TYPES.Item[ItemType.TraitModifierContainer],
 // 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.TraitModifier}.svg`,
 // 			system: systemData,
 // 			effects: [],
@@ -535,7 +535,7 @@
 // 		const newItem: SkillSource = {
 // 			_id: id,
 // 			type: ItemType.Skill,
-// 			name: systemData.name || LocalizeGURPS.translations.TYPES.Item[ItemType.Skill],
+// 			name: systemData.name || translations.TYPES.Item[ItemType.Skill],
 // 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.Skill}.svg`,
 // 			system: systemData,
 // 			effects: [],
@@ -606,7 +606,7 @@
 // 		const newItem: TechniqueSource = {
 // 			_id: id,
 // 			type: ItemType.Technique,
-// 			name: systemData.name || LocalizeGURPS.translations.TYPES.Item[ItemType.Technique],
+// 			name: systemData.name || translations.TYPES.Item[ItemType.Technique],
 // 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.Skill}.svg`,
 // 			system: systemData,
 // 			effects: [],
@@ -660,7 +660,7 @@
 // 		const newItem: SkillContainerSource = {
 // 			_id: id,
 // 			type: ItemType.SkillContainer,
-// 			name: systemData.name || LocalizeGURPS.translations.TYPES.Item[ItemType.SkillContainer],
+// 			name: systemData.name || translations.TYPES.Item[ItemType.SkillContainer],
 // 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.Skill}.svg`,
 // 			system: systemData,
 // 			effects: [],
@@ -734,7 +734,7 @@
 // 		const newItem: SpellSource = {
 // 			_id: id,
 // 			type: ItemType.Spell,
-// 			name: systemData.name || LocalizeGURPS.translations.TYPES.Item[ItemType.Spell],
+// 			name: systemData.name || translations.TYPES.Item[ItemType.Spell],
 // 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.Spell}.svg`,
 // 			system: systemData,
 // 			effects: [],
@@ -810,7 +810,7 @@
 // 		const newItem: RitualMagicSpellSource = {
 // 			_id: id,
 // 			type: ItemType.RitualMagicSpell,
-// 			name: systemData.name || LocalizeGURPS.translations.TYPES.Item[ItemType.RitualMagicSpell],
+// 			name: systemData.name || translations.TYPES.Item[ItemType.RitualMagicSpell],
 // 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.Spell}.svg`,
 // 			system: systemData,
 // 			effects: [],
@@ -864,7 +864,7 @@
 // 		const newItem: SpellContainerSource = {
 // 			_id: id,
 // 			type: ItemType.SpellContainer,
-// 			name: systemData.name || LocalizeGURPS.translations.TYPES.Item[ItemType.SpellContainer],
+// 			name: systemData.name || translations.TYPES.Item[ItemType.SpellContainer],
 // 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.Spell}.svg`,
 // 			system: systemData,
 // 			effects: [],
@@ -941,7 +941,7 @@
 // 		const newItem: EquipmentSource = {
 // 			_id: id,
 // 			type: ItemType.Equipment,
-// 			name: systemData.description || LocalizeGURPS.translations.TYPES.Item[ItemType.Equipment],
+// 			name: systemData.description || translations.TYPES.Item[ItemType.Equipment],
 // 			img: `systems/${SYSTEM_NAME}/assets/icons/equipment.svg`,
 // 			system: systemData,
 // 			effects: [],
@@ -1027,7 +1027,7 @@
 // 		const newItem: EquipmentContainerSource = {
 // 			_id: id,
 // 			type: ItemType.EquipmentContainer,
-// 			name: systemData.description || LocalizeGURPS.translations.TYPES.Item[ItemType.EquipmentContainer],
+// 			name: systemData.description || translations.TYPES.Item[ItemType.EquipmentContainer],
 // 			img: `systems/${SYSTEM_NAME}/assets/icons/equipment.svg`,
 // 			system: systemData,
 // 			effects: [],
@@ -1078,7 +1078,7 @@
 // 		const newItem: EquipmentModifierSource = {
 // 			_id: id,
 // 			type: ItemType.EquipmentModifier,
-// 			name: systemData.name || LocalizeGURPS.translations.TYPES.Item[ItemType.EquipmentModifier],
+// 			name: systemData.name || translations.TYPES.Item[ItemType.EquipmentModifier],
 // 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.EquipmentModifier}.svg`,
 // 			system: systemData,
 // 			effects: [],
@@ -1131,7 +1131,7 @@
 // 		const newItem: EquipmentModifierContainerSource = {
 // 			_id: id,
 // 			type: ItemType.EquipmentModifierContainer,
-// 			name: systemData.name || LocalizeGURPS.translations.TYPES.Item[ItemType.EquipmentModifierContainer],
+// 			name: systemData.name || translations.TYPES.Item[ItemType.EquipmentModifierContainer],
 // 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.EquipmentModifier}.svg`,
 // 			system: systemData,
 // 			effects: [],
@@ -1172,7 +1172,7 @@
 // 		const newItem: NoteSource = {
 // 			_id: id,
 // 			type: ItemType.Note,
-// 			name: systemData.text || LocalizeGURPS.translations.TYPES.Item[ItemType.Note],
+// 			name: systemData.text || translations.TYPES.Item[ItemType.Note],
 // 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.Note}.svg`,
 // 			system: systemData,
 // 			effects: [],
@@ -1222,7 +1222,7 @@
 // 		const newItem: NoteContainerSource = {
 // 			_id: id,
 // 			type: ItemType.NoteContainer,
-// 			name: systemData.text || LocalizeGURPS.translations.TYPES.Item[ItemType.NoteContainer],
+// 			name: systemData.text || translations.TYPES.Item[ItemType.NoteContainer],
 // 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.Note}.svg`,
 // 			system: systemData,
 // 			effects: [],
@@ -1276,7 +1276,7 @@
 // 		const newItem: MeleeWeaponSource = {
 // 			_id: id,
 // 			type: ItemType.WeaponMelee,
-// 			name: systemData.usage || LocalizeGURPS.translations.TYPES.Item[ItemType.WeaponMelee],
+// 			name: systemData.usage || translations.TYPES.Item[ItemType.WeaponMelee],
 // 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.WeaponMelee}.svg`,
 // 			system: systemData,
 // 			effects: [],
@@ -1333,7 +1333,7 @@
 // 		const newItem: RangedWeaponSource = {
 // 			_id: id,
 // 			type: ItemType.WeaponRanged,
-// 			name: systemData.usage || LocalizeGURPS.translations.TYPES.Item[ItemType.WeaponRanged],
+// 			name: systemData.usage || translations.TYPES.Item[ItemType.WeaponRanged],
 // 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.WeaponRanged}.svg`,
 // 			system: systemData,
 // 			effects: [],

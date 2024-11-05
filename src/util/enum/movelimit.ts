@@ -1,5 +1,3 @@
-import { LocalizeGURPS } from "@util/localize.ts"
-
 export namespace movelimit {
 	export enum Option {
 		Base = "base",
@@ -8,7 +6,7 @@ export namespace movelimit {
 
 	export namespace Option {
 		export function toString(O: Option): string {
-			return LocalizeGURPS.translations.gurps.enum.movelimit[O]
+			return game.i18n.localize(`GURPS.Enum.movelimit.${O}.Name`)
 		}
 	}
 

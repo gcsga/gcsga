@@ -1,6 +1,5 @@
 // import { ActorType, GURPS_COMMANDS, RollType, gid } from "@data"
 // import { LastActor } from "./last-actor.ts"
-// import { LocalizeGURPS } from "@util"
 // import { RollModifier } from "@module/data/roll-modifier.ts"
 // import { ActorGURPS2 } from "@module/document/actor.ts"
 //
@@ -112,7 +111,7 @@
 // 			// Update level at least once to calculate default level
 // 			data.item.updateLevel()
 // 			if (!data.item || data.item.effectiveLevel === Number.MIN_SAFE_INTEGER) {
-// 				ui.notifications?.warn(LocalizeGURPS.translations.gurps.notification.no_default_skill)
+// 				ui.notifications?.warn(translations.gurps.notification.no_default_skill)
 // 				return
 // 			}
 // 		}
@@ -120,7 +119,7 @@
 // 		const itemData = $(event.currentTarget).data("json")
 // 		data.item = actor.itemCollections.spells.find(e => e.name === itemData.name)
 // 		if (!data.item || data.item.effectiveLevel === Number.MIN_SAFE_INTEGER) {
-// 			ui.notifications?.warn(LocalizeGURPS.translations.gurps.notification.no_default_skill)
+// 			ui.notifications?.warn(translations.gurps.notification.no_default_skill)
 // 			return
 // 		}
 // 	} else if ([RollType.Attack].includes(type)) {
@@ -129,7 +128,7 @@
 // 			e => e.system.processedName === itemData.itemName && e.usage === itemData.usage,
 // 		)
 // 		if (!data.item || data.item.effectiveLevel === Number.MIN_SAFE_INTEGER) {
-// 			ui.notifications?.warn(LocalizeGURPS.translations.gurps.notification.no_default_skill)
+// 			ui.notifications?.warn(translations.gurps.notification.no_default_skill)
 // 			return
 // 		}
 // 	}

@@ -1,7 +1,6 @@
 import { BasePrereq, BasePrereqSchema, PrereqConstructionOptions } from "./base-prereq.ts"
 import fields = foundry.data.fields
 import { prereq } from "@util/enum/prereq.ts"
-import { LocalizeGURPS } from "@util/localize.ts"
 import { ActorType, gid } from "@data"
 import { NumericComparison, TooltipGURPS } from "@util"
 import { ActorInst } from "../actor/helpers.ts"
@@ -110,10 +109,10 @@ class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
 		if (!this.has) satisfied = !satisfied
 
 		if (!satisfied && tooltip !== null) {
-			tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.Prefix)
+			tooltip.push(game.i18n.localize("GURPS.Tooltip.Prefix"))
 			if (this.combined_with !== "") {
 				tooltip.push(
-					LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.Attribute.CombinedWith, {
+					game.i18n.format("GURPS.Prereq.Attribute.CombinedWith", {
 						has: this.hasText,
 						att1: this.which,
 						att2: this.combined_with,
@@ -122,7 +121,7 @@ class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
 				)
 			} else {
 				tooltip.push(
-					LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.Attribute.NotCombinedWith, {
+					game.i18n.format("GURPS.Prereq.Attribute.NotCombinedWith", {
 						has: this.hasText,
 						att1: this.which,
 						qualifier: this.total.toString(),

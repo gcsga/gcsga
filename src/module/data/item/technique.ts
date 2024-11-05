@@ -7,7 +7,7 @@ import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/repl
 import { ActorType, ItemType, gid } from "../constants.ts"
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { AbstractSkillTemplate, AbstractSkillTemplateSchema } from "./templates/abstract-skill.ts"
-import { LocalizeGURPS, StringBuilder, TooltipGURPS, align, cell, difficulty, display } from "@util"
+import { StringBuilder, TooltipGURPS, align, cell, difficulty, display } from "@util"
 import {
 	ItemInst,
 	SkillLevel,
@@ -127,7 +127,7 @@ class TechniqueData extends ItemDataModel.mixin(
 			const tooltip = new TooltipGURPS()
 			const level = this.level
 			if (level.tooltip === "") return ""
-			tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.IncludesModifiersFrom, ":")
+			tooltip.push(game.i18n.localize("GURPS.Tooltip.IncludesModifiersFrom"), ":")
 			tooltip.push(level.tooltip)
 			return tooltip.toString()
 		}
@@ -142,7 +142,7 @@ class TechniqueData extends ItemDataModel.mixin(
 		})
 		if (tooltip.length !== 0) {
 			const pointsTooltip = new TooltipGURPS()
-			pointsTooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.IncludesModifiersFrom, ":")
+			tooltip.push(game.i18n.localize("GURPS.Tooltip.IncludesModifiersFrom"), ":")
 			pointsTooltip.push(tooltip.toString())
 			points.tooltip = pointsTooltip.toString()
 		}
@@ -214,7 +214,7 @@ class TechniqueData extends ItemDataModel.mixin(
 
 	get modifierNotes(): string {
 		if (!this.actor) return ""
-		return LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.SkillDefault.Notes, {
+		return game.i18n.format("GURPS.SkillDefault.Notes", {
 			name: this.default.fullName(this.actor, this.nameableReplacements),
 			modifier: this.default.modifier.signedString(),
 		})
@@ -283,16 +283,16 @@ class TechniqueData extends ItemDataModel.mixin(
 		)
 		const satisfied = sk !== null && (sk.type === ItemType.Technique || sk.system.points > 0)
 		if (!satisfied && tooltip !== null) {
-			tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.Prefix)
+			tooltip.push(game.i18n.localize("GURPS.Tooltip.Prefix"))
 			if (sk === null) {
 				tooltip.push(
-					LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.Technique.Skill, {
+					game.i18n.format("GURPS.Prereq.Technique.Skill", {
 						name: this.default.fullName(actor, this.nameableReplacements),
 					}),
 				)
 			} else {
 				tooltip.push(
-					LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.Technique.SkillWithPoints, {
+					game.i18n.format("GURPS.Prereq.Technique.SkillWithPoints", {
 						name: this.default.fullName(actor, this.nameableReplacements),
 					}),
 				)

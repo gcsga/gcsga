@@ -1,5 +1,5 @@
 import { ActorType, SkillDefaultType, ToggleableNumberField, ToggleableStringField, gid } from "@data"
-import { LocalizeGURPS, StringBuilder } from "@util"
+import { StringBuilder } from "@util"
 import { ActorGURPS2 } from "@module/documents/actor.ts"
 import { ActorTemplateType } from "@module/data/actor/types.ts"
 import { Nameable } from "@module/util/index.ts"
@@ -175,9 +175,9 @@ class SkillDefault extends foundry.abstract.DataModel<ItemDataModel, SkillDefaul
 			if (this.specialization !== null && this.specialization !== "") {
 				buffer.push(` (${this.specializationWithReplacements(replacements)})`)
 			}
-			if (this.type === gid.Dodge) buffer.push(` ${LocalizeGURPS.translations.gurps.attribute.dodge}`)
-			else if (this.type === gid.Parry) buffer.push(` ${LocalizeGURPS.translations.gurps.attribute.parry}`)
-			else if (this.type === gid.Block) buffer.push(` ${LocalizeGURPS.translations.gurps.attribute.block}`)
+			if (this.type === gid.Dodge) buffer.push(game.i18n.localize("GURPS.Attribute.Dodge"))
+			else if (this.type === gid.Parry) buffer.push(game.i18n.localize("GURPS.Attribute.Parry"))
+			else if (this.type === gid.Block) buffer.push(game.i18n.localize("GURPS.Attribute.Block"))
 			return buffer.toString()
 		}
 		if (!actor.hasTemplate(ActorTemplateType.Attributes)) {

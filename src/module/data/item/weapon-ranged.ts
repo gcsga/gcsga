@@ -14,7 +14,7 @@ import { WeaponROF } from "./fields/weapon-rof.ts"
 import { WeaponShots } from "./fields/weapon-shots.ts"
 import { WeaponBulk } from "./fields/weapon-bulk.ts"
 import { WeaponRecoil } from "./fields/weapon-recoil.ts"
-import { LocalizeGURPS, TooltipGURPS } from "@util"
+import { TooltipGURPS } from "@util"
 import { CellData, CellDataOptions } from "./components/cell-data.ts"
 import { Nameable } from "@module/util/nameable.ts"
 
@@ -44,7 +44,7 @@ class WeaponRangedData extends ItemDataModel.mixin(
 			if (tooltip.length !== 0) {
 				tooltip += "\n\n"
 			}
-			tooltip += LocalizeGURPS.translations.GURPS.Tooltip.IncludesModifiersFrom + ":"
+			tooltip += game.i18n.localize("GURPS.Tooltip.IncludesModifiersFrom") + ":"
 			tooltip += buffer.toString()
 			return tooltip
 		}

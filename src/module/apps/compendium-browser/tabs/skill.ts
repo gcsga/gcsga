@@ -1,7 +1,6 @@
 // import { ContentTabName, TabName } from "../data.ts"
 // import { CompendiumBrowserTab } from "./base.ts"
 // import { CompendiumBrowserIndexData, SkillFilters } from "./data.ts"
-// import { LocalizeGURPS } from "@util"
 // import { CompendiumBrowser } from "../index.ts"
 // import { ItemType, SYSTEM_NAME } from "@data"
 //
@@ -38,7 +37,7 @@
 // 				) {
 // 					if (!this.hasAllIndexFields(skillData, indexFields)) {
 // 						console.warn(
-// 							`${LocalizeGURPS.translations.TYPES.Item[skillData.type]} '${
+// 							`${translations.TYPES.Item[skillData.type]} '${
 // 								skillData.name
 // 							}' does not have all required data fields. Consider unselecting pack '${
 // 								pack.metadata.label

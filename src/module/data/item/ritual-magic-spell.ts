@@ -1,5 +1,5 @@
 import { ActorType, ItemType, gid } from "../constants.ts"
-import { EvalEmbeddedRegex, LocalizeGURPS, StringBuilder, TooltipGURPS, difficulty, replaceAllStringFunc } from "@util"
+import { EvalEmbeddedRegex, StringBuilder, TooltipGURPS, difficulty, replaceAllStringFunc } from "@util"
 import { SpellTemplate, SpellTemplateSchema } from "./templates/spell.ts"
 import { ItemInst, SkillLevel, calculateTechniqueLevel } from "./helpers.ts"
 import { SkillDefault } from "./components/skill-default.ts"
@@ -160,8 +160,8 @@ class RitualMagicSpellData extends ItemDataModel.mixin(
 		const colleges = this.collegeWithReplacements
 		if (colleges.length === 0) {
 			if (tooltip !== null) {
-				tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.Prefix)
-				tooltip.push(LocalizeGURPS.translations.GURPS.Prereq.RitualMagic.College)
+				tooltip.push(game.i18n.localize("GURPS.Tooltip.Prefix"))
+				tooltip.push(game.i18n.localize("GURPS.Prereq.RitualMagic.College"))
 			}
 			return false
 		}
@@ -170,23 +170,21 @@ class RitualMagicSpellData extends ItemDataModel.mixin(
 		}
 		if (actor.system.bestSkillNamed(this.skillNameWithReplacements, "", false) !== null) return true
 		if (tooltip !== null) {
-			tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.Prefix)
+			tooltip.push(game.i18n.localize("GURPS.Tooltip.Prefix"))
 			const name = this.skillNameWithReplacements
-			let buffer = LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.RitualMagic.SkillFirst, {
+			let buffer = game.i18n.format("GURPS.Prereq.RitualMagic.SkillFirst", {
 				name,
 				specialization: colleges[0],
 			})
 			for (const [index, college] of colleges.entries()) {
 				if (index === 0) continue
-				buffer = LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.RitualMagic.SkillOr, {
+				buffer = game.i18n.format("GURPS.Prereq.RitualMagic.SkillOr", {
 					existing: buffer,
 					name,
 					specialization: college,
 				})
 			}
-			tooltip.push(
-				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.RitualMagic.Skill, { name: buffer }),
-			)
+			tooltip.push(game.i18n.format("GURPS.Prereq.RitualMagic.Skill", { name: buffer }))
 		}
 		return false
 	}
@@ -194,10 +192,7 @@ class RitualMagicSpellData extends ItemDataModel.mixin(
 	override get processedName(): string {
 		const buffer = new StringBuilder()
 		buffer.push(this.nameWithReplacements)
-		if (this.tech_level_required)
-			buffer.push(
-				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.TechLevelShort, { level: this.tech_level }),
-			)
+		if (this.tech_level_required) buffer.push(game.i18n.format("GURPS.TechLevelShort", { level: this.tech_level }))
 		return buffer.toString()
 	}
 

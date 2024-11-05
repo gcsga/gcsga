@@ -76,7 +76,7 @@
 // // 	}
 // //
 // // 	get name(): string {
-// // 		return LocalizeGURPS.translations.gurps.maneuver[this.#maneuver.id]
+// // 		return translations.gurps.maneuver[this.#maneuver.id]
 // // 	}
 // //
 // // 	get img(): ImageFilePath {

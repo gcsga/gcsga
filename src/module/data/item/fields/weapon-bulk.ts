@@ -1,6 +1,6 @@
 import { AbstractWeaponTemplate } from "../templates/index.ts"
 import { WeaponField } from "./weapon-field.ts"
-import { Int, LocalizeGURPS, StringBuilder, TooltipGURPS, feature } from "@util"
+import { Int, StringBuilder, TooltipGURPS, feature } from "@util"
 import { ItemType } from "@module/data/constants.ts"
 import { ToggleableBooleanField, ToggleableNumberField } from "@module/data/fields/index.ts"
 
@@ -62,7 +62,7 @@ class WeaponBulk extends WeaponField<AbstractWeaponTemplate, WeaponBulkSchema> {
 		const minST = w.strength.resolve(w, null)
 		minST.updateSource({ min: Math.ceil(minST.min * 1.2) })
 
-		return LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Tooltip.RetractingStock, {
+		return game.i18n.format("GURPS.Tooltip.RetractingStock", {
 			bulk: this.toString(),
 			accuracy: accuracy.toString(),
 			recoil: recoil.toString(),

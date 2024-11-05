@@ -1,4 +1,3 @@
-import { LocalizeGURPS } from "@util/localize.ts"
 import { equalFold } from "@module/data/item/components/string-criteria.ts"
 
 export namespace align {
@@ -16,7 +15,7 @@ export namespace align {
 		}
 
 		export function toString(O: Option): string {
-			return LocalizeGURPS.translations.gurps.enum.align[O]
+			return game.i18n.localize(`GURPS.Enum.align.${O}.Name`)
 		}
 
 		export function extractOption(s: string): Option {

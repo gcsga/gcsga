@@ -1,5 +1,3 @@
-import { LocalizeGURPS } from "@util/localize.ts"
-
 export namespace paper {
 	export enum Size {
 		Letter = "letter",
@@ -16,7 +14,7 @@ export namespace paper {
 
 	export namespace Size {
 		export function toString(S: Size): string {
-			return LocalizeGURPS.translations.gurps.enum.paper.size[S]
+			return game.i18n.localize(`GURPS.Enum.paper.Size.${S}.Name`)
 		}
 	}
 
@@ -27,7 +25,7 @@ export namespace paper {
 
 	export namespace Orientation {
 		export function toString(O: Orientation): string {
-			return LocalizeGURPS.translations.gurps.enum.paper.orientation[O]
+			return game.i18n.localize(`GURPS.Enum.paper.Orientation.${O}.Name`)
 		}
 	}
 

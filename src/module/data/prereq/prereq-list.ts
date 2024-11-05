@@ -1,6 +1,6 @@
 import { ActorType } from "@module/data/constants.ts"
 import fields = foundry.data.fields
-import { LocalizeGURPS, NumericComparison, TooltipGURPS, extractTechLevel } from "@util"
+import { NumericComparison, TooltipGURPS, extractTechLevel } from "@util"
 import { prereq } from "@util/enum/prereq.ts"
 import { BasePrereq } from "./index.ts"
 import { PrereqTemplate } from "@module/data/item/templates/prereqs.ts"
@@ -73,9 +73,9 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 		if (!satisfied) {
 			if (eqpPenalty) hasEquipmentPenalty.value = eqpPenalty
 			if (tooltip !== null && local !== null) {
-				tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.Prefix)
-				if (this.all) tooltip.push(LocalizeGURPS.translations.GURPS.Prereq.List.All)
-				else tooltip.push(LocalizeGURPS.translations.GURPS.Prereq.List.NotAll)
+				tooltip.push(game.i18n.localize("GURPS.Tooltip.Prefix"))
+				if (this.all) tooltip.push(game.i18n.localize("GURPS.Prereq.List.All"))
+				else tooltip.push(game.i18n.localize("GURPS.Prereq.List.NotAll"))
 				tooltip.push(local)
 			}
 		}

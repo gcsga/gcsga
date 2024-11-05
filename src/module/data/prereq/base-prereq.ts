@@ -1,6 +1,6 @@
 import { ActorGURPS2 } from "@module/documents/actor.ts"
 import { ItemGURPS2 } from "@module/documents/item.ts"
-import { LocalizeGURPS, TooltipGURPS, generateId, prereq } from "@util"
+import { TooltipGURPS, generateId, prereq } from "@util"
 import { ActorInst } from "../actor/helpers.ts"
 import { ActorType } from "../constants.ts"
 import { PrereqInstances } from "./types.ts"
@@ -61,8 +61,8 @@ abstract class BasePrereq<TSchema extends BasePrereqSchema = BasePrereqSchema> e
 
 	get hasText(): string {
 		const has = (this as unknown as { has: boolean }).has ?? true
-		if (has) return LocalizeGURPS.translations.GURPS.Prereq.Has
-		return LocalizeGURPS.translations.GURPS.Prereq.DoesNotHave
+		if (has) return game.i18n.localize("GURPS.Prereq.Has")
+		return game.i18n.localize("GURPS.Prereq.DoesNotHave")
 	}
 
 	get nameableReplacements(): Map<string, string> {

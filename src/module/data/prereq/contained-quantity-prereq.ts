@@ -1,5 +1,4 @@
 import { prereq } from "@util/enum/prereq.ts"
-import { LocalizeGURPS } from "@util/localize.ts"
 import { BasePrereq, BasePrereqSchema } from "./base-prereq.ts"
 import { NumericComparison, TooltipGURPS } from "@util"
 import { ItemType } from "@module/data/constants.ts"
@@ -43,9 +42,9 @@ class ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema> 
 		}
 		if (!this.has) satisfied = !satisfied
 		if (!satisfied && tooltip !== null) {
-			tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.Prefix)
+			tooltip.push(game.i18n.localize("GURPS.Tooltip.Prefix"))
 			tooltip.push(
-				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.ContainedQuantity, {
+				game.i18n.format("GURPS.Prereq.ContainedQuantity", {
 					has: this.hasText,
 					qualifier: this.qualifier.toString(),
 				}),

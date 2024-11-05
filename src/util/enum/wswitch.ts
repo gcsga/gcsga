@@ -1,5 +1,3 @@
-import { LocalizeGURPS } from "@util/localize.ts"
-
 export namespace wswitch {
 	export enum Type {
 		CanBlock = "can_block",
@@ -27,7 +25,7 @@ export namespace wswitch {
 
 	export namespace Type {
 		export function toString(T: Type): string {
-			return LocalizeGURPS.translations.gurps.enum.wswitch[T]
+			return game.i18n.localize(`GURPS.Enum.wswitch.${T}.Name`)
 		}
 	}
 

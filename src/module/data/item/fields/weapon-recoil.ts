@@ -1,6 +1,6 @@
 import { AbstractWeaponTemplate } from "../templates/index.ts"
 import { WeaponField } from "./weapon-field.ts"
-import { Int, LocalizeGURPS, StringBuilder, TooltipGURPS, feature } from "@util"
+import { Int, StringBuilder, TooltipGURPS, feature } from "@util"
 import { ToggleableNumberField } from "@module/data/fields/index.ts"
 
 class WeaponRecoil extends WeaponField<AbstractWeaponTemplate, WeaponRecoilSchema> {
@@ -41,8 +41,7 @@ class WeaponRecoil extends WeaponField<AbstractWeaponTemplate, WeaponRecoilSchem
 	}
 
 	override tooltip(_w: AbstractWeaponTemplate): string {
-		if (this.shot !== 0 && this.slug !== 0 && this.shot !== this.slug)
-			LocalizeGURPS.translations.GURPS.Tooltip.Recoil
+		if (this.shot !== 0 && this.slug !== 0 && this.shot !== this.slug) game.i18n.localize("GURPS.Tooltip.Recoil")
 		return ""
 	}
 

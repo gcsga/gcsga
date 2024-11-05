@@ -15,11 +15,9 @@ export namespace progression {
 	export namespace Option {
 		export function toString(O: Option): string {
 			return `GURPS.Enum.progression.${O}.Name`
-			// return LocalizeGURPS.translations.gurps.enum.progression.string[O]
 		}
 		export function toAltString(O: Option): string {
 			return `GURPS.Enum.progression.${O}.Hint`
-			// return LocalizeGURPS.translations.gurps.enum.progression.alt_string[O]
 		}
 	}
 

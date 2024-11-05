@@ -1,6 +1,5 @@
 // import { SETTINGS, SYSTEM_NAME } from "@data"
 // import { Progress } from "@system/progress.ts"
-// import { LocalizeGURPS, sluggify } from "@util"
 // import * as R from "remeda"
 // import { CompendiumBrowserSources } from "./index.ts"
 //
@@ -17,7 +16,7 @@
 // 		packs: string[],
 // 		indexFields: string[],
 // 	): AsyncGenerator<{ pack: CompendiumCollection<CompendiumDocument>; index: CompendiumIndex }, void, unknown> {
-// 		const localize = LocalizeGURPS.translations.gurps.progress_bar
+// 		const localize = translations.gurps.progress_bar
 // 		const sources = this.#getSources()
 //
 // 		const progress = new Progress({ max: packs.length })
@@ -27,7 +26,7 @@
 // 				progress.advance()
 // 				continue
 // 			}
-// 			progress.advance({ label: LocalizeGURPS.format(localize.loading_pack, { pack: pack.metadata.label }) })
+// 			progress.advance({ label: game.i18n.format(localize.loading_pack, { pack: pack.metadata.label }) })
 // 			if (pack.documentName === documentType) {
 // 				const index = await pack.getIndex({ fields: indexFields })
 // 				const firstResult: Partial<CompendiumIndexData> = index.contents.at(0) ?? {}
@@ -38,7 +37,7 @@
 // 					yield { pack, index: filteredIndex }
 // 				} else {
 // 					ui.notifications.warn(
-// 						LocalizeGURPS.format(LocalizeGURPS.translations.gurps.error.pack_not_loaded, {
+// 						game.i18n.format(translations.gurps.error.pack_not_loaded, {
 // 							pack: pack.collection,
 // 						}),
 // 					)
@@ -115,7 +114,7 @@
 // 	}
 //
 // 	async #loadSources(packs: string[]): Promise<void> {
-// 		const localize = LocalizeGURPS.translations.gurps.progress_bar
+// 		const localize = translations.gurps.progress_bar
 // 		const progress = new Progress({ max: packs.length })
 //
 // 		const loadedSources = new Set<string>()
@@ -130,7 +129,7 @@
 // 				continue
 // 			}
 // 			progress.advance({
-// 				label: LocalizeGURPS.format(localize.loading_pack, { pack: pack.metadata.label ?? "" }),
+// 				label: game.i18n.format(localize.loading_pack, { pack: pack.metadata.label ?? "" }),
 // 			})
 // 			const index = await pack.getIndex({ fields: indexFields })
 //

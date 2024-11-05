@@ -1,6 +1,6 @@
 import { BasePrereq, BasePrereqSchema } from "./base-prereq.ts"
 import { prereq } from "@util/enum/prereq.ts"
-import { LocalizeGURPS, StringComparison, TooltipGURPS } from "@util"
+import { StringComparison, TooltipGURPS } from "@util"
 import { ActorType } from "@module/data/constants.ts"
 import { ActorInst } from "../actor/helpers.ts"
 import { Nameable } from "@module/util/index.ts"
@@ -54,13 +54,13 @@ class EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema> 
 			hasEquipmentPenalty.value = true
 			if (tooltip !== null) {
 				tooltip.push(
-					LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.EquippedEquipment.Base, {
-						prefix: LocalizeGURPS.translations.GURPS.Tooltip.Prefix,
+					game.i18n.format("GURPS.Prereq.EquippedEquipment.Base", {
+						prefix: game.i18n.localize("GURPS.Tooltip.Prefix"),
 						name: this.name.toString(replacements),
 						tags: this.tags.toStringWithPrefix(
 							replacements,
-							LocalizeGURPS.translations.GURPS.Prereq.EquippedEquipment.OneTag,
-							LocalizeGURPS.translations.GURPS.Prereq.EquippedEquipment.AllTags,
+							game.i18n.localize("GURPS.Prereq.EquippedEquipment.OneTag"),
+							game.i18n.localize("GURPS.Prereq.EquippedEquipment.AllTags"),
 						),
 					}),
 				)

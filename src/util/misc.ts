@@ -1,7 +1,3 @@
-// import { ItemType } from "@module/data/constants.ts"
-import { LocalizeGURPS } from "./localize.ts"
-import { StringBuilder } from "./string-builder.ts"
-
 function trimS(str: string, substring: string): string {
 	if (!substring || !str.includes(substring)) {
 		return str
@@ -338,27 +334,6 @@ function d6ify(str: string, flavor: string | null = ""): string {
 	return w.replace(/d$/g, `d6${flavor || ""}`) // And do the same for the end of the line.
 }
 
-function sheetDisplayNotes(
-	s: string,
-	options: { unsatisfied?: string; unready?: boolean } = { unsatisfied: "", unready: false },
-): string {
-	const buffer = new StringBuilder()
-	if (options.unsatisfied && options.unsatisfied !== "")
-		buffer.push(
-			`<div class='unsatisfied' data-tooltip='${options.unsatisfied}' data-tooltip-direction='DOWN'>` +
-				`<i class='gcs-triangle-exclamation'></i>${LocalizeGURPS.translations.gurps.prereq.unsatisfied}` +
-				"</div>",
-		)
-	if (options.unready)
-		buffer.push(
-			"<div class='unsatisfied'>" +
-				`<i class='gcs-triangle-exclamation'></i>${LocalizeGURPS.translations.gurps.weapon.unready}` +
-				"</div>",
-		)
-	buffer.appendToNewLine(s)
-	return `<div class="item-notes">${buffer.toString()}</div>`
-}
-
 export {
 	ErrorGURPS,
 	d6ify,
@@ -378,7 +353,6 @@ export {
 	sanitize,
 	sanitizeId,
 	setHasElement,
-	sheetDisplayNotes,
 	signedInteger,
 	sluggify,
 	tupleHasValue,

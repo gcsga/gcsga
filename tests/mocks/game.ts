@@ -1,6 +1,5 @@
 // import { ConditionID, EFFECT_ACTION, SETTINGS, SYSTEM_NAME, gid } from "@data"
 // import { MookSchema, ThresholdOp } from "@system"
-// import { LocalizeGURPS } from "@util"
 // import { attribute } from "@util/enum/attribute.ts"
 // import { progression } from "@util/enum/progression.ts"
 //
@@ -9,7 +8,7 @@
 //
 // 	constructor() {
 // 		this.settings = new MockSettings()
-// 		LocalizeGURPS.ready = true
+// 		localizeGURPS.ready = true
 // 	}
 // }
 //

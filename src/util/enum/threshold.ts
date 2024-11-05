@@ -13,12 +13,10 @@ export namespace threshold {
 
 		export function toString(O: Op): string {
 			return `GURPS.Enum.threshold.${O}.Name`
-			// return LocalizeGURPS.translations.gurps.enum.threshold.string[O]
 		}
 
 		export function altString(O: Op): string {
 			return `GURPS.Enum.threshold.${O}.Hint`
-			// return LocalizeGURPS.translations.gurps.enum.threshold.alt_string[O]
 		}
 	}
 

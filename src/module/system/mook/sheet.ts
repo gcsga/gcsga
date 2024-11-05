@@ -2,7 +2,7 @@
 // import { Mook } from "./document.ts"
 // import { DialogGURPS } from "@module/apps/dialog.ts"
 // import { CharacterConfigSheet } from "@actor/character/config.ts"
-// import { LocalizeGURPS, htmlQuery } from "@util"
+// import { htmlQuery } from "@util"
 // import { AttributeGURPS } from "@system/attribute/index.ts"
 // import { EXAMPLE_STATBLOCKS } from "./data.ts"
 //
@@ -35,7 +35,7 @@
 // 	}
 //
 // 	override get title(): string {
-// 		return LocalizeGURPS.translations.gurps.mook.title
+// 		return translations.gurps.mook.title
 // 	}
 //
 // 	override activateListeners($html: JQuery<HTMLElement>): void {
@@ -48,7 +48,7 @@
 // 			if (!this.testing) {
 // 				this.testing = true
 // 				const button = $(html).find("button#create span")
-// 				button.text(LocalizeGURPS.translations.gurps.mook.test)
+// 				button.text(translations.gurps.mook.test)
 // 			}
 // 		})
 // 	}
@@ -67,8 +67,8 @@
 // 			secondary_attributes,
 // 			point_pools,
 // 			button_text: this.testing
-// 				? LocalizeGURPS.translations.gurps.mook.test
-// 				: LocalizeGURPS.translations.gurps.mook.create,
+// 				? translations.gurps.mook.test
+// 				: translations.gurps.mook.create,
 // 			text: this._prepareText(),
 // 		})
 // 	}
@@ -172,7 +172,7 @@
 //
 // 	private testMook() {
 // 		if (this.object.profile.name === "") {
-// 			ui.notifications?.error(LocalizeGURPS.translations.gurps.error.mook.name)
+// 			ui.notifications?.error(translations.gurps.error.mook.name)
 // 			return false
 // 		}
 // 		console.log(this.object)

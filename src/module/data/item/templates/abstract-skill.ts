@@ -1,5 +1,5 @@
 import { ItemDataModel } from "@module/data/item/abstract.ts"
-import { difficulty, Int, LocalizeGURPS, StringBuilder } from "@util"
+import { difficulty, Int, StringBuilder } from "@util"
 import { ItemType } from "@module/data/constants.ts"
 import { SkillLevel } from "../helpers.ts"
 import { ItemTemplateType } from "../types.ts"
@@ -50,13 +50,11 @@ class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 		const buffer = new StringBuilder()
 		buffer.push(this.hasTemplate(ItemTemplateType.BasicInformation) ? this.nameWithReplacements : "")
 		if (this.tech_level_required) {
-			buffer.push(
-				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.TechLevelShort, { level: this.tech_level }),
-			)
+			buffer.push(game.i18n.format("GURPS.TechLevelShort", { level: this.tech_level }))
 		}
 		if (this.isOfType(ItemType.Skill) && this.specializationWithReplacements !== "") {
 			buffer.push(
-				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.SkillSpecialization, {
+				game.i18n.format("GURPS.SkillSpecialization", {
 					specialization: this.specializationWithReplacements,
 				}),
 			)

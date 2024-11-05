@@ -1,5 +1,3 @@
-import { LocalizeGURPS } from "@util/localize.ts"
-
 export namespace encumbrance {
 	export enum Level {
 		No = "none",
@@ -11,7 +9,7 @@ export namespace encumbrance {
 
 	export namespace Level {
 		export function toString(L: Level): string {
-			return LocalizeGURPS.translations.gurps.enum.encumbrance[L]
+			return game.i18n.localize(`GURPS.Enum.encumbrance.${L}.Name`)
 		}
 
 		export function weightMultiplier(L: Level): number {

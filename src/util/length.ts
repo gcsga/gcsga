@@ -1,5 +1,4 @@
 import { Int } from "./int.ts"
-import { LocalizeGURPS } from "./localize.ts"
 
 export namespace Length {
 	export enum Unit {
@@ -185,6 +184,6 @@ export namespace Length {
 	}
 
 	export function f(u: Unit): string {
-		return LocalizeGURPS.translations.gurps.length_units[u]
+		return game.i18n.localize(`GURPS.Enum.Length.${u}.Name`)
 	}
 }

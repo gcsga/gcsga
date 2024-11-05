@@ -1,7 +1,7 @@
 import { WeaponField } from "./weapon-field.ts"
 import fields = foundry.data.fields
 import { AbstractWeaponTemplate } from "../templates/abstract-weapon.ts"
-import { Int, LocalizeGURPS, StringBuilder, TooltipGURPS, feature, wswitch } from "@util"
+import { Int, StringBuilder, TooltipGURPS, feature, wswitch } from "@util"
 import { ToggleableBooleanField, ToggleableNumberField } from "@module/data/fields/index.ts"
 
 class WeaponStrength extends WeaponField<AbstractWeaponTemplate, WeaponStrengthSchema> {
@@ -54,14 +54,12 @@ class WeaponStrength extends WeaponField<AbstractWeaponTemplate, WeaponStrengthS
 		if (w.parent.container !== null && !(w.parent.container instanceof Promise)) {
 			const st = w.parent.container.system.ratedStrength
 			if (st > 0) {
-				tooltip.push(LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Tooltip.StrengthRated, { st }))
+				tooltip.push(game.i18n.format("GURPS.Tooltip.StrengthRated", { st }))
 			}
 		}
 		if (this.min > 0) {
 			if (tooltip.length !== 0) tooltip.push("\n\n")
-			tooltip.push(
-				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Tooltip.StrengthMinimum, { min: this.min }),
-			)
+			tooltip.push(game.i18n.format("GURPS.Tooltip.StrengthMinimum", { min: this.min }))
 		}
 
 		if (this.bipod) {
@@ -69,37 +67,37 @@ class WeaponStrength extends WeaponField<AbstractWeaponTemplate, WeaponStrengthS
 			const reducedST = Math.ceil((this.min * 2) / 3)
 			if (reducedST > 0 && reducedST !== this.min) {
 				tooltip.push(
-					LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Tooltip.StrengthBipodReducedST, {
+					game.i18n.format(game.i18n.localize("GURPS.Tooltip.StrengthBipodReducedST"), {
 						st: reducedST,
 					}),
 				)
 			} else {
-				tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.StrengthBipodNoReducedST)
+				tooltip.push(game.i18n.localize("GURPS.Tooltip.StrengthBipodNoReducedST"))
 			}
 		}
 
 		if (this.mounted) {
 			if (tooltip.length !== 0) tooltip.push("\n\n")
-			tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.StrengthMounted)
+			tooltip.push(game.i18n.localize("GURPS.Tooltip.StrengthMounted"))
 		}
 
 		if (this.musketRest) {
 			if (tooltip.length !== 0) tooltip.push("\n\n")
-			tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.StrengthMusketRest)
+			tooltip.push(game.i18n.localize("GURPS.Tooltip.StrengthMusketRest"))
 		}
 
 		if (this.twoHanded || this.twoHandedUnready) {
 			if (tooltip.length !== 0) tooltip.push("\n\n")
 			if (this.twoHandedUnready)
 				tooltip.push(
-					LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Tooltip.StrengthTwoHandedUnready, {
+					game.i18n.format("GURPS.Tooltip.StrengthTwoHandedUnready", {
 						st15: this.min * 1.5,
 						st3: this.min * 3,
 					}),
 				)
 			else
 				tooltip.push(
-					LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Tooltip.StrengthTwoHanded, {
+					game.i18n.format("GURPS.Tooltip.StrengthTwoHanded", {
 						st15: this.min * 1.5,
 						st2: this.min * 2,
 					}),

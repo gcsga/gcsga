@@ -1,6 +1,6 @@
 // import { HOOKS, SOCKET, SYSTEM_NAME, UserFlags } from "@data"
 // import { ModifierBucket } from "./button.ts"
-// import { LocalizeGURPS, htmlQuery, htmlQueryAll } from "@util"
+// import {  htmlQuery, htmlQueryAll } from "@util"
 // import { DialogGURPS } from "../dialog.ts"
 // // import { PDF } from "@module/util/index.ts"
 // import { RollModifierStack } from "@module/data/roll-modifier.ts"
@@ -124,17 +124,17 @@
 // 		setTimeout(async () => {
 // 			new DialogGURPS(
 // 				{
-// 					title: LocalizeGURPS.translations.gurps.system.modifier_bucket.save_current,
+// 					title: translations.gurps.system.modifier_bucket.save_current,
 // 					content: await renderTemplate(`systems/${SYSTEM_NAME}/templates/modifier-bucket/name.hbs`, {}),
 // 					buttons: {
 // 						apply: {
 // 							icon: '<i class="fas fa-check"></i>',
-// 							label: LocalizeGURPS.translations.gurps.system.modifier_bucket.save_apply,
+// 							label: translations.gurps.system.modifier_bucket.save_apply,
 // 							callback: async (html: HTMLElement | JQuery<HTMLElement>) => {
 // 								const form = $(html).find("form")
 // 								let name = form.find("input").val()
 // 								if (!name || name === "")
-// 									name = LocalizeGURPS.translations.gurps.system.modifier_bucket.untitled_stack
+// 									name = translations.gurps.system.modifier_bucket.untitled_stack
 // 								const savedStacks = game.user.flags[SYSTEM_NAME][UserFlags.SavedStacks]
 // 								savedStacks.push(
 // 									new RollModifierStack({
@@ -148,7 +148,7 @@
 // 						},
 // 						no: {
 // 							icon: '<i class="fas fa-times"></i>',
-// 							label: LocalizeGURPS.translations.gurps.system.modifier_bucket.save_cancel,
+// 							label: translations.gurps.system.modifier_bucket.save_cancel,
 // 						},
 // 					},
 // 					default: "apply",

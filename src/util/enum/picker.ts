@@ -1,5 +1,3 @@
-import { LocalizeGURPS } from "@util/localize.ts"
-
 export namespace picker {
 	export enum Type {
 		NotApplicable = "not_applicable",
@@ -9,7 +7,7 @@ export namespace picker {
 
 	export namespace Type {
 		export function toString(T: Type): string {
-			return LocalizeGURPS.translations.gurps.enum.picker[T]
+			return game.i18n.localize(`GURPS.Enum.picker.${T}.Name`)
 		}
 	}
 

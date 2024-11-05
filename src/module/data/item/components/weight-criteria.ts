@@ -1,4 +1,3 @@
-import { LocalizeGURPS } from "../../../../util/localize.ts"
 import { ItemDataModel } from "@module/data/item/abstract.ts"
 import { NumericComparison, Weight } from "@util"
 import fields = foundry.data.fields
@@ -41,11 +40,11 @@ class WeightCriteria extends foundry.abstract.DataModel<ItemDataModel, WeightCri
 	}
 
 	override toString(): string {
-		return LocalizeGURPS.translations.gurps.numeric_criteria.string[this.compare]
+		return game.i18n.localize(`GURPS.WeightCriteria.${this.compare}.Name`)
 	}
 
 	altString(): string {
-		return LocalizeGURPS.translations.gurps.numeric_criteria.alt_string[this.compare]
+		return game.i18n.localize(`GURPS.WeightCriteria.${this.compare}.Alt`)
 	}
 
 	describe(): string {

@@ -1,6 +1,5 @@
 import { NumericComparison } from "@util/enum/numeric-comparison.ts"
 import { ItemDataModel } from "@module/data/item/abstract.ts"
-import { LocalizeGURPS } from "@util/localize.ts"
 import fields = foundry.data.fields
 
 class NumericCriteria extends foundry.abstract.DataModel<ItemDataModel, NumericCriteriaSchema> {
@@ -35,11 +34,11 @@ class NumericCriteria extends foundry.abstract.DataModel<ItemDataModel, NumericC
 	}
 
 	override toString(): string {
-		return LocalizeGURPS.translations.gurps.numeric_criteria.string[this.compare]
+		return game.i18n.localize(`GURPS.NumericCriteria.${this.compare}.Name`)
 	}
 
 	altString(): string {
-		return LocalizeGURPS.translations.gurps.numeric_criteria.alt_string[this.compare]
+		return game.i18n.localize(`GURPS.NumericCriteria.${this.compare}.Alt`)
 	}
 
 	describe(): string {

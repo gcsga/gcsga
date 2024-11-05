@@ -1,7 +1,7 @@
 import { AbstractWeaponTemplate } from "../templates/index.ts"
 import { WeaponField } from "./weapon-field.ts"
 import fields = foundry.data.fields
-import { Int, LocalizeGURPS, StringBuilder, TooltipGURPS, feature, progression, stdmg } from "@util"
+import { Int, StringBuilder, TooltipGURPS, feature, progression, stdmg } from "@util"
 import { ActorType, ItemType, gid } from "@module/data/constants.ts"
 import { DiceGURPS, DiceSchema } from "@module/data/dice.ts"
 import { SheetSettings } from "@module/data/sheet-settings.ts"
@@ -52,7 +52,7 @@ class WeaponDamage extends WeaponField<AbstractWeaponTemplate, WeaponDamageSchem
 		if (this.modifier_per_die !== 0) {
 			if (buffer.length !== 0) buffer.push(" ")
 			buffer.push(
-				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Weapon.ModifierPerDie, {
+				game.i18n.format("GURPS.Weapon.ModifierPerDie", {
 					value: this.modifier_per_die.signedString(),
 				}),
 			)
@@ -75,8 +75,8 @@ class WeaponDamage extends WeaponField<AbstractWeaponTemplate, WeaponDamageSchem
 	override tooltip(_w: AbstractWeaponTemplate): string {
 		const tooltip = new TooltipGURPS()
 		this.resolvedValue(tooltip)
-		if (tooltip.length !== 0) return LocalizeGURPS.translations.GURPS.Messages.NoAdditionalModifiers
-		return LocalizeGURPS.translations.GURPS.Messages.IncludesModifiersFrom + tooltip.toString()
+		if (tooltip.length !== 0) return game.i18n.localize("GURPS.Messages.NoAdditionalModifiers")
+		return game.i18n.localize("GURPS.Messages.IncludesModifiersFrom") + tooltip.toString()
 	}
 
 	resolvedValue(tooltip: TooltipGURPS | null): string {

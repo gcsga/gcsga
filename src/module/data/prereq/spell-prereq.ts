@@ -3,7 +3,7 @@ import fields = foundry.data.fields
 import { BasePrereq, BasePrereqSchema } from "./base-prereq.ts"
 import { spellcmp } from "@util/enum/spellcmp.ts"
 import { ActorType, ItemType } from "@data"
-import { LocalizeGURPS, NumericComparison, StringComparison, TooltipGURPS } from "@util"
+import { NumericComparison, StringComparison, TooltipGURPS } from "@util"
 import { Nameable } from "@module/util/index.ts"
 import { ItemGURPS2 } from "@module/documents/item.ts"
 import { ActorInst } from "../actor/helpers.ts"
@@ -93,33 +93,33 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 		if (!this.has) satisfied = !satisfied
 
 		if (!satisfied && tooltip !== null) {
-			tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.Prefix)
+			tooltip.push(game.i18n.localize("GURPS.Tooltip.Prefix"))
 			const spellText =
 				this.quantity.qualifier === 1
-					? LocalizeGURPS.translations.GURPS.Prereq.Spell.SpellSingular
-					: LocalizeGURPS.translations.GURPS.Prereq.Spell.SpellPlural
+					? game.i18n.localize("GURPS.Prereq.Spell.SpellSingular")
+					: game.i18n.localize("GURPS.Prereq.Spell.SpellPlural")
 			const qualifier = (() => {
 				switch (this.sub_type) {
 					case spellcmp.Type.Any:
-						return LocalizeGURPS.translations.GURPS.Prereq.Spell.Any
+						return game.i18n.localize("GURPS.Prereq.Spell.Any")
 					case spellcmp.Type.CollegeCount:
-						return LocalizeGURPS.translations.GURPS.Prereq.Spell.CollegeCount
+						return game.i18n.localize("GURPS.Prereq.Spell.CollegeCount")
 					case spellcmp.Type.Name:
-						return LocalizeGURPS.translations.GURPS.Prereq.Spell.Name
+						return game.i18n.localize("GURPS.Prereq.Spell.Name")
 					case spellcmp.Type.Tag:
-						return LocalizeGURPS.translations.GURPS.Prereq.Spell.Tag
+						return game.i18n.localize("GURPS.Prereq.Spell.Tag")
 					case spellcmp.Type.College:
-						return LocalizeGURPS.translations.GURPS.Prereq.Spell.College
+						return game.i18n.localize("GURPS.Prereq.Spell.College")
 					default:
-						return LocalizeGURPS.translations.GURPS.Prereq.Spell.Any
+						return game.i18n.localize("GURPS.Prereq.Spell.Any")
 				}
 			})()
 			tooltip.push(
-				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.Spell.Base, {
+				game.i18n.format(game.i18n.format("GURPS.Prereq.Spell.Base"), {
 					has: this.hasText,
 					quantity: this.quantity.qualifier,
 					spellText,
-					qualifier: LocalizeGURPS.format(qualifier, { value: this.qualifier.toString(replacements) }),
+					qualifier: game.i18n.format(qualifier, { value: this.qualifier.toString(replacements) }),
 				}),
 			)
 		}

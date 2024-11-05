@@ -1,5 +1,4 @@
 // import { SYSTEM_NAME } from "@data"
-// import { LocalizeGURPS } from "@util"
 // import { GCS_FILE_VERSIONS, ImportedItemLibrarySource } from "./data.ts"
 // import { DialogGURPS } from "@module/apps/dialog.ts"
 // import { ItemImporter } from "./item.ts"
@@ -22,17 +21,17 @@
 // 		setTimeout(async () => {
 // 			new DialogGURPS(
 // 				{
-// 					title: LocalizeGURPS.translations.gurps.system.library_import.title_item,
+// 					title: translations.gurps.system.library_import.title_item,
 // 					content: await renderTemplate(`systems/${SYSTEM_NAME}/templates/item-library-import.hbs`, {}),
 // 					buttons: {
 // 						import: {
 // 							icon: '<i class="fas fa-file-import"></i>',
-// 							label: LocalizeGURPS.translations.gurps.system.library_import.import,
+// 							label: translations.gurps.system.library_import.import,
 // 							callback: (html: HTMLElement | JQuery<HTMLElement>) => {
 // 								const form = $(html).find("form")[0]
 // 								const files = form.data.files
 // 								if (!files.length)
-// 									ui.notifications?.error(LocalizeGURPS.translations.gurps.error.import.no_file)
+// 									ui.notifications?.error(translations.gurps.error.import.no_file)
 // 								else {
 // 									const file = files[0]
 // 									readTextFromFile(file).then(text =>
@@ -47,7 +46,7 @@
 // 						},
 // 						no: {
 // 							icon: '<i class="fas fa-times"></i>',
-// 							label: LocalizeGURPS.translations.gurps.system.library_import.cancel,
+// 							label: translations.gurps.system.library_import.cancel,
 // 						},
 // 					},
 // 					default: "import",
@@ -66,8 +65,8 @@
 //
 // 		if (!GCS_FILE_VERSIONS.includes(data.version)) {
 // 			if (data.version < Math.min(...GCS_FILE_VERSIONS))
-// 				return this.throwError(LocalizeGURPS.translations.gurps.error.import.format_old)
-// 			else return this.throwError(LocalizeGURPS.translations.gurps.error.import.format_new)
+// 				return this.throwError(translations.gurps.error.import.format_old)
+// 			else return this.throwError(translations.gurps.error.import.format_new)
 // 		}
 //
 // 		const items = ItemImporter.importItems(data.rows)
@@ -89,11 +88,11 @@
 //
 // 		const counter = items.length
 // 		ui.notifications.info(
-// 			LocalizeGURPS.format(LocalizeGURPS.translations.gurps.system.library_import.start, { pnumber: counter }),
+// 			game.i18n.format(translations.gurps.system.library_import.start, { pnumber: counter }),
 // 		)
 // 		await ItemGURPS2.createDocuments(items, { pack: pack.collection, keepId: true })
 // 		ui.notifications.info(
-// 			LocalizeGURPS.format(LocalizeGURPS.translations.gurps.system.library_import.finished, { number: counter }),
+// 			game.i18n.format(translations.gurps.system.library_import.finished, { number: counter }),
 // 		)
 // 	}
 // }

@@ -1,7 +1,7 @@
 import { WeaponField } from "./weapon-field.ts"
 import fields = foundry.data.fields
 import { AbstractWeaponTemplate } from "../templates/abstract-weapon.ts"
-import { Int, LocalizeGURPS, StringBuilder, TooltipGURPS, feature, wswitch } from "@util"
+import { Int, StringBuilder, TooltipGURPS, feature, wswitch } from "@util"
 import { ActorType, gid } from "@module/data/constants.ts"
 import { ToggleableBooleanField, ToggleableNumberField } from "@module/data/fields/index.ts"
 
@@ -48,14 +48,14 @@ class WeaponParry extends WeaponField<AbstractWeaponTemplate, WeaponParrySchema>
 		const tooltip = new TooltipGURPS()
 		if (this.fencing)
 			tooltip.push(
-				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Tooltip.ParryFencing, {
+				game.i18n.format("GURPS.Tooltip.ParryFencing", {
 					retreatingParry: this.modifier + 3,
 					normalParry: this.modifier + 1,
 				}),
 			)
 		if (this.unbalanced) {
 			if (tooltip.length !== 0) tooltip.push("\n\n")
-			tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.ParryUnbalanced)
+			tooltip.push(game.i18n.localize("GURPS.Tooltip.ParryUnbalanced"))
 		}
 		return tooltip.toString()
 	}

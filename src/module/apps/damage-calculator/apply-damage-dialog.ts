@@ -3,7 +3,6 @@ import { DamageRoll, DamageTarget } from "./index.ts"
 import { SETTINGS, SYSTEM_NAME, gid } from "@data"
 import { HitLocationUtil } from "./hit-location-utils.ts"
 import { DamageTypes } from "./damage-type.ts"
-import { LocalizeGURPS } from "@util"
 // import { PDF } from "@module/util/index.ts"
 
 export class ApplyDamageDialog extends Application {
@@ -36,7 +35,8 @@ export class ApplyDamageDialog extends Application {
 
 		super(options)
 
-		this.calculator = createDamageCalculator(roll, target, LocalizeGURPS.format)
+		// this.calculator = createDamageCalculator(roll, target, game.i18n.format)
+		this.calculator = createDamageCalculator(roll, target, game.i18n.format)
 	}
 
 	private calculator: IDamageCalculator
@@ -55,7 +55,7 @@ export class ApplyDamageDialog extends Application {
 	}
 
 	override get title(): string {
-		return LocalizeGURPS.translations.gurps.apply_damage_dialog.title
+		return game.i18n.localize("GURPS.ApplyDamageDialog.Title")
 	}
 
 	override getData(options?: Partial<ApplicationOptions> | undefined): object {

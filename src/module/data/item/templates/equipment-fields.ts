@@ -1,7 +1,7 @@
 import { ItemType } from "@module/data/constants.ts"
 import { SheetSettings } from "@module/data/sheet-settings.ts"
 import { MaybePromise } from "@module/data/types.ts"
-import { LocalizeGURPS, StringBuilder, Weight, align, cell, display } from "@util"
+import { StringBuilder, Weight, align, cell, display } from "@util"
 import { ItemDataModel } from "../abstract.ts"
 import { CellData, CellDataOptions } from "../components/cell-data.ts"
 import {
@@ -133,7 +133,7 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 			const localBuffer = new StringBuilder()
 			if (this.rated_strength !== 0) {
 				localBuffer.push(
-					LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.RatedStrength, {
+					game.i18n.format("GURPS.RatedStrength", {
 						value: this.rated_strength,
 					}),
 				)

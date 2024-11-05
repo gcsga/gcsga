@@ -1,6 +1,6 @@
 import fields = foundry.data.fields
 import { WeaponField } from "./weapon-field.ts"
-import { Int, LocalizeGURPS, StringBuilder, TooltipGURPS, feature, wswitch } from "@util"
+import { Int, StringBuilder, TooltipGURPS, feature, wswitch } from "@util"
 import { AbstractWeaponTemplate } from "../templates/index.ts"
 import { ToggleableBooleanField, ToggleableNumberField } from "@module/data/fields/index.ts"
 
@@ -63,7 +63,7 @@ class WeaponReach extends WeaponField<AbstractWeaponTemplate, WeaponReachSchema>
 	}
 
 	override tooltip(_w: AbstractWeaponTemplate): string {
-		if (this.changeRequiresReady) return LocalizeGURPS.translations.GURPS.Tooltip.ReachChangeRequiresReady
+		if (this.changeRequiresReady) return game.i18n.localize("GURPS.Tooltip.ReachChangeRequiresReady")
 		return ""
 	}
 

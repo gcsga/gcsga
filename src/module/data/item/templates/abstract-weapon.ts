@@ -1,6 +1,6 @@
 import { ItemDataModel } from "@module/data/item/abstract.ts"
 import fields = foundry.data.fields
-import { LocalizeGURPS, StringBuilder, TooltipGURPS, encumbrance, feature, skillsel, wsel, wswitch } from "@util"
+import { StringBuilder, TooltipGURPS, encumbrance, feature, skillsel, wsel, wswitch } from "@util"
 import { ItemTemplateType } from "../types.ts"
 import { ActorType, ItemType } from "@module/data/constants.ts"
 import { WeaponStrength } from "../fields/weapon-strength.ts"
@@ -94,7 +94,7 @@ class AbstractWeaponTemplate extends ItemDataModel<AbstractWeaponTemplateSchema>
 			if (tooltip !== null) {
 				tooltip.push("\n")
 				tooltip.push(
-					LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Tooltip.SkillLevelStrengthRequirement, {
+					game.i18n.format("GURPS.Tooltip.SkillLevelStrengthRequirement", {
 						name: this.processedName,
 						modifier: -minST,
 					}),
@@ -133,7 +133,7 @@ class AbstractWeaponTemplate extends ItemDataModel<AbstractWeaponTemplateSchema>
 		if (penalty !== 0 && tooltip !== null) {
 			tooltip.push("\n")
 			tooltip.push(
-				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Tooltip.EncumbrancePenalty, {
+				game.i18n.format("GURPS.Tooltip.EncumbrancePenalty", {
 					modifier: penalty.signedString(),
 				}),
 			)
@@ -315,11 +315,11 @@ class AbstractWeaponTemplate extends ItemDataModel<AbstractWeaponTemplateSchema>
 		return Nameable.apply(this.notes, this.nameableReplacements)
 	}
 
-	override async prepareBaseData(): Promise<void> {
+	override prepareBaseData(): void {
 		super.prepareBaseData()
-		const container = await this.parent.container
-		if (container?.hasTemplate(ItemTemplateType.Replacement)) {
-			await container.system.prepareNameableKeys()
+		const container = this.parent.container
+		if (!(container instanceof Promise) && container?.hasTemplate(ItemTemplateType.Replacement)) {
+			container.system.prepareNameableKeys()
 		}
 	}
 }

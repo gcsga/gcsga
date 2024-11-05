@@ -4,7 +4,7 @@ import { SheetSettings } from "@module/data/sheet-settings.ts"
 import { Study } from "@module/data/study.ts"
 import { MaybePromise } from "@module/data/types.ts"
 import { Nameable } from "@module/util/index.ts"
-import { LocalizeGURPS, StringBuilder, TooltipGURPS, align, cell, display } from "@util"
+import { StringBuilder, TooltipGURPS, align, cell, display } from "@util"
 import { AttributeDifficulty } from "../components/attribute-difficulty.ts"
 import { CellData, CellDataOptions } from "../components/cell-data.ts"
 import { StringArrayField } from "../fields/string-array-field.ts"
@@ -74,7 +74,7 @@ class SpellTemplate extends ItemDataModel<SpellTemplateSchema> {
 			const tooltip = new TooltipGURPS()
 			const level = this.level
 			if (level.tooltip === "") return ""
-			tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.IncludesModifiersFrom, ":")
+			tooltip.push(game.i18n.localize("GURPS.Tooltip.IncludesModifiersFrom"), ":")
 			tooltip.push(level.tooltip)
 			return tooltip.toString()
 		}
@@ -89,7 +89,7 @@ class SpellTemplate extends ItemDataModel<SpellTemplateSchema> {
 		})
 		if (tooltip.length !== 0) {
 			const pointsTooltip = new TooltipGURPS()
-			pointsTooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.IncludesModifiersFrom, ":")
+			pointsTooltip.push(game.i18n.localize("GURPS.Tooltip.IncludesModifiersFrom"), ":")
 			pointsTooltip.push(tooltip.toString())
 			points.tooltip = pointsTooltip.toString()
 		}
@@ -200,16 +200,16 @@ class SpellTemplate extends ItemDataModel<SpellTemplateSchema> {
 
 		switch (true) {
 			case level < 10:
-				return LocalizeGURPS.translations.GURPS.SpellRitual.LessThan10
+				return game.i18n.localize("GURPS.SpellRitual.LessThan10")
 			case level < 15:
-				return LocalizeGURPS.translations.GURPS.SpellRitual.LessThan15
+				return game.i18n.localize("GURPS.SpellRitual.LessThan15")
 			case level < 20: {
-				const ritual = LocalizeGURPS.translations.GURPS.SpellRitual.LessThan15
-				let time = LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.SpellRitual.Time, { number: -1 })
+				const ritual = game.i18n.localize("GURPS.SpellRitual.LessThan15")
+				let time = game.i18n.format("GURPS.SpellRitual.Time", { number: -1 })
 				if (this.classWithReplacements.toLowerCase().includes("blocking")) {
 					time = ""
 				}
-				return LocalizeGURPS.format(ritual, { time })
+				return game.i18n.format(ritual, { time })
 			}
 			default: {
 				const adj = Math.trunc((level - 15) / 5)
@@ -217,12 +217,12 @@ class SpellTemplate extends ItemDataModel<SpellTemplateSchema> {
 				let time = ""
 				let cost = ""
 				if (!spellClass.includes("missile")) {
-					time = LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.SpellRitual.Time, { number: 1 << adj })
+					time = game.i18n.format("GURPS.SpellRitual.Time", { number: 1 << adj })
 				}
 				if (!spellClass.includes("blocking")) {
-					cost = LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.SpellRitual.Cost, { number: adj + 1 })
+					cost = game.i18n.format("GURPS.SpellRitual.Cost", { number: adj + 1 })
 				}
-				return LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.SpellRitual.MoreThan20, { time, cost })
+				return game.i18n.format("GURPS.SpellRitual.MoreThan20", { time, cost })
 			}
 		}
 	}

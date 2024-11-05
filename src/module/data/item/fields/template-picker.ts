@@ -1,6 +1,6 @@
 import { SystemDataModel } from "@module/data/abstract.ts"
 import fields = foundry.data.fields
-import { LocalizeGURPS, picker } from "@util"
+import { picker } from "@util"
 import { NumericCriteria } from "@module/data/item/components/numeric-criteria.ts"
 import { NumericCriteriaField } from "./numeric-criteria-field.ts"
 
@@ -21,15 +21,15 @@ class TemplatePicker extends foundry.abstract.DataModel<SystemDataModel, Templat
 	get description(): string {
 		switch (this.type) {
 			case picker.Type.Count:
-				return LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.TemplatePicker.descriptionCount, {
+				return game.i18n.format("GURPS.TemplatePicker.descriptionCount", {
 					number: this.qualifier.altString(),
 				})
 			case picker.Type.Points: {
 				const points =
 					this.qualifier.qualifier === 1
-						? LocalizeGURPS.translations.GURPS.TemplatePicker.points
-						: LocalizeGURPS.translations.GURPS.TemplatePicker.point
-				return LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.TemplatePicker.descriptionCount, {
+						? game.i18n.localize("GURPS.TemplatePicker.points")
+						: game.i18n.localize("GURPS.TemplatePicker.point")
+				return game.i18n.format("GURPS.TemplatePicker.descriptionCount", {
 					number: this.qualifier.altString(),
 					points,
 				})

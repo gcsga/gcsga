@@ -1,5 +1,5 @@
 import { BasePrereq, BasePrereqSchema } from "./base-prereq.ts"
-import { LocalizeGURPS, NumericComparison, StringComparison, TooltipGURPS, prereq } from "@util"
+import { NumericComparison, StringComparison, TooltipGURPS, prereq } from "@util"
 import { ActorType } from "@module/data/constants.ts"
 import { ActorInst } from "../actor/helpers.ts"
 import { NumericCriteriaField } from "../item/fields/numeric-criteria-field.ts"
@@ -61,15 +61,15 @@ class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 		if (!this.has) satisfied = !satisfied
 
 		if (!satisfied && tooltip !== null) {
-			tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.Prefix)
+			tooltip.push(game.i18n.localize("GURPS.Tooltip.Prefix"))
 			const notes =
 				this.notes.compare === StringComparison.Option.AnyString
 					? ""
-					: LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.Trait.Notes, {
+					: game.i18n.format("GURPS.Prereq.Trait.Notes", {
 							value: this.notes.toString(replacements),
 						})
 			tooltip.push(
-				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.Trait.Base, {
+				game.i18n.format("GURPS.Prereq.Trait.Base", {
 					has: this.hasText,
 					name: this.name.toString(replacements),
 					notes,

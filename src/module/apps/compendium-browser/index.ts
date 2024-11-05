@@ -2,7 +2,6 @@
 // import {
 // 	DnD,
 // 	ErrorGURPS,
-// 	LocalizeGURPS,
 // 	applyBanding,
 // 	createHTMLElement,
 // 	fontAwesomeIcon,
@@ -70,7 +69,7 @@
 // 	}
 //
 // 	override get title(): string {
-// 		return LocalizeGURPS.translations.gurps.compendium_browser.title
+// 		return translations.gurps.compendium_browser.title
 // 	}
 //
 // 	static override get defaultOptions(): ApplicationOptions {
@@ -275,7 +274,7 @@
 //
 // 				await this.#resetInitializedTabs()
 // 				this.render(true)
-// 				ui.notifications.info(LocalizeGURPS.translations.gurps.compendium_browser.settings_saved)
+// 				ui.notifications.info(translations.gurps.compendium_browser.settings_saved)
 // 			})
 //
 // 			const sourceSearch = htmlQuery<HTMLInputElement>(form, "input[data-element=setting-sources-search]")
@@ -308,7 +307,7 @@
 //
 // 			const deleteButton = htmlQuery<HTMLInputElement>(form, "button[data-action=settings-sources-delete]")
 // 			deleteButton?.addEventListener("click", async () => {
-// 				const localize = LocalizeGURPS.translations.gurps.compendium_browser.sources
+// 				const localize = translations.gurps.compendium_browser.sources
 // 				const confirm = await Dialog.confirm({
 // 					title: localize.delete_all_title,
 // 					content: `
@@ -572,7 +571,7 @@
 // 	// 	const item = await this.#getEquipment(uuid)
 // 	//
 // 	// 	if (actors.length === 0) {
-// 	// 		ui.notifications.error(LocalizeGURPS.translations.gurps.error.no_token_selected)
+// 	// 		ui.notifications.error(translations.gurps.error.no_token_selected)
 // 	// 		return
 // 	// 	}
 // 	//
@@ -582,14 +581,14 @@
 // 	//
 // 	// 	if (actors.length === 1 && game.user.character && actors[0] === game.user.character) {
 // 	// 		ui.notifications.info(
-// 	// 			LocalizeGURPS.format(LocalizeGURPS.translations.gurps.compendium_browser.added_item_to_character, {
+// 	// 			game.i18n.format(translations.gurps.compendium_browser.added_item_to_character, {
 // 	// 				item: item.name,
 // 	// 				character: game.user.character.name,
 // 	// 			}),
 // 	// 		)
 // 	// 	} else {
 // 	// 		ui.notifications.info(
-// 	// 			LocalizeGURPS.format(LocalizeGURPS.translations.gurps.compendium_browser.added_item, {
+// 	// 			game.i18n.format(translations.gurps.compendium_browser.added_item, {
 // 	// 				item: item.name,
 // 	// 			}),
 // 	// 		)
@@ -604,7 +603,7 @@
 // 	// 		if (game.user.character?.isOfType(ActorType.Character)) {
 // 	// 			actors.push(game.user.character)
 // 	// 		} else {
-// 	// 			ui.notifications.error(LocalizeGURPS.translations.gurps.error.no_token_selected)
+// 	// 			ui.notifications.error(translations.gurps.error.no_token_selected)
 // 	// 			return
 // 	// 		}
 // 	// 	}
@@ -622,8 +621,8 @@
 // 	// 	if (actors.length === 1) {
 // 	// 		if (purchaseSuccesses === 1) {
 // 	// 			ui.notifications.info(
-// 	// 				LocalizeGURPS.format(
-// 	// 					LocalizeGURPS.translations.gurps.compendium_browser.bought_item_with_character,
+// 	// 				game.i18n.format(
+// 	// 					translations.gurps.compendium_browser.bought_item_with_character,
 // 	// 					{
 // 	// 						item: item.name,
 // 	// 						characters: actors[0].name,
@@ -632,8 +631,8 @@
 // 	// 			)
 // 	// 		} else {
 // 	// 			ui.notifications.info(
-// 	// 				LocalizeGURPS.format(
-// 	// 					LocalizeGURPS.translations.gurps.compendium_browser.failed_to_buy_item_with_character,
+// 	// 				game.i18n.format(
+// 	// 					translations.gurps.compendium_browser.failed_to_buy_item_with_character,
 // 	// 					{
 // 	// 						item: item.name,
 // 	// 						characters: actors[0].name,
@@ -644,8 +643,8 @@
 // 	// 	} else {
 // 	// 		if (purchaseSuccesses === actors.length) {
 // 	// 			ui.notifications.info(
-// 	// 				LocalizeGURPS.format(
-// 	// 					LocalizeGURPS.translations.gurps.compendium_browser.bought_item_with_all_characters,
+// 	// 				game.i18n.format(
+// 	// 					translations.gurps.compendium_browser.bought_item_with_all_characters,
 // 	// 					{
 // 	// 						item: item.name,
 // 	// 						characters: actors[0].name,
@@ -654,8 +653,8 @@
 // 	// 			)
 // 	// 		} else {
 // 	// 			ui.notifications.info(
-// 	// 				LocalizeGURPS.format(
-// 	// 					LocalizeGURPS.translations.gurps.compendium_browser.failed_to_buy_item_with_some_characters,
+// 	// 				game.i18n.format(
+// 	// 					translations.gurps.compendium_browser.failed_to_buy_item_with_some_characters,
 // 	// 					{
 // 	// 						item: item.name,
 // 	// 						characters: actors[0].name,

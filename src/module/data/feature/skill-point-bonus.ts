@@ -1,6 +1,5 @@
 import { Nameable } from "@module/util/index.ts"
 import { StringComparison, TooltipGURPS, feature } from "@util"
-import { LocalizeGURPS } from "@util/localize.ts"
 import { BaseFeature, BaseFeatureSchema } from "./base-feature.ts"
 import { createDummyElement } from "@module/applications/helpers.ts"
 import { ReplaceableStringCriteriaField } from "../item/fields/replaceable-string-criteria-field.ts"
@@ -37,11 +36,11 @@ class SkillPointBonus extends BaseFeature<SkillPointBonusSchema> {
 
 	override addToTooltip(tooltip: TooltipGURPS | null): void {
 		if (tooltip !== null) {
-			let lang = LocalizeGURPS.translations.gurps.feature.points_multiple
-			if (this.adjustedAmount === 1) lang = LocalizeGURPS.translations.gurps.feature.points_one
+			let lang = "GURPS.Feature.Points.Multiple"
+			if (this.adjustedAmount === 1) lang = "GURPS.Feature.Points.Singular"
 			if (tooltip.length !== 0) tooltip.push("<br>")
 			tooltip.push(
-				LocalizeGURPS.format(lang, {
+				game.i18n.format(lang, {
 					source: this.parentName,
 					// amount: this.leveledAmount.format(false),
 					amount: this.format(false),

@@ -1,7 +1,7 @@
 import { BasePrereq, BasePrereqSchema } from "./base-prereq.ts"
 import { prereq } from "@util/enum/prereq.ts"
 import { ActorType, ItemType } from "@module/data/constants.ts"
-import { LocalizeGURPS, NumericComparison, StringComparison, TooltipGURPS } from "@util"
+import { NumericComparison, StringComparison, TooltipGURPS } from "@util"
 import { ItemGURPS2 } from "@module/documents/item.ts"
 import { ActorInst } from "../actor/helpers.ts"
 import { Nameable } from "@module/util/index.ts"
@@ -67,23 +67,23 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 		if (this.has) satisfied = !satisfied
 
 		if (!satisfied && tooltip !== null) {
-			tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.Prefix)
+			tooltip.push(game.i18n.localize("GURPS.Tooltip.Prefix"))
 			const specialization =
 				this.specialization.compare === StringComparison.Option.AnyString
 					? ""
-					: LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.Skill.Specialization, {
+					: game.i18n.format("GURPS.Prereq.Skill.Specialization", {
 							value: this.specialization.toString(replacements),
 						})
 			const level =
 				techLevel === ""
-					? LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.Skill.LevelNoTL, {
+					? game.i18n.format("GURPS.Prereq.Skill.LevelNoTL", {
 							value: this.level.toString(),
 						})
-					: LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.Skill.LevelWithTL, {
+					: game.i18n.format("GURPS.Prereq.Skill.LevelWithTL", {
 							value: this.level.toString(),
 						})
 			tooltip.push(
-				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.Skill.Base, {
+				game.i18n.format("GURPS.Prereq.Skill.Base", {
 					has: this.hasText,
 					name: this.name.toString(replacements),
 					specialization,

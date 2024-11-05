@@ -1,4 +1,4 @@
-import { Int, LocalizeGURPS, NumericComparison, StringComparison, TooltipGURPS, feature, wsel, wswitch } from "@util"
+import { Int, NumericComparison, StringComparison, TooltipGURPS, feature, wsel, wswitch } from "@util"
 import fields = foundry.data.fields
 import { BaseFeature, BaseFeatureSchema } from "./base-feature.ts"
 import { ItemType } from "@module/data/constants.ts"
@@ -123,19 +123,16 @@ class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 		buf.push(" [")
 		if (this.type === feature.Type.WeaponSwitch) {
 			buf.push(
-				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.feature.weapon_bonus.weapon_switch, {
+				game.i18n.format(`GURPS.Feature.WeaponBonus.${this.type}`, {
 					type: this.switch_type!,
 					value: this.switch_type_value!,
 				}),
 			)
 		} else {
 			buf.push(
-				LocalizeGURPS.format(
-					LocalizeGURPS.translations.gurps.feature.weapon_bonus[this.type as feature.WeaponBonusType],
-					{
-						level: this.format(this.percent ?? false),
-					},
-				),
+				game.i18n.format(`GURPS.Feature.WeaponBonus.${this.type}`, {
+					level: this.format(this.percent ?? false),
+				}),
 			)
 		}
 		buf.push("]")
@@ -162,17 +159,17 @@ class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 		}
 		switch (true) {
 			case this.per_die && this.per_level:
-				return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.feature.weapon_bonus.per_die_per_level, {
+				return game.i18n.format("GURPS.Feature.WeaponBonus.PerDiePerLevel", {
 					total: adjustedAmt,
 					base: amt,
 				})
 			case this.per_die:
-				return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.feature.weapon_bonus.per_die, {
+				return game.i18n.format("GURPS.Feature.WeaponBonus.PerDie", {
 					total: adjustedAmt,
 					base: amt,
 				})
 			case this.per_level:
-				return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.feature.weapon_bonus.per_level, {
+				return game.i18n.format("GURPS.Feature.WeaponBonus.PerLevel", {
 					total: adjustedAmt,
 					base: amt,
 				})

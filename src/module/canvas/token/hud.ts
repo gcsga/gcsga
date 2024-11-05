@@ -1,6 +1,6 @@
 // import { ActorType, ConditionID, ManeuverID, SYSTEM_NAME } from "@module/data/constants.ts"
 // import { TokenGURPS } from "./object.ts"
-// import { ErrorGURPS, LocalizeGURPS, htmlQuery, htmlQueryAll } from "@util"
+// import { ErrorGURPS, htmlQuery, htmlQueryAll } from "@util"
 //
 // export interface TokenHUDDataGURPS extends TokenHUDData {
 // 	conditions: Partial<TokenHUDStatusEffectChoice>[]
@@ -105,7 +105,7 @@
 // 		return Array.from(maneuvers.values()).map(e => {
 // 			const title = [ManeuverID.BLANK_1, ManeuverID.BLANK_2, ""].includes(e.id)
 // 				? ""
-// 				: LocalizeGURPS.translations.gurps.maneuver[e.id]
+// 				: translations.gurps.maneuver[e.id]
 //
 // 			return {
 // 				id: e.id,
