@@ -31,6 +31,7 @@ class StringArrayField<
 		else if (Array.isArray(config.value)) config.value = config.value.join(", ")
 		if (config.editable === false) {
 			const element = document.createElement("span")
+			element.classList.add("input-disabled")
 			element.innerHTML = config.value ?? ""
 			return element
 		}

@@ -31,6 +31,7 @@ class ToggleableStringField<
 
 		if (config && config.editable === false) {
 			const element = document.createElement("span")
+			element.classList.add("input-disabled")
 			if (options) element.innerHTML = game.i18n.localize(options[config.value])
 			else element.innerHTML = config.value ?? ""
 			return element
