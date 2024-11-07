@@ -6,11 +6,6 @@
 
 ## Current Tasks
 
-- Restyle input fields and toggleable input fields
-- Implement some input fields being disabled when sheet is not in edit mode
-  - exclude points, quantity, enabled/disabled, equipped/unequipped
-- show replacement values when not in edit mode, use different background color to indicate, and tooltip to show original text
-
 ## Left To Do
 
 - Chat Messages \*5
@@ -20,15 +15,11 @@
   - Re-do menus \*1
     - Attribute Effects \*1
   - Re-add old settings \*2
-- Item \*3
-  - Add field label values for all fields \* DONE
+- Item
 - Actor
   - Legacy Support?
 - Item Sheet \* CURRENT
-  - Replacements Tab
-    - Toggle for showing replacements instead of placeholders (optional)
-    - In non-edit mode, show replacements instead of substitutions maybe with indicating color background
-  - Embeds Tab
+  - Description \* CURRENT
 - Effect Sheet \* CURRENT
   - Effect \* DONE
   - Roll Modifiers \* DONE
@@ -53,11 +44,17 @@
 
 ## Done
 
+- Item
+  - Add field label values for all fields
 - Roll Handlers
   - Fix old functions
 - Change #clean for #cleanData
 - Change Schema Fields to Embedded Data Fields where appropriate
 - Item Sheet
+  - Replacements Tab
+    - Toggle for showing replacements instead of placeholders (optional)
+    - In non-edit mode, show replacements instead of substitutions maybe with indicating color background
+  - Embeds Tab
   - Header color dependent on item type page color in GURPS Basic Set
   - Prereqs
   - Features

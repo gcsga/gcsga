@@ -33,6 +33,9 @@
 	select,
 	span.input-disabled {
 		--input-background-color: var(--gurps-color-light-blue-2);
+		--checkbox-background-color: var(--gurps-color-light-blue-2);
+		--checkbox-disabled-color: var(--gurps-color-light-blue-2);
+		--checkbox-checked-color: var(--gurps-color-orange-1);
 	}
 }
 
@@ -42,6 +45,9 @@
 	select,
 	span.input-disabled {
 		--input-background-color: var(--gurps-color-dark-blue);
+		--checkbox-background-color: var(--gurps-color-dark-blue);
+		--checkbox-disabled-color: var(--gurps-color-dark-blue);
+		--checkbox-checked-color: var(--gurps-color-orange-1);
 	}
 }
 
@@ -82,8 +88,10 @@
 		select {
 			width: fit-content;
 		}
+
 		select,
 		input[type="text"],
+		input[type="checkbox"],
 		input[type="number"],
 		span.input-disabled {
 			height: 1.5rem;
