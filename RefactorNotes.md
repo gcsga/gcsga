@@ -2,9 +2,14 @@
 
 ## Bugs
 
+- item entry context menu currently broken
 - source data retains unused replacement values
 
 ## Current Tasks
+
+- Add Effects Tab to Item Sheet
+- Add Effect Sheet
+- Add Effect system fields
 
 ## Left To Do
 
@@ -36,6 +41,7 @@
 - Combat
 - Combatant
 - Active Effect
+  - Add "consumable" toggle, quantity, cooldown?, duration in hours? (for luck?)
 - Modifier Bucket
   - Implement Fuzzy Search
   - Data Models

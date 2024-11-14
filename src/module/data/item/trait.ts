@@ -47,7 +47,12 @@ class TraitData extends ItemDataModel.mixin(
 			"gurps.details-features",
 			"gurps.details-study",
 		]
-		context.embedsParts = ["gurps.embeds-weapon-melee", "gurps.embeds-weapon-ranged", "gurps.embeds-trait-modifier"]
+		context.embedsParts = [
+			"gurps.embeds-trait-modifier",
+			"gurps.embeds-weapon-melee",
+			"gurps.embeds-weapon-ranged",
+			"gurps.embeds-effect",
+		]
 	}
 
 	static override defineSchema(): TraitSchema {

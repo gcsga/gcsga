@@ -2,7 +2,7 @@ import { SystemDataModel } from "@module/data/abstract.ts"
 import { cell, align } from "@util"
 import fields = foundry.data.fields
 import { SheetButton } from "./sheet-button.ts"
-import { ItemType } from "@module/data/constants.ts"
+import { EffectType, ItemType } from "@module/data/constants.ts"
 
 type CellDataOptions = {
 	type?: string
@@ -14,7 +14,7 @@ type ItemCell = {
 	id: string
 	sort: number
 	uuid: string
-	type: ItemType
+	type: ItemType | EffectType
 	cells: Record<string, CellData>
 	buttons: SheetButton[]
 	children?: ItemCell[]

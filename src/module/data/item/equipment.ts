@@ -27,6 +27,7 @@ class EquipmentData extends ItemDataModel.mixin(
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
 		context.detailsParts = ["gurps.details-equipment", "gurps.details-prereqs", "gurps.details-features"]
 		context.embedsParts = [
+			"gurps.embeds-effect",
 			"gurps.embeds-equipment-modifier",
 			"gurps.embeds-weapon-melee",
 			"gurps.embeds-weapon-ranged",

@@ -5,8 +5,10 @@ import { ItemTemplateInst } from "@module/data/item/helpers.ts"
 import { type ActorGURPS2 } from "./actor.ts"
 import { ItemSystemFlags } from "./item-system-flags.ts"
 import { Nameable } from "@module/util/nameable.ts"
+import { ActiveEffectGURPS } from "./active-effect.ts"
 
 class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extends Item<TParent> {
+	declare effects: foundry.abstract.EmbeddedCollection<ActiveEffectGURPS<this>>
 	/**
 	 * Get the data model that represents system flags.
 	 */

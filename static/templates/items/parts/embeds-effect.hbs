@@ -1,0 +1,28 @@
+<div class="items-section" data-types="effect">
+	<div class="items-header">
+		<div class="item-header item-name">Name</div>
+		<div class="item-header item-controls"></div>
+	</div>
+	<ul class="item-list">
+		{{#each effects}} {{> entry effect=this}} {{/each}}
+	</ul>
+</div>
+
+{{#* inline "entry"}}
+<li
+	class="item"
+	data-effect-name="{{effect.name}}"
+	data-effect-id="{{effect.id}}"
+	data-uuid="{{effect.uuid}}"
+	draggable="false"
+>
+	<div class="item-row">
+		<!-- Cell Data -->
+		{{#each effect.cells as |cell key|}} {{cell.element}} {{/each}}
+		<!-- Buttons -->
+		<div class="item-detail item-controls">
+			{{#each effect.buttons as |button index|}} {{button.element}}{{/each}}
+		</div>
+	</div>
+</li>
+{{/inline}}

@@ -404,6 +404,7 @@ enum HOOKS {
 	ADD_MODIFEIR = "addModifier",
 	DROP_ITEM_SHEET_DATA = "dropItemSheetData",
 	GET_ITEM_CONTEXT_OPTIONS = "getItemContextOptions",
+	GET_EFFECT_CONTEXT_OPTIONS = "getEffectContextOptions",
 }
 
 const SORTABLE_BASE_OPTIONS: Sortable.Options = {

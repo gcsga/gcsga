@@ -71,6 +71,7 @@
 			}
 		},
 		"Item": {
+			"CreateNew": "New {type}",
 			"BasicInformation": {
 				"FIELDS": {
 					"Notes": { "Name": "Notes" },

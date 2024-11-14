@@ -1,4 +1,4 @@
-import { HOOKS, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
+import { EffectType, HOOKS, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
 import { AttributeBonus } from "@module/data/feature/attribute-bonus.ts"
 import { FeatureTypes } from "@module/data/feature/types.ts"
 import { ItemTemplateType } from "@module/data/item/types.ts"
@@ -252,7 +252,6 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 	// 	}
 	//
 	// 	const targetSection = htmlClosest(event.related, ".items-section[data-types]")?.dataset.types?.split(",") ?? []
-	// 	console.log(targetSection)
 	// 	if (targetSection.length === 0) return false
 	// 	if (targetSection.includes(sourceItem.type)) return true
 	//
@@ -391,7 +390,6 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 	/* -------------------------------------------- */
 
 	_getTabs(): Record<string, Partial<ApplicationTab>> {
-		console.log("_getTabs")
 		let tabs: Record<string, Partial<ApplicationTab>> = {
 			description: {
 				id: "description",
@@ -420,18 +418,10 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		}
 		if (this.item.hasTemplate(ItemTemplateType.Replacement)) {
 			const replacements = this.item.system.nameableReplacements
-			console.log(replacements)
-			// for (const key of replacements.keys()) {
-			// 	if (key.startsWith("-=")) replacements.delete(key)
-			// }
 			if (replacements.size === 0) delete tabs.replacements
 		} else {
 			delete tabs.replacements
 		}
-		// console.log(this.item.system.nameableReplacements.size)
-		// if (!this.item.hasTemplate(ItemTemplateType.Replacement) || this.item.system.nameableReplacements.size === 0)
-		// 	delete tabs.replacements
-
 		if (!this.item.hasTemplate(ItemTemplateType.Container)) delete tabs.embeds
 
 		return this._markTabs(tabs)
@@ -766,10 +756,6 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		}
 		if (this.item.hasTemplate(ItemTemplateType.Replacement)) {
 			const replacements = this.item.system.nameableReplacements
-			// for (const key of replacements.keys()) {
-			// 	if (key.startsWith("-=")) replacements.delete(key)
-			// }
-			// console.log(replacements)
 			obj.replacements = replacements
 		}
 		return obj
@@ -799,23 +785,24 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		}
 
 		if (partId === "embeds") {
+			context.effects = await this._prepareEffectEmbedList(this.item.effects)
 			if (!this.item.hasTemplate(ItemTemplateType.Container)) return context
-			context.modifiers = await this._prepareEmbedList(this.item.system.modifiers, {
+			context.modifiers = await this._prepareItemEmbedList(this.item.system.modifiers, {
 				type: this.item.type as ItemType,
 				level: 0,
 			})
-			context.children = await this._prepareEmbedList(this.item.system.children, {
+			context.children = await this._prepareItemEmbedList(this.item.system.children, {
 				type: this.item.type as ItemType,
 				level: 0,
 			})
-			context.weaponsMelee = await this._prepareEmbedList(
+			context.weaponsMelee = await this._prepareItemEmbedList(
 				(await this.item.system.itemTypes)[ItemType.WeaponMelee],
 				{
 					type: this.item.type as ItemType,
 					level: 0,
 				},
 			)
-			context.weaponsRanged = await this._prepareEmbedList(
+			context.weaponsRanged = await this._prepareItemEmbedList(
 				(await this.item.system.itemTypes)[ItemType.WeaponRanged],
 				{
 					type: this.item.type as ItemType,
@@ -828,7 +815,30 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 
 	/* -------------------------------------------- */
 
-	protected async _prepareEmbedList(
+	protected async _prepareEffectEmbedList(
+		embeds: MaybePromise<Collection<ActiveEffectGURPS> | Array<ActiveEffectGURPS>>,
+	): Promise<ItemCell[]> {
+		const list: ItemCell[] = []
+		let i = 0
+		for (const item of await embeds) {
+			const listItem: ItemCell = {
+				name: item.name,
+				id: item.id,
+				sort: 0,
+				uuid: item.uuid,
+				type: item.type as EffectType,
+				cells: item.system.cellData(),
+				buttons: item.system.sheetButtons,
+			}
+			list.push(listItem)
+			i += 1
+		}
+		return list
+	}
+
+	/* -------------------------------------------- */
+
+	protected async _prepareItemEmbedList(
 		embeds: MaybePromise<Collection<ItemGURPS2> | Array<ItemGURPS2>>,
 		{ type, level }: { type: ItemType; level: number },
 	): Promise<ItemCell[]> {
@@ -844,14 +854,11 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 				buttons: item.system.sheetButtons,
 			}
 			if (item.hasTemplate(ItemTemplateType.Container)) {
-				listItem.children = await this._prepareEmbedList(item.system.children, { type, level: level + 1 })
+				listItem.children = await this._prepareItemEmbedList(item.system.children, { type, level: level + 1 })
 			}
 			list.push(listItem)
 		}
 		list.sort((a, b) => (a.sort > b.sort ? 1 : -1))
-		// list.forEach(e => {
-		// 	console.log(e.name, e.sort)
-		// })
 		return list
 	}
 

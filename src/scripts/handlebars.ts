@@ -98,9 +98,10 @@ class HandlebarsHelpersGURPS {
 		return JSON.stringify(a)
 	}
 
-	static join(a: string[], s: string): string {
-		if (!a || !a.length) return ""
-		return a.join(s)
+	static join(a: string[] | Set<string>, s: string): string {
+		if (Array.isArray(a)) return a.length === 0 ? "" : a.join(s)
+		if (a instanceof Set) return a.size === 0 ? "" : [...a].join(s)
+		return ""
 	}
 
 	static arr(...args: unknown[]): unknown[] {

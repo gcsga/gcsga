@@ -5,7 +5,8 @@ import { ItemGURPS2 } from "@module/documents/item.ts"
 import { ErrorGURPS, htmlClosest } from "@util"
 import sheets = foundry.applications.sheets
 import { ContextMenuGURPS } from "../context-menu.ts"
-import { SYSTEM_NAME, HOOKS, ItemType } from "@module/data/constants.ts"
+import { SYSTEM_NAME, HOOKS, ItemType, ItemTypes, EffectType } from "@module/data/constants.ts"
+import { ActiveEffectGURPS } from "@module/documents/active-effect.ts"
 
 class InventoryElement extends HTMLElement {
 	connectedCallback(): void {
@@ -32,8 +33,16 @@ class InventoryElement extends HTMLElement {
 			})
 		}
 
-		new ContextMenuGURPS(this, "[data-item-id]", [], {
-			onOpen: this._onOpenItemContextMenu.bind(this),
+		new ContextMenuGURPS(this, ".inventory-list > .items-section", [], {
+			onOpen: this._onOpenContextMenu.bind(this),
+		})
+
+		new ContextMenuGURPS(this.querySelector(".items-list") as HTMLElement, "[data-item-id]", [], {
+			onOpen: this._onOpenContextMenu.bind(this),
+		})
+
+		new ContextMenuGURPS(this.querySelector(".items-list") as HTMLElement, "[data-effect-id]", [], {
+			onOpen: this._onOpenContextMenu.bind(this),
 		})
 	}
 
@@ -92,8 +101,47 @@ class InventoryElement extends HTMLElement {
 
 	/* -------------------------------------------- */
 
+	/**
+	 * Retrieve an item with the specified ID.
+	 */
+	getEffect(id: string): MaybePromise<ActiveEffectGURPS | null> {
+		if (this.document instanceof ItemGURPS2) {
+			return this.document.effects.get(id) ?? null
+		}
+		return this.document.effects.get(id) ?? null
+	}
+
+	/* -------------------------------------------- */
+
 	/* -------------------------------------------- */
 	/*  Event Handlers                              */
+	/* -------------------------------------------- */
+
+	protected _onOpenContextMenu(element: HTMLElement): void {
+		if (!!element.dataset.itemId) return this._onOpenItemContextMenu(element)
+		if (!!element.dataset.effectId) return this._onOpenEffectContextMenu(element)
+		return this._onOpenItemListContextMenu(element)
+	}
+
+	protected _onOpenItemListContextMenu(element: HTMLElement): void {
+		const itemTypes: string[] = element.dataset.types?.split(",") ?? []
+
+		if (ui.context)
+			ui.context.menuItems = itemTypes.map(type => {
+				return {
+					name: game.i18n.format("GURPS.Item.CreateNew", {
+						type: game.i18n.localize(
+							type === EffectType.Effect ? `TYPES.ActiveEffect.${type}` : `TYPES.Item.${type}`,
+						),
+					}),
+					icon: "",
+					callback: (li: JQuery<HTMLElement>) =>
+						this._onCreateContainedItem(li[0], type as ItemType | EffectType.Effect),
+					condition: () => this.document.isOwner && !this.document.compendium?.locked,
+				}
+			})
+	}
+
 	/* -------------------------------------------- */
 
 	protected _onOpenItemContextMenu(element: HTMLElement): void {
@@ -107,6 +155,58 @@ class InventoryElement extends HTMLElement {
 		}
 	}
 
+	/* -------------------------------------------- */
+
+	protected _onOpenEffectContextMenu(element: HTMLElement): void {
+		const effect = this.getEffect((element.closest("[data-effect-id]") as HTMLElement)?.dataset.itemId ?? "")
+		// Parts of ContextMenu doesn't play well with promises, so don't show menus for containers in packs
+		if (!effect || effect instanceof Promise) return
+
+		if (ui.context) {
+			ui.context.menuItems = this._getEffectContextOptions(effect, element)
+			Hooks.call(`${SYSTEM_NAME}.${HOOKS.GET_EFFECT_CONTEXT_OPTIONS}`, effect, ui.context.menuItems)
+		}
+	}
+
+	/* -------------------------------------------- */
+
+	protected async _onCreateContainedItem(_target: HTMLElement, type: ItemType | EffectType.Effect) {
+		if (!(ItemTypes as string[]).includes(type) && type !== EffectType.Effect) {
+			throw ErrorGURPS(`"${type}" is not a valid Item Type or an Active Effect`)
+		}
+
+		const item = this.document as ItemGURPS2
+		if (type === EffectType.Effect) {
+			const children = (await item.createEmbeddedDocuments("ActiveEffect", [
+				{ name: EffectType.Effect, type: EffectType.Effect },
+			])) as ActiveEffectGURPS[]
+			return children?.[0].sheet.render(true)
+		}
+
+		if (!item.hasTemplate(ItemTemplateType.Container)) {
+			throw ErrorGURPS("Containing Item is not a container")
+		}
+		if (!item.system.constructor.contentsTypes.has(type)) {
+			throw ErrorGURPS("Containing Item cannot accept this item type as contents")
+		}
+
+		if (item.isEmbedded) {
+			const children = (await item.parent?.createEmbeddedDocuments("Item", [
+				{ type, system: { container: item.id } },
+			])) as ItemGURPS2[]
+			return children?.[0].sheet.render(true)
+		} else if (item.pack) {
+			const children = (await Item.createDocuments([
+				{ name: "Test", type, system: { container: item.id }, pack: item.pack },
+			])) as ItemGURPS2[]
+			return children?.[0].sheet.render(true)
+		} else {
+			const children = (await Item.createDocuments([
+				{ name: "Test", type, system: { container: item.id } },
+			])) as ItemGURPS2[]
+			return children?.[0].sheet.render(true)
+		}
+	}
 	/* -------------------------------------------- */
 
 	protected async _onItemAction(target: HTMLElement, action: string) {
@@ -174,6 +274,27 @@ class InventoryElement extends HTMLElement {
 					item.isOwner &&
 					!item.compendium?.locked &&
 					item.isOfType(ItemType.EquipmentModifier, ItemType.TraitModifier),
+			},
+		]
+
+		return options
+	}
+
+	/* -------------------------------------------- */
+
+	protected _getEffectContextOptions(effect: ActiveEffectGURPS, _element: HTMLElement): ContextMenuEntry[] {
+		const options = [
+			{
+				name: "Edit",
+				icon: "<i class='fa-solid fa-edit'></i>",
+				callback: (li: JQuery<HTMLElement>) => this._onItemAction(li[0], "edit"),
+				condition: () => effect.isOwner && !effect.compendium?.locked,
+			},
+			{
+				name: "Delete",
+				icon: "<i class='fa-solid fa-trash'></i>",
+				callback: (li: JQuery<HTMLElement>) => this._onItemAction(li[0], "delete"),
+				condition: () => effect.isOwner && !effect.compendium?.locked,
 			},
 		]
 

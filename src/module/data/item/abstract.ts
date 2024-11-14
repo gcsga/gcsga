@@ -51,7 +51,7 @@ class ItemDataModel<TSchema extends ItemDataSchema = ItemDataSchema> extends Sys
 	/* -------------------------------------------- */
 
 	cellData(_options: CellDataOptions = {}): Record<string, CellData> {
-		throw ErrorGURPS(`ItemGURPS#cellData must be implemented.`)
+		throw ErrorGURPS(`ItemDataModel#cellData must be implemented.`)
 	}
 
 	/* -------------------------------------------- */

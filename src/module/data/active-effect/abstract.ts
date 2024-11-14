@@ -4,6 +4,9 @@ import { ActorGURPS2 } from "@module/documents/actor.ts"
 import { ItemGURPS2 } from "@module/documents/item.ts"
 import { SystemDataModel } from "../abstract.ts"
 import { EffectDataInstances } from "./types.ts"
+import { ErrorGURPS } from "@util"
+import { CellDataOptions, CellData } from "../item/components/cell-data.ts"
+import { SheetButton } from "../item/components/sheet-button.ts"
 
 /**
  * Variant of the SystemDataModel with support for rich active effect tooltips.
@@ -34,6 +37,27 @@ class EffectDataModel<TSchema extends EffectDataSchema = EffectDataSchema> exten
 		const parent = this.parent.parent
 		if (parent instanceof Actor) return parent
 		return parent.parent
+	}
+
+	/* -------------------------------------------- */
+
+	cellData(_options: CellDataOptions = {}): Record<string, CellData> {
+		throw ErrorGURPS(`EffectDataModel#cellData must be implemented.`)
+	}
+
+	/* -------------------------------------------- */
+
+	get sheetButtons(): SheetButton[] {
+		return [
+			new SheetButton(
+				{
+					classList: ["fa-solid", "fa-ellipsis-vertical"],
+					action: "openItemContextMenu",
+					permission: foundry.CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER,
+				},
+				{ parent: this },
+			),
+		]
 	}
 }
 
