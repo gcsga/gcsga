@@ -3,6 +3,8 @@ import api = foundry.applications.api
 import { EffectType, SYSTEM_NAME } from "@module/data/constants.ts"
 import { AttributeBonus } from "@module/data/feature/attribute-bonus.ts"
 import { RollModifier } from "@module/data/roll-modifier.ts"
+import { feature } from "@util"
+import { FeatureTypes } from "@module/data/feature/types.ts"
 
 class ActiveEffectSheetGURPS extends api.HandlebarsApplicationMixin(api.DocumentSheetV2<ActiveEffectGURPS>) {
 	// Set initial values for tabgroups
@@ -21,8 +23,8 @@ class ActiveEffectSheetGURPS extends api.HandlebarsApplicationMixin(api.Document
 			resizable: true,
 		},
 		position: {
-			width: 650,
-			height: 700,
+			width: 600,
+			height: 400,
 		},
 		form: {
 			submitOnChange: true,
@@ -68,6 +70,12 @@ class ActiveEffectSheetGURPS extends api.HandlebarsApplicationMixin(api.Document
 		return this.document
 	}
 
+	/* -------------------------------------------- */
+
+	get editable(): boolean {
+		return this.isEditable
+	}
+
 	override async _prepareContext(options = {}): Promise<object> {
 		const modes = Object.fromEntries(
 			Object.entries(CONST.ACTIVE_EFFECT_MODES).map(e => [e[1], game.i18n.localize(`EFFECT.MODE_${e[0]}`)]),
@@ -80,7 +88,7 @@ class ActiveEffectSheetGURPS extends api.HandlebarsApplicationMixin(api.Document
 			data: this.effect.toObject(),
 			system: this.effect.system,
 			source: this.effect.system.toObject(),
-			editable: this.isEditable,
+			editable: this.editable,
 			modes,
 		}
 
@@ -92,11 +100,15 @@ class ActiveEffectSheetGURPS extends api.HandlebarsApplicationMixin(api.Document
 		return context
 	}
 
+	/* -------------------------------------------- */
+
 	protected override async _preparePartContext(partId: string, context: Record<string, any>): Promise<object> {
 		context.partId = `${this.id}-${partId}`
 		context.tab = context.tabs[partId]
 		return context
 	}
+
+	/* -------------------------------------------- */
 
 	_getTabs(): Record<string, Partial<ApplicationTab>> {
 		return this._markTabs({
@@ -121,6 +133,8 @@ class ActiveEffectSheetGURPS extends api.HandlebarsApplicationMixin(api.Document
 		})
 	}
 
+	/* -------------------------------------------- */
+
 	protected _markTabs(tabs: Record<string, Partial<ApplicationTab>>): Record<string, Partial<ApplicationTab>> {
 		for (const v of Object.values(tabs)) {
 			v.active = this.tabGroups[v.group!] === v.id
@@ -130,12 +144,16 @@ class ActiveEffectSheetGURPS extends api.HandlebarsApplicationMixin(api.Document
 		return tabs
 	}
 
+	/* -------------------------------------------- */
+
 	static async #onViewImage(this: ActiveEffectSheetGURPS, event: Event): Promise<void> {
 		event.preventDefault()
 		const title = this.effect.name
 		// const title = this.effect.system.identified === false ? this.effect.system.unidentified.name : this.effect.name
 		new ImagePopout(this.effect.img, { title, uuid: this.effect.uuid }).render(true)
 	}
+
+	/* -------------------------------------------- */
 
 	static async #onEditImage(this: ActiveEffectSheetGURPS, event: Event): Promise<void> {
 		const img = event.currentTarget as HTMLImageElement
@@ -154,6 +172,8 @@ class ActiveEffectSheetGURPS extends api.HandlebarsApplicationMixin(api.Document
 		await fp.browse(this.effect.img)
 	}
 
+	/* -------------------------------------------- */
+
 	static async #onAddFeature(this: ActiveEffectSheetGURPS, event: Event): Promise<void> {
 		event.preventDefault()
 		event.stopImmediatePropagation()
@@ -166,6 +186,8 @@ class ActiveEffectSheetGURPS extends api.HandlebarsApplicationMixin(api.Document
 
 		await this.effect.update({ "system.features": features })
 	}
+
+	/* -------------------------------------------- */
 
 	static async #onDeleteFeature(this: ActiveEffectSheetGURPS, event: Event): Promise<void> {
 		event.preventDefault()
@@ -183,6 +205,8 @@ class ActiveEffectSheetGURPS extends api.HandlebarsApplicationMixin(api.Document
 		await this.effect.update({ "system.features": features })
 	}
 
+	/* -------------------------------------------- */
+
 	static async #onAddRollModifier(this: ActiveEffectSheetGURPS, event: Event): Promise<void> {
 		event.preventDefault()
 		event.stopImmediatePropagation()
@@ -195,6 +219,8 @@ class ActiveEffectSheetGURPS extends api.HandlebarsApplicationMixin(api.Document
 
 		await this.effect.update({ "system.modifiers": modifiers })
 	}
+
+	/* -------------------------------------------- */
 
 	static async #onDeleteRollModifier(this: ActiveEffectSheetGURPS, event: Event): Promise<void> {
 		event.preventDefault()
@@ -212,6 +238,8 @@ class ActiveEffectSheetGURPS extends api.HandlebarsApplicationMixin(api.Document
 		await this.effect.update({ "system.modifiers": modifiers })
 	}
 
+	/* -------------------------------------------- */
+
 	static async #onAddEffectChange(this: ActiveEffectSheetGURPS, event: Event): Promise<void> {
 		event.preventDefault()
 		event.stopImmediatePropagation()
@@ -222,6 +250,8 @@ class ActiveEffectSheetGURPS extends api.HandlebarsApplicationMixin(api.Document
 
 		await this.effect.update({ changes: changes }, { render: true })
 	}
+
+	/* -------------------------------------------- */
 
 	static async #onDeleteEffectChange(this: ActiveEffectSheetGURPS, event: Event): Promise<void> {
 		event.preventDefault()
@@ -237,6 +267,66 @@ class ActiveEffectSheetGURPS extends api.HandlebarsApplicationMixin(api.Document
 
 		await this.effect.update({ changes: changes })
 	}
+
+	/* -------------------------------------------- */
+
+	async _onChangeFeatureType(event: Event): Promise<void> {
+		event.preventDefault()
+		event.stopImmediatePropagation()
+
+		const element = event.target as HTMLSelectElement
+		const index = parseInt(element.dataset.index ?? "")
+		if (isNaN(index)) return
+		const value = element.value as feature.Type
+		const effect = this.effect
+		if (!effect.isOfType(EffectType.Effect)) return
+
+		const features = effect.system.toObject().features
+
+		features.splice(index, 1, new FeatureTypes[value]({ type: value }).toObject())
+
+		this.effect.update({ "system.features": features })
+	}
+
+	/* -------------------------------------------- */
+
+	protected override _onRender(context: object, options: ApplicationRenderOptions): void {
+		super._onRender(context, options)
+		if (options.isFirstRender) {
+			const featureTypeFields = this.element.querySelectorAll("[data-selector='feature-type'")
+			for (const input of featureTypeFields) {
+				input.addEventListener("change", event => this._onChangeFeatureType(event))
+			}
+		}
+		if (!this.isEditable) this._disableFields()
+
+		this.element.classList.add(this.effect.type)
+	}
+
+	/* -------------------------------------------- */
+
+	protected _disableFields() {
+		const selector = `.window-content :is(${[
+			"INPUT",
+			"SELECT",
+			"TEXTAREA",
+			"BUTTON",
+			"COLOR-PICKER",
+			"DOCUMENT-TAGS",
+			"FILE-PICKER",
+			"HUE-SLIDER",
+			"MULTI-SELECT",
+			"PROSE-MIRROR",
+			"RANGE-PICKER",
+			"STRING-TAGS",
+		].join(", ")}):not(.interface-only)`
+		for (const element of this.element.querySelectorAll(selector) as NodeListOf<HTMLInputElement>) {
+			if (element.tagName === "TEXTAREA") element.readOnly = true
+			else element.disabled = true
+		}
+	}
+
+	/* -------------------------------------------- */
 
 	static async #onSubmit(
 		this: ActiveEffectSheetGURPS,

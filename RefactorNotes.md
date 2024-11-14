@@ -2,7 +2,6 @@
 
 ## Bugs
 
-- item entry context menu currently broken
 - source data retains unused replacement values
 
 ## Current Tasks

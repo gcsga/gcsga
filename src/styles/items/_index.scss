@@ -27,7 +27,14 @@
 	}
 }
 
-.theme-light .gurps.item.sheet {
+.gurps.active-effect.sheet {
+	&.effect {
+		--filter-header: hue-rotate(194deg) saturate(1) brightness(0.81);
+	}
+}
+
+.theme-light .gurps.item.sheet,
+.theme-light .gurps.active-effect.sheet {
 	--background-color: var(--gurps-color-light-blue-1);
 	input,
 	select,
@@ -39,7 +46,8 @@
 	}
 }
 
-.gurps.item.sheet {
+.gurps.item.sheet,
+.gurps.active-effect.sheet {
 	--background-color: var(--gurps-color-dark-gray);
 	input,
 	select,
@@ -51,7 +59,8 @@
 	}
 }
 
-.gurps.item.sheet {
+.gurps.item.sheet,
+.gurps.active-effect.sheet {
 	@import "header";
 
 	min-width: 600px;
@@ -140,11 +149,58 @@
 		border-radius: 0.25rem;
 	}
 
-	@import "details_prereqs", "details_features", "details_defaults", "details_study";
+	fieldset.details-list {
+		ul {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+		}
+
+		hr {
+			margin: 0.5rem 0;
+		}
+
+		li {
+			display: flex;
+			flex-direction: column;
+			gap: 0.5rem;
+
+			.form-fields {
+				&.secondary {
+					padding-left: 2.125rem;
+				}
+
+				display: flex;
+				flex-direction: row;
+				gap: 0.5rem;
+			}
+		}
+
+		button {
+			flex: 0;
+			width: 1.5rem;
+			height: 1.5rem;
+			padding: 0 0.625rem;
+
+			i {
+				width: 1.25rem;
+				height: 1.25rem;
+				margin: auto;
+				align-content: center;
+			}
+		}
+
+		> button {
+			margin-bottom: 0.5rem;
+		}
+	}
+
+	@import "details_prereqs", "details_features", "details_study";
 	@import "embeds";
 }
 
-.gurps.item.sheet.minimized {
+.gurps.item.sheet.minimized,
+.gurps.active-effect.sheet.minimized {
 	min-width: unset;
 	> header.window-header {
 		// Make Window Icon and Title visible in minimized sheet

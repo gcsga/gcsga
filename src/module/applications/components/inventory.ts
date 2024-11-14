@@ -30,6 +30,15 @@ class InventoryElement extends HTMLElement {
 						clientY,
 					}),
 				)
+				htmlClosest(event.currentTarget, "[data-effect-id")?.dispatchEvent(
+					new PointerEvent("contextmenu", {
+						view: window,
+						bubbles: true,
+						cancelable: true,
+						clientX,
+						clientY,
+					}),
+				)
 			})
 		}
 
@@ -102,7 +111,7 @@ class InventoryElement extends HTMLElement {
 	/* -------------------------------------------- */
 
 	/**
-	 * Retrieve an item with the specified ID.
+	 * Retrieve an effect with the specified ID.
 	 */
 	getEffect(id: string): MaybePromise<ActiveEffectGURPS | null> {
 		if (this.document instanceof ItemGURPS2) {
@@ -158,7 +167,8 @@ class InventoryElement extends HTMLElement {
 	/* -------------------------------------------- */
 
 	protected _onOpenEffectContextMenu(element: HTMLElement): void {
-		const effect = this.getEffect((element.closest("[data-effect-id]") as HTMLElement)?.dataset.itemId ?? "")
+		const effect = this.getEffect((element.closest("[data-effect-id]") as HTMLElement)?.dataset.effectId ?? "")
+		console.log(effect)
 		// Parts of ContextMenu doesn't play well with promises, so don't show menus for containers in packs
 		if (!effect || effect instanceof Promise) return
 
@@ -234,6 +244,25 @@ class InventoryElement extends HTMLElement {
 
 	/* -------------------------------------------- */
 
+	protected async _onEffectAction(target: HTMLElement, action: string) {
+		const { effectId } = (target.closest("[data-effect-id]") as HTMLElement)?.dataset ?? {}
+		const effect = await this.getEffect(effectId ?? "")
+		if (!effect) return
+
+		switch (action) {
+			case "delete":
+				return effect.deleteDialog()
+			case "edit":
+			case "view":
+				return effect.sheet.render(true)
+			default:
+				console.error(`Invalid action "${action}"`)
+				return
+		}
+	}
+
+	/* -------------------------------------------- */
+
 	protected _getItemContextOptions(item: ItemGURPS2, _element: HTMLElement): ContextMenuEntry[] {
 		const options = [
 			{
@@ -287,13 +316,19 @@ class InventoryElement extends HTMLElement {
 			{
 				name: "Edit",
 				icon: "<i class='fa-solid fa-edit'></i>",
-				callback: (li: JQuery<HTMLElement>) => this._onItemAction(li[0], "edit"),
+				callback: (li: JQuery<HTMLElement>) => this._onEffectAction(li[0], "edit"),
 				condition: () => effect.isOwner && !effect.compendium?.locked,
+			},
+			{
+				name: "View",
+				icon: "<i class='fa-solid fa-eye'></i>",
+				callback: (li: JQuery<HTMLElement>) => this._onEffectAction(li[0], "edit"),
+				condition: () => !effect.isOwner || (!!effect.compendium && effect.compendium.locked),
 			},
 			{
 				name: "Delete",
 				icon: "<i class='fa-solid fa-trash'></i>",
-				callback: (li: JQuery<HTMLElement>) => this._onItemAction(li[0], "delete"),
+				callback: (li: JQuery<HTMLElement>) => this._onEffectAction(li[0], "delete"),
 				condition: () => effect.isOwner && !effect.compendium?.locked,
 			},
 		]

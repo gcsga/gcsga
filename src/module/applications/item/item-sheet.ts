@@ -665,6 +665,8 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		this.item.update({ "system.prereqs": prereqs })
 	}
 
+	/* -------------------------------------------- */
+
 	async _onChangeFeatureType(event: Event): Promise<void> {
 		event.preventDefault()
 		event.stopImmediatePropagation()

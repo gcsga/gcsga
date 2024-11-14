@@ -52,7 +52,7 @@ class EffectDataModel<TSchema extends EffectDataSchema = EffectDataSchema> exten
 			new SheetButton(
 				{
 					classList: ["fa-solid", "fa-ellipsis-vertical"],
-					action: "openItemContextMenu",
+					dataset: { contextMenu: "" },
 					permission: foundry.CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER,
 				},
 				{ parent: this },
