@@ -1,20 +1,22 @@
-<fieldset class="details-features details-list">
-	<legend>{{localize "GURPS.Item.Features.DetailsLegend"}}</legend>
-	{{#if editable}}
-	<button type="button" data-action="addFeature"><i class="fa-regular fa-plus"></i></button>
-	{{else}}
-	<button type="button" data-action="addFeature" disabled><i class="fa-regular fa-plus"></i></button>
-	{{/if}}
-	<ul>
-		<!-- Iterate over features -->
-		{{#each system.features as |feature|}}
-		<!-- Gap between entries -->
-		{{#unless @first}}
-		<hr />
-		{{/unless}}
-		<!-- Generated feature partial -->
-		{{feature.element}}
-		<!-- End Loop -->
-		{{/each}}
-	</ul>
-</fieldset>
+<gurps-feature-list>
+	<fieldset class="details-features details-list">
+		<legend>{{localize "GURPS.Item.Features.DetailsLegend"}}</legend>
+		{{#if editable}}
+		<button type="button" data-add-feature><i class="fa-regular fa-plus"></i></button>
+		{{else}}
+		<button type="button" data-add-feature disabled><i class="fa-regular fa-plus"></i></button>
+		{{/if}}
+		<ul>
+			<!-- Iterate over features -->
+			{{#each system.features as |feature|}}
+			<!-- Gap between entries -->
+			{{#unless @first}}
+			<hr />
+			{{/unless}}
+			<!-- Generated feature partial -->
+			{{feature.element}}
+			<!-- End Loop -->
+			{{/each}}
+		</ul>
+	</fieldset>
+</gurps-feature-list>

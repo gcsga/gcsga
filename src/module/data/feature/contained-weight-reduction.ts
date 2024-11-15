@@ -57,7 +57,7 @@ class ContainedWeightReduction extends BaseFeature<ContainedWeightReductionSchem
 				icon: ["fa-regular", "fa-trash"],
 				label: "",
 				data: {
-					action: "deleteFeature",
+					deleteFeature: "",
 					index: this.index.toString(),
 				},
 				disabled: !enabled,

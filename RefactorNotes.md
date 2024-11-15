@@ -6,6 +6,7 @@
 
 ## Current Tasks
 
+- Separate Features, Prereqs, etc into their own subsections like inventory
 - Add Effects Tab to Item Sheet
 - Add Effect Sheet
 - Add Effect system fields

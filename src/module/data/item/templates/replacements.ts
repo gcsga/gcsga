@@ -20,7 +20,6 @@ class ReplacementTemplate extends ItemDataModel<ReplacementTemplateSchema> {
 		options: ItemDatabaseUpdateOperation<ItemGURPS2["parent"]>,
 		userId: string,
 	) {
-		console.log(changed)
 		super._onUpdate(changed, options, userId)
 	}
 

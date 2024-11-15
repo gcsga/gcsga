@@ -1,10 +1,7 @@
 import { ActiveEffectGURPS } from "@module/documents/active-effect.ts"
 import api = foundry.applications.api
 import { EffectType, SYSTEM_NAME } from "@module/data/constants.ts"
-import { AttributeBonus } from "@module/data/feature/attribute-bonus.ts"
 import { RollModifier } from "@module/data/roll-modifier.ts"
-import { feature } from "@util"
-import { FeatureTypes } from "@module/data/feature/types.ts"
 
 class ActiveEffectSheetGURPS extends api.HandlebarsApplicationMixin(api.DocumentSheetV2<ActiveEffectGURPS>) {
 	// Set initial values for tabgroups
@@ -34,8 +31,8 @@ class ActiveEffectSheetGURPS extends api.HandlebarsApplicationMixin(api.Document
 		actions: {
 			viewImage: this.#onViewImage,
 			editImage: this.#onEditImage,
-			addFeature: this.#onAddFeature,
-			deleteFeature: this.#onDeleteFeature,
+			// addFeature: this.#onAddFeature,
+			// deleteFeature: this.#onDeleteFeature,
 			addRollModifier: this.#onAddRollModifier,
 			deleteRollModifier: this.#onDeleteRollModifier,
 			addEffectChange: this.#onAddEffectChange,
@@ -174,37 +171,37 @@ class ActiveEffectSheetGURPS extends api.HandlebarsApplicationMixin(api.Document
 
 	/* -------------------------------------------- */
 
-	static async #onAddFeature(this: ActiveEffectSheetGURPS, event: Event): Promise<void> {
-		event.preventDefault()
-		event.stopImmediatePropagation()
-
-		const effect = this.effect
-		if (!effect.isOfType(EffectType.Effect, EffectType.Condition)) return
-
-		const features = (effect.system.toObject() as any).features
-		features.push(new AttributeBonus({}).toObject())
-
-		await this.effect.update({ "system.features": features })
-	}
-
-	/* -------------------------------------------- */
-
-	static async #onDeleteFeature(this: ActiveEffectSheetGURPS, event: Event): Promise<void> {
-		event.preventDefault()
-		event.stopImmediatePropagation()
-
-		const element = event.target as HTMLElement
-		const index = parseInt(element.dataset.index ?? "")
-		if (isNaN(index)) return
-		const effect = this.effect
-		if (!effect.isOfType(EffectType.Effect, EffectType.Condition)) return
-
-		const features = (effect.system.toObject() as any).features
-		features.splice(index, 1)
-
-		await this.effect.update({ "system.features": features })
-	}
-
+	// static async #onAddFeature(this: ActiveEffectSheetGURPS, event: Event): Promise<void> {
+	// 	event.preventDefault()
+	// 	event.stopImmediatePropagation()
+	//
+	// 	const effect = this.effect
+	// 	if (!effect.isOfType(EffectType.Effect, EffectType.Condition)) return
+	//
+	// 	const features = (effect.system.toObject() as any).features
+	// 	features.push(new AttributeBonus({}).toObject())
+	//
+	// 	await this.effect.update({ "system.features": features })
+	// }
+	//
+	// /* -------------------------------------------- */
+	//
+	// static async #onDeleteFeature(this: ActiveEffectSheetGURPS, event: Event): Promise<void> {
+	// 	event.preventDefault()
+	// 	event.stopImmediatePropagation()
+	//
+	// 	const element = event.target as HTMLElement
+	// 	const index = parseInt(element.dataset.index ?? "")
+	// 	if (isNaN(index)) return
+	// 	const effect = this.effect
+	// 	if (!effect.isOfType(EffectType.Effect, EffectType.Condition)) return
+	//
+	// 	const features = (effect.system.toObject() as any).features
+	// 	features.splice(index, 1)
+	//
+	// 	await this.effect.update({ "system.features": features })
+	// }
+	//
 	/* -------------------------------------------- */
 
 	static async #onAddRollModifier(this: ActiveEffectSheetGURPS, event: Event): Promise<void> {
@@ -270,34 +267,34 @@ class ActiveEffectSheetGURPS extends api.HandlebarsApplicationMixin(api.Document
 
 	/* -------------------------------------------- */
 
-	async _onChangeFeatureType(event: Event): Promise<void> {
-		event.preventDefault()
-		event.stopImmediatePropagation()
-
-		const element = event.target as HTMLSelectElement
-		const index = parseInt(element.dataset.index ?? "")
-		if (isNaN(index)) return
-		const value = element.value as feature.Type
-		const effect = this.effect
-		if (!effect.isOfType(EffectType.Effect)) return
-
-		const features = effect.system.toObject().features
-
-		features.splice(index, 1, new FeatureTypes[value]({ type: value }).toObject())
-
-		this.effect.update({ "system.features": features })
-	}
+	// async _onChangeFeatureType(event: Event): Promise<void> {
+	// 	event.preventDefault()
+	// 	event.stopImmediatePropagation()
+	//
+	// 	const element = event.target as HTMLSelectElement
+	// 	const index = parseInt(element.dataset.index ?? "")
+	// 	if (isNaN(index)) return
+	// 	const value = element.value as feature.Type
+	// 	const effect = this.effect
+	// 	if (!effect.isOfType(EffectType.Effect)) return
+	//
+	// 	const features = effect.system.toObject().features
+	//
+	// 	features.splice(index, 1, new FeatureTypes[value]({ type: value }).toObject())
+	//
+	// 	this.effect.update({ "system.features": features })
+	// }
 
 	/* -------------------------------------------- */
 
 	protected override _onRender(context: object, options: ApplicationRenderOptions): void {
 		super._onRender(context, options)
-		if (options.isFirstRender) {
-			const featureTypeFields = this.element.querySelectorAll("[data-selector='feature-type'")
-			for (const input of featureTypeFields) {
-				input.addEventListener("change", event => this._onChangeFeatureType(event))
-			}
-		}
+		// if (options.isFirstRender) {
+		// 	const featureTypeFields = this.element.querySelectorAll("[data-selector='feature-type'")
+		// 	for (const input of featureTypeFields) {
+		// 		input.addEventListener("change", event => this._onChangeFeatureType(event))
+		// 	}
+		// }
 		if (!this.isEditable) this._disableFields()
 
 		this.element.classList.add(this.effect.type)

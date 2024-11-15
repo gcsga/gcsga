@@ -1,13 +1,11 @@
 import { EffectType, HOOKS, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
-import { AttributeBonus } from "@module/data/feature/attribute-bonus.ts"
-import { FeatureTypes } from "@module/data/feature/types.ts"
 import { ItemTemplateType } from "@module/data/item/types.ts"
 import { AttributePrereq } from "@module/data/prereq/index.ts"
 import { PrereqList, PrereqListSchema } from "@module/data/prereq/prereq-list.ts"
 import { PrereqTypes } from "@module/data/prereq/types.ts"
 import { SkillDefault } from "@module/data/item/components/skill-default.ts"
 import { ItemGURPS2 } from "@module/documents/item.ts"
-import { feature, prereq, study } from "@util/enum/index.ts"
+import { prereq, study } from "@util/enum/index.ts"
 import { generateId } from "@util/misc.ts"
 import { ActiveEffectGURPS } from "@module/documents/active-effect.ts"
 import { MaybePromise } from "@module/data/types.ts"
@@ -86,8 +84,6 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			addPrereq: this.#onAddPrereq,
 			addPrereqList: this.#onAddPrereqList,
 			deletePrereq: this.#onDeletePrereq,
-			addFeature: this.#onAddFeature,
-			deleteFeature: this.#onDeleteFeature,
 			addDefault: this.#onAddDefault,
 			deleteDefault: this.#onDeleteDefault,
 			addStudyEntry: this.#onAddStudyEntry,
@@ -547,39 +543,6 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 
 	/* -------------------------------------------- */
 
-	static async #onAddFeature(this: ItemSheetGURPS, event: Event): Promise<void> {
-		event.preventDefault()
-		event.stopImmediatePropagation()
-
-		const item = this.item
-		if (!item.hasTemplate(ItemTemplateType.Feature)) return
-
-		const features = item.system.toObject().features
-		features.push(new AttributeBonus({}).toObject())
-
-		await this.item.update({ "system.features": features })
-	}
-
-	/* -------------------------------------------- */
-
-	static async #onDeleteFeature(this: ItemSheetGURPS, event: Event): Promise<void> {
-		event.preventDefault()
-		event.stopImmediatePropagation()
-
-		const element = event.target as HTMLElement
-		const index = parseInt(element.dataset.index ?? "")
-		if (isNaN(index)) return
-		const item = this.item
-		if (!item.hasTemplate(ItemTemplateType.Feature)) return
-
-		const features = item.system.toObject().features
-		features.splice(index, 1)
-
-		await this.item.update({ "system.features": features })
-	}
-
-	/* -------------------------------------------- */
-
 	static async #onAddDefault(this: ItemSheetGURPS, event: Event): Promise<void> {
 		event.preventDefault()
 		event.stopImmediatePropagation()
@@ -667,36 +630,12 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 
 	/* -------------------------------------------- */
 
-	async _onChangeFeatureType(event: Event): Promise<void> {
-		event.preventDefault()
-		event.stopImmediatePropagation()
-
-		const element = event.target as HTMLSelectElement
-		const index = parseInt(element.dataset.index ?? "")
-		if (isNaN(index)) return
-		const value = element.value as feature.Type
-		const item = this.item
-		if (!item.hasTemplate(ItemTemplateType.Feature)) return
-
-		const features = item.system.toObject().features
-
-		features.splice(index, 1, new FeatureTypes[value]({ type: value }).toObject())
-
-		this.item.update({ "system.features": features })
-	}
-
-	/* -------------------------------------------- */
-
 	protected override _onRender(context: object, options: ApplicationRenderOptions): void {
 		super._onRender(context, options)
 		if (options.isFirstRender) {
 			const prereqTypeFields = this.element.querySelectorAll("[data-selector='prereq-type'")
 			for (const input of prereqTypeFields) {
 				input.addEventListener("change", event => this._onChangePrereqType(event))
-			}
-			const featureTypeFields = this.element.querySelectorAll("[data-selector='feature-type'")
-			for (const input of featureTypeFields) {
-				input.addEventListener("change", event => this._onChangeFeatureType(event))
 			}
 		}
 		if (!this.isEditable) this._disableFields()

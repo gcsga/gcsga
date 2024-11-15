@@ -73,7 +73,7 @@ class CostReduction extends BaseFeature<CostReductionSchema> {
 				icon: ["fa-regular", "fa-trash"],
 				label: "",
 				data: {
-					action: "deleteFeature",
+					deleteFeature: "",
 					index: this.index.toString(),
 				},
 				disabled: !enabled,

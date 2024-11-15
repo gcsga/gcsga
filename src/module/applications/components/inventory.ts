@@ -62,8 +62,7 @@ class InventoryElement extends HTMLElement {
 	/**
 	 * Reference to the application that contains this component.
 	 */
-	// @ts-expect-error is assigned
-	#app: sheets.ActorSheetV2<ActorGURPS2> | sheets.ItemSheetV2<ItemGURPS2>
+	#app!: sheets.ActorSheetV2<ActorGURPS2> | sheets.ItemSheetV2<ItemGURPS2>
 
 	/* -------------------------------------------- */
 

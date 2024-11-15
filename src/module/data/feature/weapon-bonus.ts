@@ -212,7 +212,7 @@ class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 				icon: ["fa-regular", "fa-trash"],
 				label: "",
 				data: {
-					action: "deleteFeature",
+					deleteFeature: "",
 					index: this.index.toString(),
 				},
 				disabled: !enabled,
