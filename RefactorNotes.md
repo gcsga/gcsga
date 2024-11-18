@@ -6,6 +6,7 @@
 
 ## Current Tasks
 
+- Change actions from array to map/embedded collection
 - Create activity
 - Move attacks to activity (reasoning: they don't need to be items and don't directly go on a character, and can't contain other items)
 - Activity Types

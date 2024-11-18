@@ -23,6 +23,8 @@ export function deepClone<T>(original: T): T
  */
 export function duplicate<T>(original: T): T
 
+export function isSubclass<T, U>(cls: ConstructorOf<T>, parent: ConstructorOf<U>): boolean
+
 /**
  * Test whether a value is empty-like; either undefined or a content-less object.
  * @param value The value to test

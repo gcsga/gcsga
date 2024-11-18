@@ -14,6 +14,8 @@ import { ItemTemplateType } from "../types.ts"
 import fields = foundry.data.fields
 import { WeightField } from "../fields/weight-field.ts"
 import { ToggleableBooleanField, ToggleableNumberField, ToggleableStringField } from "@module/data/fields/index.ts"
+import { AttackMelee } from "@module/data/action/attack-melee.ts"
+import { AttackRanged } from "@module/data/action/attack-ranged.ts"
 
 class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchema> {
 	static override defineSchema(): EquipmentFieldsTemplateSchema {
@@ -323,17 +325,16 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 
 	protected _fillWithNameableKeysFromEmbeds(m: Map<string, string>, existing: Map<string, string>): void {
 		const modifiers = this.allModifiers
-		const weapons = this.weapons
+		const attacks = this.attacks
 
 		if (!(modifiers instanceof Promise))
 			for (const modifier of modifiers) {
 				modifier.system.fillWithNameableKeys(m, modifier.system.nameableReplacements)
 			}
 
-		if (!(weapons instanceof Promise))
-			for (const weapon of weapons) {
-				weapon.system.fillWithNameableKeys(m, existing)
-			}
+		for (const attack of attacks) {
+			attack.fillWithNameableKeys(m, existing)
+		}
 	}
 }
 
@@ -342,7 +343,9 @@ interface EquipmentFieldsTemplate extends ModelPropsFromSchema<EquipmentFieldsTe
 	get modifiers(): MaybePromise<
 		Collection<ItemInst<ItemType.EquipmentModifier | ItemType.EquipmentModifierContainer>>
 	>
-	get weapons(): MaybePromise<Collection<ItemInst<ItemType.WeaponMelee | ItemType.WeaponRanged>>>
+	get attacks(): (AttackMelee | AttackRanged)[]
+	get meleeAttacks(): AttackMelee[]
+	get rangedAttacks(): AttackRanged[]
 	get allModifiers(): MaybePromise<Collection<ItemInst<ItemType.EquipmentModifier>>>
 
 	open: boolean | null

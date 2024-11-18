@@ -157,7 +157,7 @@ class WeaponDamage extends WeaponField<BaseAttack, WeaponDamageSchema> {
 		if (actor === null || !actor.isOfType(ActorType.Character)) return new DiceGURPS({ sides: 6, multiplier: 1 })
 		const maxSt = this.parent.strength.resolve(this.parent, null).min * 3
 		let st = 0
-		const container = this.parent.parent.container
+		const container = this.item
 		if (container !== null && !(container instanceof Promise)) {
 			st = container.system.ratedStrength
 		}

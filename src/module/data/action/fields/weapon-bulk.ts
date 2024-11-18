@@ -1,7 +1,8 @@
 import { WeaponField } from "./weapon-field.ts"
 import { Int, StringBuilder, TooltipGURPS, feature } from "@util"
-import { ItemType } from "@module/data/constants.ts"
+import { ActionType } from "@module/data/constants.ts"
 import { ToggleableBooleanField, ToggleableNumberField } from "@module/data/fields/index.ts"
+import { BaseAttack } from "../base-attack.ts"
 
 class WeaponBulk extends WeaponField<BaseAttack, WeaponBulkSchema> {
 	static override defineSchema(): WeaponBulkSchema {
@@ -46,7 +47,7 @@ class WeaponBulk extends WeaponField<BaseAttack, WeaponBulkSchema> {
 	// Tooltip returns a tooltip for the data, if any. Call .resolve() prior to calling this method if you want the tooltip
 	// to be based on the resolved values.
 	override tooltip(w: BaseAttack): string {
-		if (!w.isOfType(ItemType.WeaponRanged)) return ""
+		if (!w.isOfType(ActionType.AttackRanged)) return ""
 
 		if (!this.retractingStock) return ""
 		if (this.normal < 0) this.normal += 1

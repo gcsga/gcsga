@@ -1,19 +1,23 @@
 import { ItemType } from "@module/data/constants.ts"
-import { EquipmentFieldsTemplate } from "./templates/equipment-fields.ts"
 import { ItemGURPS2 } from "@module/documents/item.ts"
 import { MaybePromise } from "../types.ts"
 import { ItemInst } from "./helpers.ts"
 import { ItemTemplateType } from "./types.ts"
 import { ItemDataModel } from "./abstract.ts"
-import { BasicInformationTemplate } from "./templates/basic-information.ts"
-import { ContainerTemplate } from "./templates/container.ts"
-import { FeatureTemplate } from "./templates/features.ts"
-import { PrereqTemplate } from "./templates/prereqs.ts"
-import { ReplacementTemplate } from "./templates/replacements.ts"
 import { FeatureSet } from "../feature/types.ts"
 import { Nameable } from "@module/util/nameable.ts"
+import {
+	ActionTemplate,
+	BasicInformationTemplate,
+	ContainerTemplate,
+	EquipmentFieldsTemplate,
+	FeatureTemplate,
+	PrereqTemplate,
+	ReplacementTemplate,
+} from "./templates/index.ts"
 
 class EquipmentData extends ItemDataModel.mixin(
+	ActionTemplate,
 	BasicInformationTemplate,
 	PrereqTemplate,
 	FeatureTemplate,
@@ -22,7 +26,7 @@ class EquipmentData extends ItemDataModel.mixin(
 	EquipmentFieldsTemplate,
 ) {
 	static override modifierTypes = new Set([ItemType.EquipmentModifier, ItemType.EquipmentModifierContainer])
-	static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
+	// static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
 
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
 		context.detailsParts = ["gurps.details-equipment", "gurps.details-prereqs", "gurps.details-features"]
@@ -94,7 +98,7 @@ class EquipmentData extends ItemDataModel.mixin(
 }
 
 interface EquipmentData {
-	get weapons(): MaybePromise<Collection<ItemInst<ItemType.WeaponMelee | ItemType.WeaponRanged>>>
+	// get weapons(): MaybePromise<Collection<ItemInst<ItemType.WeaponMelee | ItemType.WeaponRanged>>>
 }
 
 export { EquipmentData }

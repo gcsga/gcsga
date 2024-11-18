@@ -25,6 +25,8 @@ class AppliedEffectField extends fields.SchemaField<AppliedEffectFieldSchema> {
 
 		Object.defineProperty(obj, "effect", {
 			get(): ActiveEffectGURPS {
+				// TODO: fix
+				console.log(item)
 				return item?.effects.get(this._id)
 			},
 			configurable: true,

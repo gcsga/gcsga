@@ -1,12 +1,5 @@
 import { ItemDataModel } from "./abstract.ts"
-import { PrereqTemplate, PrereqTemplateSchema } from "./templates/prereqs.ts"
-import { ContainerTemplate, ContainerTemplateSchema } from "./templates/container.ts"
-import { FeatureTemplate, FeatureTemplateSchema } from "./templates/features.ts"
-import { StudyTemplate, StudyTemplateSchema } from "./templates/study.ts"
-import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
 import { ActorType, ItemType, gid } from "../constants.ts"
-import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
-import { AbstractSkillTemplate, AbstractSkillTemplateSchema } from "./templates/abstract-skill.ts"
 import { StringBuilder, TooltipGURPS, align, cell, difficulty, display } from "@util"
 import {
 	ItemInst,
@@ -21,16 +14,35 @@ import { CellData, CellDataOptions } from "./components/cell-data.ts"
 import { SkillDefault } from "./components/skill-default.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { Study } from "../study.ts"
-import { SkillDefaultTemplate, SkillDefaultTemplateSchema } from "./templates/defaults.ts"
 import { AttributeDifficultyField } from "./fields/attribute-difficulty-field.ts"
 import { SkillDefaultField } from "./fields/skill-default-field.ts"
 import { getAttributeChoices } from "../attribute/helpers.ts"
-import { MaybePromise } from "../types.ts"
 import { Nameable } from "@module/util/nameable.ts"
 import { ToggleableBooleanField } from "../fields/toggleable-boolean-field.ts"
 import { ToggleableNumberField } from "../fields/toggleable-number-field.ts"
+import {
+	AbstractSkillTemplate,
+	AbstractSkillTemplateSchema,
+	ActionTemplate,
+	ActionTemplateSchema,
+	BasicInformationTemplate,
+	BasicInformationTemplateSchema,
+	ContainerTemplate,
+	ContainerTemplateSchema,
+	FeatureTemplate,
+	FeatureTemplateSchema,
+	PrereqTemplate,
+	PrereqTemplateSchema,
+	ReplacementTemplate,
+	ReplacementTemplateSchema,
+	SkillDefaultTemplate,
+	SkillDefaultTemplateSchema,
+	StudyTemplate,
+	StudyTemplateSchema,
+} from "./templates/index.ts"
 
 class TechniqueData extends ItemDataModel.mixin(
+	ActionTemplate,
 	BasicInformationTemplate,
 	PrereqTemplate,
 	ContainerTemplate,
@@ -40,7 +52,7 @@ class TechniqueData extends ItemDataModel.mixin(
 	SkillDefaultTemplate,
 	AbstractSkillTemplate,
 ) {
-	static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
+	// static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
 
 	constructor(
 		data?: DeepPartial<SourceFromSchema<TechniqueSchema>>,
@@ -319,20 +331,20 @@ class TechniqueData extends ItemDataModel.mixin(
 	}
 
 	protected _fillWithNameableKeysFromEmbeds(m: Map<string, string>, existing: Map<string, string>): void {
-		const weapons = this.weapons
+		const attacks = this.attacks
 
-		if (!(weapons instanceof Promise))
-			for (const weapon of weapons) {
-				weapon.system.fillWithNameableKeys(m, existing)
-			}
+		for (const attack of attacks) {
+			attack.fillWithNameableKeys(m, existing)
+		}
 	}
 }
 
 interface TechniqueData extends ModelPropsFromSchema<TechniqueSchema> {
-	get weapons(): MaybePromise<Collection<ItemInst<ItemType.WeaponMelee | ItemType.WeaponRanged>>>
+	// get weapons(): MaybePromise<Collection<ItemInst<ItemType.WeaponMelee | ItemType.WeaponRanged>>>
 }
 
-type TechniqueSchema = BasicInformationTemplateSchema &
+type TechniqueSchema = ActionTemplateSchema &
+	BasicInformationTemplateSchema &
 	PrereqTemplateSchema &
 	ContainerTemplateSchema &
 	FeatureTemplateSchema &

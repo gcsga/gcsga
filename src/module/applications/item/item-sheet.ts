@@ -1,4 +1,4 @@
-import { EffectType, HOOKS, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
+import { ActionType, HOOKS, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
 import { ItemTemplateType } from "@module/data/item/types.ts"
 import { AttributePrereq } from "@module/data/prereq/index.ts"
 import { PrereqList, PrereqListSchema } from "@module/data/prereq/prereq-list.ts"
@@ -14,6 +14,7 @@ import { SheetSettings } from "@module/data/sheet-settings.ts"
 import { ItemCell } from "@module/data/item/components/cell-data.ts"
 import { ELEMENTS } from "../components/index.ts"
 import { Study } from "@module/data/study.ts"
+import { Action } from "@module/data/action/types.ts"
 
 const { api, sheets } = foundry.applications
 
@@ -726,7 +727,7 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		}
 
 		if (partId === "embeds") {
-			context.effects = await this._prepareEffectEmbedList(this.item.effects)
+			// context.effects = await this._prepareEffectEmbedList(this.item.effects)
 			if (!this.item.hasTemplate(ItemTemplateType.Container)) return context
 			context.modifiers = await this._prepareItemEmbedList(this.item.system.modifiers, {
 				type: this.item.type as ItemType,
@@ -736,6 +737,10 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 				type: this.item.type as ItemType,
 				level: 0,
 			})
+			if (this.item.hasTemplate(ItemTemplateType.Action)) {
+				context.attacksMelee = await this._prepareActionEmbedList(this.item.system.meleeAttacks)
+				context.attacksRanged = await this._prepareActionEmbedList(this.item.system.rangedAttacks)
+			}
 			// context.weaponsMelee = await this._prepareItemEmbedList(
 			// 	(await this.item.system.itemTypes)[ItemType.WeaponMelee],
 			// 	{
@@ -756,21 +761,23 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 
 	/* -------------------------------------------- */
 
-	protected async _prepareEffectEmbedList(
-		embeds: MaybePromise<Collection<ActiveEffectGURPS> | Array<ActiveEffectGURPS>>,
+	protected async _prepareActionEmbedList(
+		embeds: MaybePromise<Collection<Action> | Array<Action>>,
 	): Promise<ItemCell[]> {
 		const list: ItemCell[] = []
 		let i = 0
 		for (const item of await embeds) {
+			console.log(item)
 			const listItem: ItemCell = {
 				name: item.name,
 				id: item.id,
 				sort: 0,
 				uuid: item.uuid,
-				type: item.type as EffectType,
-				cells: item.system.cellData(),
-				buttons: item.system.sheetButtons,
+				type: item.type as ActionType,
+				cells: item.cellData(),
+				buttons: item.sheetButtons,
 			}
+			console.log(listItem)
 			list.push(listItem)
 			i += 1
 		}

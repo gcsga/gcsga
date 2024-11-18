@@ -65,8 +65,8 @@ export const Load = {
 			[ItemType.TraitModifierContainer]: ItemInstance.TraitModifierContainerData,
 			[ItemType.TraitModifier]: ItemInstance.TraitModifierData,
 			[ItemType.Trait]: ItemInstance.TraitData,
-			[ItemType.WeaponMelee]: ItemInstance.WeaponMeleeData,
-			[ItemType.WeaponRanged]: ItemInstance.WeaponRangedData,
+			// [ItemType.WeaponMelee]: ItemInstance.WeaponMeleeData,
+			// [ItemType.WeaponRanged]: ItemInstance.WeaponRangedData,
 		}
 
 		CONFIG.ActiveEffect.dataModels = {

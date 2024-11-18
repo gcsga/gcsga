@@ -1,21 +1,32 @@
-import { ActorType, ItemType, gid } from "../constants.ts"
+import { ActorType, gid } from "../constants.ts"
 import { EvalEmbeddedRegex, StringBuilder, TooltipGURPS, difficulty, replaceAllStringFunc } from "@util"
-import { ItemInst, SkillLevel } from "./helpers.ts"
+import { SkillLevel } from "./helpers.ts"
 import { AttributeDifficultyField } from "./fields/attribute-difficulty-field.ts"
 import { getAttributeChoices } from "../attribute/helpers.ts"
-import { SpellTemplate, SpellTemplateSchema } from "./templates/spell.ts"
 import { ItemDataModel } from "./abstract.ts"
-import { AbstractSkillTemplate, AbstractSkillTemplateSchema } from "./templates/abstract-skill.ts"
-import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
-import { ContainerTemplate, ContainerTemplateSchema } from "./templates/container.ts"
-import { PrereqTemplate, PrereqTemplateSchema } from "./templates/prereqs.ts"
-import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
-import { StudyTemplate, StudyTemplateSchema } from "./templates/study.ts"
 import { Nameable } from "@module/util/nameable.ts"
-import { MaybePromise } from "../types.ts"
 import { ActorTemplateType } from "../actor/types.ts"
+import {
+	AbstractSkillTemplate,
+	AbstractSkillTemplateSchema,
+	ActionTemplate,
+	ActionTemplateSchema,
+	BasicInformationTemplate,
+	BasicInformationTemplateSchema,
+	ContainerTemplate,
+	ContainerTemplateSchema,
+	PrereqTemplate,
+	PrereqTemplateSchema,
+	ReplacementTemplate,
+	ReplacementTemplateSchema,
+	SpellTemplate,
+	SpellTemplateSchema,
+	StudyTemplate,
+	StudyTemplateSchema,
+} from "./templates/index.ts"
 
 class SpellData extends ItemDataModel.mixin(
+	ActionTemplate,
 	BasicInformationTemplate,
 	PrereqTemplate,
 	ContainerTemplate,
@@ -24,7 +35,7 @@ class SpellData extends ItemDataModel.mixin(
 	AbstractSkillTemplate,
 	SpellTemplate,
 ) {
-	static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
+	// static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
 
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
 		context.detailsParts = ["gurps.details-spell", "gurps.details-prereqs", "gurps.details-study"]
@@ -142,20 +153,20 @@ class SpellData extends ItemDataModel.mixin(
 	}
 
 	protected _fillWithNameableKeysFromEmbeds(m: Map<string, string>, existing: Map<string, string>): void {
-		const weapons = this.weapons
+		const attacks = this.attacks
 
-		if (!(weapons instanceof Promise))
-			for (const weapon of weapons) {
-				weapon.system.fillWithNameableKeys(m, existing)
-			}
+		for (const attack of attacks) {
+			attack.fillWithNameableKeys(m, existing)
+		}
 	}
 }
 
 interface SpellData extends ModelPropsFromSchema<SpellSchema> {
-	get weapons(): MaybePromise<Collection<ItemInst<ItemType.WeaponMelee | ItemType.WeaponRanged>>>
+	// get weapons(): MaybePromise<Collection<ItemInst<ItemType.WeaponMelee | ItemType.WeaponRanged>>>
 }
 
-type SpellSchema = BasicInformationTemplateSchema &
+type SpellSchema = ActionTemplateSchema &
+	BasicInformationTemplateSchema &
 	PrereqTemplateSchema &
 	ContainerTemplateSchema &
 	StudyTemplateSchema &

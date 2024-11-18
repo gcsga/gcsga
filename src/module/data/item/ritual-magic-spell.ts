@@ -1,23 +1,34 @@
-import { ActorType, ItemType, gid } from "../constants.ts"
+import { ActorType, gid } from "../constants.ts"
 import { EvalEmbeddedRegex, StringBuilder, TooltipGURPS, difficulty, replaceAllStringFunc } from "@util"
-import { SpellTemplate, SpellTemplateSchema } from "./templates/spell.ts"
-import { ItemInst, SkillLevel, calculateTechniqueLevel } from "./helpers.ts"
+import { SkillLevel, calculateTechniqueLevel } from "./helpers.ts"
 import { SkillDefault } from "./components/skill-default.ts"
 import { Nameable } from "@module/util/index.ts"
 import { AttributeDifficultyField } from "./fields/attribute-difficulty-field.ts"
 import { ItemDataModel } from "./abstract.ts"
-import { AbstractSkillTemplate, AbstractSkillTemplateSchema } from "./templates/abstract-skill.ts"
-import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
-import { ContainerTemplate, ContainerTemplateSchema } from "./templates/container.ts"
-import { PrereqTemplate, PrereqTemplateSchema } from "./templates/prereqs.ts"
-import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
-import { StudyTemplate, StudyTemplateSchema } from "./templates/study.ts"
-import { MaybePromise } from "../types.ts"
 import { ActorTemplateType } from "../actor/types.ts"
 import { ToggleableNumberField } from "../fields/index.ts"
 import { ReplaceableStringField } from "../fields/replaceable-string-field.ts"
+import {
+	AbstractSkillTemplate,
+	AbstractSkillTemplateSchema,
+	ActionTemplate,
+	ActionTemplateSchema,
+	BasicInformationTemplate,
+	BasicInformationTemplateSchema,
+	ContainerTemplate,
+	ContainerTemplateSchema,
+	PrereqTemplate,
+	PrereqTemplateSchema,
+	ReplacementTemplate,
+	ReplacementTemplateSchema,
+	SpellTemplate,
+	SpellTemplateSchema,
+	StudyTemplate,
+	StudyTemplateSchema,
+} from "./templates/index.ts"
 
 class RitualMagicSpellData extends ItemDataModel.mixin(
+	ActionTemplate,
 	BasicInformationTemplate,
 	PrereqTemplate,
 	ContainerTemplate,
@@ -26,7 +37,7 @@ class RitualMagicSpellData extends ItemDataModel.mixin(
 	AbstractSkillTemplate,
 	SpellTemplate,
 ) {
-	static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
+	// static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
 
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
 		context.detailsParts = ["gurps.details-ritual-magic-spell", "gurps.details-prereqs", "gurps.details-study"]
@@ -238,12 +249,11 @@ class RitualMagicSpellData extends ItemDataModel.mixin(
 	}
 
 	protected _fillWithNameableKeysFromEmbeds(m: Map<string, string>, existing: Map<string, string>): void {
-		const weapons = this.weapons
+		const attacks = this.attacks
 
-		if (!(weapons instanceof Promise))
-			for (const weapon of weapons) {
-				weapon.system.fillWithNameableKeys(m, existing)
-			}
+		for (const attack of attacks) {
+			attack.fillWithNameableKeys(m, existing)
+		}
 	}
 
 	/**  Replacements */
@@ -253,10 +263,11 @@ class RitualMagicSpellData extends ItemDataModel.mixin(
 }
 
 interface RitualMagicSpellData extends ModelPropsFromSchema<RitualMagicSpellSchema> {
-	get weapons(): MaybePromise<Collection<ItemInst<ItemType.WeaponMelee | ItemType.WeaponRanged>>>
+	// get weapons(): MaybePromise<Collection<ItemInst<ItemType.WeaponMelee | ItemType.WeaponRanged>>>
 }
 
-type RitualMagicSpellSchema = BasicInformationTemplateSchema &
+type RitualMagicSpellSchema = ActionTemplateSchema &
+	BasicInformationTemplateSchema &
 	PrereqTemplateSchema &
 	ContainerTemplateSchema &
 	StudyTemplateSchema &

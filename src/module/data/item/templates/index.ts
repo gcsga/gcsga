@@ -1,6 +1,7 @@
+export { ActionTemplate, type ActionTemplateSchema } from "./action.ts"
 // export { AbstractEffectTemplate, type AbstractEffectTemplateSchema } from "./abstract-effect.ts"
 export { AbstractSkillTemplate, type AbstractSkillTemplateSchema } from "./abstract-skill.ts"
-export { AbstractWeaponTemplate, type AbstractWeaponTemplateSchema } from "./abstract-weapon.ts"
+// export { AbstractWeaponTemplate, type AbstractWeaponTemplateSchema } from "./abstract-weapon.ts"
 export { BasicInformationTemplate, type BasicInformationTemplateSchema } from "./basic-information.ts"
 export { ContainerTemplate, type ContainerTemplateSchema } from "./container.ts"
 export { EquipmentFieldsTemplate, type EquipmentFieldsTemplateSchema } from "./equipment-fields.ts"

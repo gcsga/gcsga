@@ -10,6 +10,8 @@ import { MaybePromise } from "../types.ts"
 import { CellData, CellDataOptions } from "./components/cell-data.ts"
 import { ItemInst, costAdjustedForModifiers } from "./helpers.ts"
 import {
+	ActionTemplate,
+	ActionTemplateSchema,
 	BasicInformationTemplate,
 	BasicInformationTemplateSchema,
 	ContainerTemplate,
@@ -28,17 +30,18 @@ import { ToggleableBooleanField, ToggleableNumberField, ToggleableStringField } 
 import { ReplaceableStringField } from "../fields/replaceable-string-field.ts"
 
 class TraitData extends ItemDataModel.mixin(
+	ActionTemplate,
 	BasicInformationTemplate,
-	PrereqTemplate,
 	ContainerTemplate,
 	FeatureTemplate,
-	StudyTemplate,
+	PrereqTemplate,
 	ReplacementTemplate,
+	StudyTemplate,
 ) {
 	static override _systemType = ItemType.Trait
 
 	static override modifierTypes = new Set([ItemType.TraitModifier, ItemType.TraitModifierContainer])
-	static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
+	// static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
 
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
 		context.detailsParts = [
@@ -331,22 +334,23 @@ class TraitData extends ItemDataModel.mixin(
 		existing: Map<string, string>,
 	): Promise<void> {
 		const modifiers = await this.allModifiers
-		const weapons = await this.weapons
+		const attacks = this.attacks
 
 		for (const modifier of modifiers) {
 			modifier.system.fillWithNameableKeys(m, modifier.system.nameableReplacements)
 		}
-		for (const weapon of weapons) {
-			weapon.system.fillWithNameableKeys(m, existing)
+		for (const attack of attacks) {
+			attack.fillWithNameableKeys(m, existing)
 		}
 	}
 }
 
 interface TraitData extends ModelPropsFromSchema<TraitSchema> {
-	get weapons(): MaybePromise<Collection<ItemInst<ItemType.WeaponMelee | ItemType.WeaponRanged>>>
+	// get weapons(): MaybePromise<Collection<ItemInst<ItemType.WeaponMelee | ItemType.WeaponRanged>>>
 }
 
-type TraitSchema = BasicInformationTemplateSchema &
+type TraitSchema = ActionTemplateSchema &
+	BasicInformationTemplateSchema &
 	PrereqTemplateSchema &
 	ContainerTemplateSchema &
 	FeatureTemplateSchema &

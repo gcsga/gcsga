@@ -18,9 +18,9 @@ class ItemCollectionsMap<TActor extends ActorGURPS2> {
 	declare carriedEquipment: Collection<ItemInst<ItemType.Equipment> | ItemInst<ItemType.EquipmentContainer>>
 	declare otherEquipment: Collection<ItemInst<ItemType.Equipment> | ItemInst<ItemType.EquipmentContainer>>
 	declare notes: Collection<ItemInst<ItemType.Note> | ItemInst<ItemType.NoteContainer>>
-	declare weapons: Collection<ItemInst<ItemType.WeaponMelee> | ItemInst<ItemType.WeaponRanged>>
-	declare meleeWeapons: Collection<ItemInst<ItemType.WeaponMelee>>
-	declare rangedWeapons: Collection<ItemInst<ItemType.WeaponRanged>>
+	// declare weapons: Collection<ItemInst<ItemType.WeaponMelee> | ItemInst<ItemType.WeaponRanged>>
+	// declare meleeWeapons: Collection<ItemInst<ItemType.WeaponMelee>>
+	// declare rangedWeapons: Collection<ItemInst<ItemType.WeaponRanged>>
 
 	constructor(items: EmbeddedCollection<ItemGURPS2<TActor>>) {
 		this.traits = new Collection(
@@ -58,15 +58,15 @@ class ItemCollectionsMap<TActor extends ActorGURPS2> {
 		this.notes = new Collection(
 			items.filter(item => item.isOfType(ItemType.Note, ItemType.NoteContainer)).map(e => [e.id, e]),
 		) as unknown as this["notes"]
-		this.weapons = new Collection(
-			items.filter(item => item.isOfType(ItemType.WeaponMelee, ItemType.WeaponRanged)).map(e => [e.id, e]),
-		) as unknown as this["weapons"]
-		this.meleeWeapons = new Collection(
-			items.filter(item => item.isOfType(ItemType.WeaponMelee)).map(e => [e.id, e]),
-		) as unknown as this["meleeWeapons"]
-		this.rangedWeapons = new Collection(
-			items.filter(item => item.isOfType(ItemType.WeaponRanged)).map(e => [e.id, e]),
-		) as unknown as this["rangedWeapons"]
+		// this.weapons = new Collection(
+		// 	items.filter(item => item.isOfType(ItemType.WeaponMelee, ItemType.WeaponRanged)).map(e => [e.id, e]),
+		// ) as unknown as this["weapons"]
+		// this.meleeWeapons = new Collection(
+		// 	items.filter(item => item.isOfType(ItemType.WeaponMelee)).map(e => [e.id, e]),
+		// ) as unknown as this["meleeWeapons"]
+		// this.rangedWeapons = new Collection(
+		// 	items.filter(item => item.isOfType(ItemType.WeaponRanged)).map(e => [e.id, e]),
+		// ) as unknown as this["rangedWeapons"]
 	}
 }
 

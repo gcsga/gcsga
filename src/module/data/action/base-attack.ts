@@ -35,12 +35,12 @@ class BaseAttack<TSchema extends BaseAttackSchema = BaseAttackSchema> extends Ba
 		}
 	}
 
-	protected get _processedNameForWeapon(): string {
-		const container = this.item
-		if (!(container instanceof Promise) && container !== null) {
-			if (container.hasTemplate(ItemTemplateType.BasicInformation)) return container.system.nameWithReplacements
-			return container.name
-		}
+	get processedName(): string {
+		// const container = this.item
+		// if (!(container instanceof Promise) && container !== null) {
+		// 	if (container.hasTemplate(ItemTemplateType.BasicInformation)) return container.system.nameWithReplacements
+		// 	return container.name
+		// }
 		return this.usageWithReplacements
 	}
 
@@ -105,13 +105,13 @@ class BaseAttack<TSchema extends BaseAttackSchema = BaseAttackSchema> extends Ba
 				tooltip.push("\n")
 				tooltip.push(
 					game.i18n.format("GURPS.Tooltip.SkillLevelStrengthRequirement", {
-						name: this._processedNameForWeapon,
+						name: this.processedName,
 						modifier: -minST,
 					}),
 				)
 			}
 		}
-		const nameQualifier = this._processedNameForWeapon
+		const nameQualifier = this.processedName
 		for (const bonus of actor.system.namedWeaponSkillBonusesFor(
 			nameQualifier,
 			this.usageWithReplacements,
@@ -221,7 +221,7 @@ class BaseAttack<TSchema extends BaseAttackSchema = BaseAttackSchema> extends Ba
 			bonusSet,
 			allowed,
 		)
-		const nameQualifier = this._processedNameForWeapon
+		const nameQualifier = this.processedName
 		actor.system.addNamedWeaponBonusesFor(
 			nameQualifier,
 			this.usageWithReplacements,
@@ -289,7 +289,7 @@ class BaseAttack<TSchema extends BaseAttackSchema = BaseAttackSchema> extends Ba
 						break
 					case wsel.Type.WithName: {
 						if (
-							f.name.matches(replacements, this._processedNameForWeapon) &&
+							f.name.matches(replacements, this.processedName) &&
 							f.specialization.matches(replacements, this.usageWithReplacements) &&
 							f.tags.matchesList(replacements, ...tags)
 						) {
@@ -314,7 +314,14 @@ class BaseAttack<TSchema extends BaseAttackSchema = BaseAttackSchema> extends Ba
 		return new Map<string, string>()
 	}
 
-	/** Namebales */
+	/** Nameables */
+	fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string>): void {
+		Nameable.extract(this.name, m, existing)
+		Nameable.extract(this.notes, m, existing)
+
+		this._fillWithNameableKeysFromDefaults(m, existing)
+	}
+
 	protected _fillWithNameableKeysFromDefaults(m: Map<string, string>, existing: Map<string, string>): void {
 		for (const feature of this.defaults) {
 			feature.fillWithNameableKeys(m, existing)

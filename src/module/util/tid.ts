@@ -1,4 +1,4 @@
-import { ActorType, ItemType } from "@module/data/constants.ts"
+import { ActionType, ActorType, ItemType } from "@module/data/constants.ts"
 import { ItemKind } from "@module/data/types.ts"
 import { ErrorGURPS } from "@util"
 
@@ -14,7 +14,7 @@ class TID {
 		return `${kind}${randomId}`
 	}
 
-	static fromDocumentType(type: ActorType | ItemType): TIDString {
+	static fromDocumentType(type: ActorType | ItemType | ActionType): TIDString {
 		const kind = (() => {
 			switch (type) {
 				case ItemType.Trait:
@@ -54,9 +54,9 @@ class TID {
 				// 	return ItemKind.Effect
 				// case ItemType.Condition:
 				// 	return ItemKind.Condition
-				case ItemType.WeaponMelee:
+				case ActionType.AttackMelee:
 					return ItemKind.WeaponMelee
-				case ItemType.WeaponRanged:
+				case ActionType.AttackRanged:
 					return ItemKind.WeaponRanged
 				case ActorType.Character:
 					return ItemKind.Entity
@@ -67,7 +67,7 @@ class TID {
 		return TID.init(kind)
 	}
 
-	static typeFromKind(kind: ItemKind): ActorType | ItemType {
+	static typeFromKind(kind: ItemKind): ActorType | ItemType | ActionType {
 		switch (kind) {
 			case ItemKind.Trait:
 				return ItemType.Trait
@@ -107,9 +107,9 @@ class TID {
 			// case ItemKind.Condition:
 			// 	return ItemType.Condition
 			case ItemKind.WeaponMelee:
-				return ItemType.WeaponMelee
+				return ActionType.AttackMelee
 			case ItemKind.WeaponRanged:
-				return ItemType.WeaponMelee
+				return ActionType.AttackMelee
 			case ItemKind.Entity:
 				return ActorType.Character
 			default:

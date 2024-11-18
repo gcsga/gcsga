@@ -7,6 +7,7 @@ import sheets = foundry.applications.sheets
 import { ContextMenuGURPS } from "../context-menu.ts"
 import { SYSTEM_NAME, HOOKS, ItemType, ItemTypes, EffectType } from "@module/data/constants.ts"
 import { ActiveEffectGURPS } from "@module/documents/active-effect.ts"
+import { Action } from "@module/data/action/types.ts"
 
 class InventoryElement extends HTMLElement {
 	connectedCallback(): void {
@@ -22,6 +23,15 @@ class InventoryElement extends HTMLElement {
 				event.stopPropagation()
 				const { clientX, clientY } = event as MouseEvent
 				htmlClosest(event.currentTarget, "[data-item-id")?.dispatchEvent(
+					new PointerEvent("contextmenu", {
+						view: window,
+						bubbles: true,
+						cancelable: true,
+						clientX,
+						clientY,
+					}),
+				)
+				htmlClosest(event.currentTarget, "[data-action-id")?.dispatchEvent(
 					new PointerEvent("contextmenu", {
 						view: window,
 						bubbles: true,
@@ -47,6 +57,10 @@ class InventoryElement extends HTMLElement {
 		})
 
 		new ContextMenuGURPS(this.querySelector(".items-list") as HTMLElement, "[data-item-id]", [], {
+			onOpen: this._onOpenContextMenu.bind(this),
+		})
+
+		new ContextMenuGURPS(this.querySelector(".items-list") as HTMLElement, "[data-action-id]", [], {
 			onOpen: this._onOpenContextMenu.bind(this),
 		})
 
@@ -112,6 +126,16 @@ class InventoryElement extends HTMLElement {
 	/**
 	 * Retrieve an effect with the specified ID.
 	 */
+	getAction(id: string): MaybePromise<Action | null> {
+		if (!(this.document instanceof ItemGURPS2) || !this.document.hasTemplate(ItemTemplateType.Action)) return null
+		return this.document.system.actions.get(id) ?? null
+	}
+
+	/* -------------------------------------------- */
+
+	/**
+	 * Retrieve an effect with the specified ID.
+	 */
 	getEffect(id: string): MaybePromise<ActiveEffectGURPS | null> {
 		if (this.document instanceof ItemGURPS2) {
 			return this.document.effects.get(id) ?? null
@@ -127,6 +151,7 @@ class InventoryElement extends HTMLElement {
 
 	protected _onOpenContextMenu(element: HTMLElement): void {
 		if (!!element.dataset.itemId) return this._onOpenItemContextMenu(element)
+		if (!!element.dataset.actionId) return this._onOpenActionContextMenu(element)
 		if (!!element.dataset.effectId) return this._onOpenEffectContextMenu(element)
 		return this._onOpenItemListContextMenu(element)
 	}
@@ -160,6 +185,19 @@ class InventoryElement extends HTMLElement {
 		if (ui.context) {
 			ui.context.menuItems = this._getItemContextOptions(item, element)
 			Hooks.call(`${SYSTEM_NAME}.${HOOKS.GET_ITEM_CONTEXT_OPTIONS}`, item, ui.context.menuItems)
+		}
+	}
+
+	/* -------------------------------------------- */
+
+	protected _onOpenActionContextMenu(element: HTMLElement): void {
+		const action = this.getAction((element.closest("[data-action-id]") as HTMLElement)?.dataset.actionId ?? "")
+		// Parts of ContextMenu doesn't play well with promises, so don't show menus for containers in packs
+		if (!action || action instanceof Promise) return
+
+		if (ui.context) {
+			ui.context.menuItems = this._getActionContextOptions(action, element)
+			Hooks.call(`${SYSTEM_NAME}.${HOOKS.GET_ACTION_CONTEXT_OPTIONS}`, action, ui.context.menuItems)
 		}
 	}
 
@@ -243,6 +281,25 @@ class InventoryElement extends HTMLElement {
 
 	/* -------------------------------------------- */
 
+	protected async _onActionAction(target: HTMLElement, action: string) {
+		const { actionId } = (target.closest("[data-action-id]") as HTMLElement)?.dataset ?? {}
+		const item = (await this.getAction(actionId ?? "")) ?? null
+		if (!item) return
+
+		switch (action) {
+			case "delete":
+				return item.deleteDialog()
+			case "edit":
+			case "view":
+				return item.sheet?.render(true)
+			default:
+				console.error(`Invalid action "${action}"`)
+				return
+		}
+	}
+
+	/* -------------------------------------------- */
+
 	protected async _onEffectAction(target: HTMLElement, action: string) {
 		const { effectId } = (target.closest("[data-effect-id]") as HTMLElement)?.dataset ?? {}
 		const effect = await this.getEffect(effectId ?? "")
@@ -302,6 +359,34 @@ class InventoryElement extends HTMLElement {
 					item.isOwner &&
 					!item.compendium?.locked &&
 					item.isOfType(ItemType.EquipmentModifier, ItemType.TraitModifier),
+			},
+		]
+
+		return options
+	}
+
+	/* -------------------------------------------- */
+
+	protected _getActionContextOptions(_action: Action, _element: HTMLElement): ContextMenuEntry[] {
+		const options = [
+			{
+				name: "Edit",
+				icon: "<i class='fa-solid fa-edit'></i>",
+				callback: (li: JQuery<HTMLElement>) => this._onActionAction(li[0], "edit"),
+				condition: () => this.document.isOwner && !this.document.compendium?.locked,
+			},
+			{
+				name: "View",
+				icon: "<i class='fa-solid fa-eye'></i>",
+				callback: (li: JQuery<HTMLElement>) => this._onActionAction(li[0], "edit"),
+				condition: () =>
+					!this.document.isOwner || (!!this.document.compendium && this.document.compendium.locked),
+			},
+			{
+				name: "Delete",
+				icon: "<i class='fa-solid fa-trash'></i>",
+				callback: (li: JQuery<HTMLElement>) => this._onActionAction(li[0], "delete"),
+				condition: () => this.document.isOwner && !this.document.compendium?.locked,
 			},
 		]
 

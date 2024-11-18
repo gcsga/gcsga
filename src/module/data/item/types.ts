@@ -21,13 +21,14 @@ export interface ItemDataInstances {
 	[ItemType.TraitModifierContainer]: ItemInstance.TraitModifierContainerData
 	[ItemType.TraitModifier]: ItemInstance.TraitModifierData
 	[ItemType.Trait]: ItemInstance.TraitData
-	[ItemType.WeaponMelee]: ItemInstance.WeaponMeleeData
-	[ItemType.WeaponRanged]: ItemInstance.WeaponRangedData
+	// [ItemType.WeaponMelee]: ItemInstance.WeaponMeleeData
+	// [ItemType.WeaponRanged]: ItemInstance.WeaponRangedData
 }
 
 export enum ItemTemplateType {
+	Action = "ActionTemplate",
 	AbstractSkill = "AbstractSkillTemplate",
-	AbstractWeapon = "AbstractWeaponTemplate",
+	// AbstractWeapon = "AbstractWeaponTemplate",
 	BasicInformation = "BasicInformationTemplate",
 	Container = "ContainerTemplate",
 	Default = "SkillDefaultTemplate",
@@ -41,8 +42,9 @@ export enum ItemTemplateType {
 }
 
 export interface ItemDataTemplates {
+	[ItemTemplateType.Action]: ItemDataTemplate.ActionTemplate
 	[ItemTemplateType.AbstractSkill]: ItemDataTemplate.AbstractSkillTemplate
-	[ItemTemplateType.AbstractWeapon]: ItemDataTemplate.AbstractWeaponTemplate
+	// [ItemTemplateType.AbstractWeapon]: ItemDataTemplate.AbstractWeaponTemplate
 	[ItemTemplateType.BasicInformation]: ItemDataTemplate.BasicInformationTemplate
 	[ItemTemplateType.Container]: ItemDataTemplate.ContainerTemplate
 	[ItemTemplateType.Default]: ItemDataTemplate.SkillDefaultTemplate

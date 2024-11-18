@@ -18,7 +18,8 @@ class ContainerTemplate extends ItemDataModel<ContainerTemplateSchema> {
 	 * Valid contents types for this item type
 	 */
 	static get contentsTypes(): Set<ItemType> {
-		return new Set([...this.childTypes, ...this.modifierTypes, ...this.weaponTypes])
+		return new Set([...this.childTypes, ...this.modifierTypes])
+		// return new Set([...this.childTypes, ...this.modifierTypes, ...this.weaponTypes])
 	}
 
 	/**
@@ -43,16 +44,16 @@ class ContainerTemplate extends ItemDataModel<ContainerTemplateSchema> {
 		return this.constructor.modifierTypes
 	}
 
-	/**
-	 * Valid weapon types for this item type
-	 */
-	static weaponTypes: Set<ItemType> = new Set()
-
-	/* -------------------------------------------- */
-
-	get weaponTypes(): Set<ItemType> {
-		return this.constructor.weaponTypes
-	}
+	// /**
+	//  * Valid weapon types for this item type
+	//  */
+	// static weaponTypes: Set<ItemType> = new Set()
+	//
+	// /* -------------------------------------------- */
+	//
+	// get weaponTypes(): Set<ItemType> {
+	// 	return this.constructor.weaponTypes
+	// }
 
 	get itemTypes(): MaybePromise<{ [K in keyof ItemDataInstances]: ItemInst<K>[] }> {
 		if (this.parent.pack) return this.#itemTypes()
@@ -177,22 +178,22 @@ class ContainerTemplate extends ItemDataModel<ContainerTemplateSchema> {
 		return this.modifiers
 	}
 
-	get weapons(): MaybePromise<Collection<ItemGURPS2>> {
-		if (this.constructor.modifierTypes.size === 0) return new Collection()
-		if (this.parent?.pack) return this.#weapons()
-
-		const contents = this.contents as Collection<ItemGURPS2>
-		return new Collection(
-			contents.filter(e => this.constructor.weaponTypes.has(e.type as ItemType)).map(e => [e.id, e]),
-		)
-	}
-
-	async #weapons(): Promise<Collection<ItemGURPS2>> {
-		const contents = await this.contents
-		return new Collection(
-			contents.filter(e => this.constructor.weaponTypes.has(e.type as ItemType)).map(e => [e.id, e]),
-		)
-	}
+	// get weapons(): MaybePromise<Collection<ItemGURPS2>> {
+	// 	if (this.constructor.modifierTypes.size === 0) return new Collection()
+	// 	if (this.parent?.pack) return this.#weapons()
+	//
+	// 	const contents = this.contents as Collection<ItemGURPS2>
+	// 	return new Collection(
+	// 		contents.filter(e => this.constructor.weaponTypes.has(e.type as ItemType)).map(e => [e.id, e]),
+	// 	)
+	// }
+	//
+	// async #weapons(): Promise<Collection<ItemGURPS2>> {
+	// 	const contents = await this.contents
+	// 	return new Collection(
+	// 		contents.filter(e => this.constructor.weaponTypes.has(e.type as ItemType)).map(e => [e.id, e]),
+	// 	)
+	// }
 }
 
 interface ContainerTemplate

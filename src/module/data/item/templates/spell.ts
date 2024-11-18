@@ -2,15 +2,16 @@ import { ItemType } from "@module/data/constants.ts"
 import { ItemDataModel } from "@module/data/item/abstract.ts"
 import { SheetSettings } from "@module/data/sheet-settings.ts"
 import { Study } from "@module/data/study.ts"
-import { MaybePromise } from "@module/data/types.ts"
 import { Nameable } from "@module/util/index.ts"
 import { StringBuilder, TooltipGURPS, align, cell, display } from "@util"
 import { AttributeDifficulty } from "../components/attribute-difficulty.ts"
 import { CellData, CellDataOptions } from "../components/cell-data.ts"
 import { StringArrayField } from "../fields/string-array-field.ts"
-import { ItemInst, SkillLevel, addTooltipForSkillLevelAdj, formatRelativeSkill } from "../helpers.ts"
+import { SkillLevel, addTooltipForSkillLevelAdj, formatRelativeSkill } from "../helpers.ts"
 import { ItemTemplateType } from "../types.ts"
 import { ReplaceableStringField } from "@module/data/fields/replaceable-string-field.ts"
+import { AttackMelee } from "@module/data/action/attack-melee.ts"
+import { AttackRanged } from "@module/data/action/attack-ranged.ts"
 
 class SpellTemplate extends ItemDataModel<SpellTemplateSchema> {
 	static override defineSchema(): SpellTemplateSchema {
@@ -262,7 +263,9 @@ class SpellTemplate extends ItemDataModel<SpellTemplateSchema> {
 }
 
 interface SpellTemplate extends ModelPropsFromSchema<SpellTemplateSchema> {
-	get weapons(): MaybePromise<Collection<ItemInst<ItemType.WeaponMelee | ItemType.WeaponRanged>>>
+	get attacks(): (AttackMelee | AttackRanged)[]
+	get meleeAttacks(): AttackMelee[]
+	get rangedAttacks(): AttackRanged[]
 	get nameableReplacements(): Map<string, string>
 	get processedName(): string
 	get processedNotes(): string

@@ -306,25 +306,19 @@ class TraitContainerData extends ItemDataModel.mixin(
 		this._fillWithNameableKeysFromEmbeds(m, existing)
 	}
 
-	protected _fillWithNameableKeysFromEmbeds(m: Map<string, string>, existing: Map<string, string>): void {
+	protected _fillWithNameableKeysFromEmbeds(m: Map<string, string>, _existing: Map<string, string>): void {
 		const modifiers = this.allModifiers
-		const weapons = this.weapons
 
 		if (!(modifiers instanceof Promise))
 			for (const modifier of modifiers) {
 				modifier.system.fillWithNameableKeys(m, modifier.system.nameableReplacements)
-			}
-
-		if (!(weapons instanceof Promise))
-			for (const weapon of weapons) {
-				weapon.system.fillWithNameableKeys(m, existing)
 			}
 	}
 }
 
 interface TraitContainerData extends ModelPropsFromSchema<TraitContainerSchema> {
 	get children(): MaybePromise<Collection<ItemInst<ItemType.Trait | ItemType.TraitContainer>>>
-	get weapons(): MaybePromise<Collection<ItemInst<ItemType.WeaponMelee | ItemType.WeaponRanged>>>
+	// get weapons(): MaybePromise<Collection<ItemInst<ItemType.WeaponMelee | ItemType.WeaponRanged>>>
 }
 
 type TraitContainerSchema = BasicInformationTemplateSchema &

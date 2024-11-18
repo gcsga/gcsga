@@ -99,8 +99,8 @@ enum ItemType {
 	EquipmentModifierContainer = "equipmentModifierContainer",
 	Note = "note",
 	NoteContainer = "noteContainer",
-	WeaponMelee = "weaponMelee",
-	WeaponRanged = "weaponRanged",
+	// WeaponMelee = "weaponMelee",
+	// WeaponRanged = "weaponRanged",
 }
 
 const ItemTypes = [
@@ -120,8 +120,8 @@ const ItemTypes = [
 	ItemType.EquipmentModifierContainer,
 	ItemType.Note,
 	ItemType.NoteContainer,
-	ItemType.WeaponMelee,
-	ItemType.WeaponRanged,
+	// ItemType.WeaponMelee,
+	// ItemType.WeaponRanged,
 ]
 
 enum ActionType {
@@ -416,6 +416,7 @@ enum HOOKS {
 	ADD_MODIFEIR = "addModifier",
 	DROP_ITEM_SHEET_DATA = "dropItemSheetData",
 	GET_ITEM_CONTEXT_OPTIONS = "getItemContextOptions",
+	GET_ACTION_CONTEXT_OPTIONS = "getActionContextOptions",
 	GET_EFFECT_CONTEXT_OPTIONS = "getEffectContextOptions",
 }
 

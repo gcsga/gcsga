@@ -20,11 +20,13 @@ import { ItemGURPS2 } from "@module/documents/item.ts"
 import { AttributeDifficultyField } from "./fields/attribute-difficulty-field.ts"
 import { getAttributeChoices } from "../attribute/helpers.ts"
 import { Nameable } from "@module/util/nameable.ts"
-import { MaybePromise } from "../types.ts"
+// import { MaybePromise } from "../types.ts"
 import { ToggleableNumberField } from "../fields/index.ts"
 import { ReplaceableStringField } from "../fields/replaceable-string-field.ts"
+import { ActionTemplate, ActionTemplateSchema } from "./templates/action.ts"
 
 class SkillData extends ItemDataModel.mixin(
+	ActionTemplate,
 	BasicInformationTemplate,
 	PrereqTemplate,
 	ContainerTemplate,
@@ -36,7 +38,7 @@ class SkillData extends ItemDataModel.mixin(
 ) {
 	static override _systemType = ItemType.Skill
 
-	static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
+	// static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
 
 	constructor(
 		data?: DeepPartial<SourceFromSchema<SkillSchema>>,
@@ -342,12 +344,11 @@ class SkillData extends ItemDataModel.mixin(
 	}
 
 	protected _fillWithNameableKeysFromEmbeds(m: Map<string, string>, existing: Map<string, string>): void {
-		const weapons = this.weapons
+		const attacks = this.attacks
 
-		if (!(weapons instanceof Promise))
-			for (const weapon of weapons) {
-				weapon.system.fillWithNameableKeys(m, existing)
-			}
+		for (const attack of attacks) {
+			attack.fillWithNameableKeys(m, existing)
+		}
 	}
 
 	/** Calculates level, relative level, and relevant tooltip based on current state of
@@ -431,10 +432,11 @@ class SkillData extends ItemDataModel.mixin(
 }
 
 interface SkillData extends ModelPropsFromSchema<SkillSchema> {
-	get weapons(): MaybePromise<Collection<ItemInst<ItemType.WeaponMelee | ItemType.WeaponRanged>>>
+	// get weapons(): MaybePromise<Collection<ItemInst<ItemType.WeaponMelee | ItemType.WeaponRanged>>>
 }
 
-type SkillSchema = BasicInformationTemplateSchema &
+type SkillSchema = ActionTemplateSchema &
+	BasicInformationTemplateSchema &
 	PrereqTemplateSchema &
 	ContainerTemplateSchema &
 	FeatureTemplateSchema &

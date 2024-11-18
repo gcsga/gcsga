@@ -1,19 +1,23 @@
 import { ItemType } from "../constants.ts"
 import { FeatureSet } from "../feature/types.ts"
 import { ItemGURPS2 } from "@module/documents/item.ts"
-import { EquipmentFieldsTemplate } from "./templates/equipment-fields.ts"
 import { ItemTemplateType } from "./types.ts"
 import { MaybePromise } from "../types.ts"
 import { ItemInst } from "./helpers.ts"
 import { ItemDataModel } from "./abstract.ts"
-import { BasicInformationTemplate } from "./templates/basic-information.ts"
-import { ContainerTemplate } from "./templates/container.ts"
-import { FeatureTemplate } from "./templates/features.ts"
-import { PrereqTemplate } from "./templates/prereqs.ts"
-import { ReplacementTemplate } from "./templates/replacements.ts"
 import { Nameable } from "@module/util/nameable.ts"
+import {
+	ActionTemplate,
+	BasicInformationTemplate,
+	ContainerTemplate,
+	EquipmentFieldsTemplate,
+	FeatureTemplate,
+	PrereqTemplate,
+	ReplacementTemplate,
+} from "./templates/index.ts"
 
 class EquipmentContainerData extends ItemDataModel.mixin(
+	ActionTemplate,
 	BasicInformationTemplate,
 	PrereqTemplate,
 	FeatureTemplate,
@@ -23,7 +27,7 @@ class EquipmentContainerData extends ItemDataModel.mixin(
 ) {
 	static override childTypes = new Set([ItemType.Equipment, ItemType.EquipmentContainer])
 	static override modifierTypes = new Set([ItemType.EquipmentModifier, ItemType.EquipmentModifierContainer])
-	static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
+	// static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
 
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
 		context.detailsParts = ["gurps.details-equipment", "gurps.details-prereqs", "gurps.details-features"]
@@ -120,7 +124,7 @@ interface EquipmentContainerData {
 	get modifiers(): MaybePromise<
 		Collection<ItemInst<ItemType.EquipmentModifier | ItemType.EquipmentModifierContainer>>
 	>
-	get weapons(): MaybePromise<Collection<ItemInst<ItemType.WeaponMelee | ItemType.WeaponRanged>>>
+	// get weapons(): MaybePromise<Collection<ItemInst<ItemType.WeaponMelee | ItemType.WeaponRanged>>>
 }
 
 export { EquipmentContainerData }
