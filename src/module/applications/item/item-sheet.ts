@@ -736,20 +736,20 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 				type: this.item.type as ItemType,
 				level: 0,
 			})
-			context.weaponsMelee = await this._prepareItemEmbedList(
-				(await this.item.system.itemTypes)[ItemType.WeaponMelee],
-				{
-					type: this.item.type as ItemType,
-					level: 0,
-				},
-			)
-			context.weaponsRanged = await this._prepareItemEmbedList(
-				(await this.item.system.itemTypes)[ItemType.WeaponRanged],
-				{
-					type: this.item.type as ItemType,
-					level: 0,
-				},
-			)
+			// context.weaponsMelee = await this._prepareItemEmbedList(
+			// 	(await this.item.system.itemTypes)[ItemType.WeaponMelee],
+			// 	{
+			// 		type: this.item.type as ItemType,
+			// 		level: 0,
+			// 	},
+			// )
+			// context.weaponsRanged = await this._prepareItemEmbedList(
+			// 	(await this.item.system.itemTypes)[ItemType.WeaponRanged],
+			// 	{
+			// 		type: this.item.type as ItemType,
+			// 		level: 0,
+			// 	},
+			// )
 		}
 		return context
 	}

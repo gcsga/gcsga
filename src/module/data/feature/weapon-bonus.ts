@@ -3,12 +3,12 @@ import fields = foundry.data.fields
 import { BaseFeature, BaseFeatureSchema } from "./base-feature.ts"
 import { ItemType } from "@module/data/constants.ts"
 import { Nameable } from "@module/util/index.ts"
-import { AbstractWeaponTemplate } from "@module/data/item/templates/abstract-weapon.ts"
 import { NumericCriteriaField } from "../item/fields/numeric-criteria-field.ts"
 import { createButton, createDummyElement } from "@module/applications/helpers.ts"
 import { BooleanSelectField } from "../item/fields/boolean-select-field.ts"
 import { ActiveEffectGURPS } from "@module/documents/active-effect.ts"
 import { ReplaceableStringCriteriaField } from "../item/fields/replaceable-string-criteria-field.ts"
+import { BaseAttack } from "../action/base-attack.ts"
 
 class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 	declare dieCount: number
@@ -93,7 +93,7 @@ class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 		}
 	}
 
-	adjustedAmountForWeapon(wpn: AbstractWeaponTemplate): number {
+	adjustedAmountForWeapon(wpn: BaseAttack): number {
 		if (this.type === feature.Type.WeaponMinSTBonus) {
 			this.dieCount = 1
 		} else {

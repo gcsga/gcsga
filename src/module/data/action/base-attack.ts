@@ -1,32 +1,42 @@
-import { ItemDataModel } from "@module/data/item/abstract.ts"
+import { BaseAction, BaseActionSchema } from "./base-action.ts"
 import fields = foundry.data.fields
+import { WeaponDamage } from "./fields/weapon-damage.ts"
+import { WeaponStrength } from "./fields/weapon-strength.ts"
+import { ItemTemplateType } from "../item/types.ts"
 import { StringBuilder, TooltipGURPS, encumbrance, feature, skillsel, wsel, wswitch } from "@util"
-import { ItemTemplateType } from "../types.ts"
-import { ActorType, ItemType } from "@module/data/constants.ts"
-import { WeaponStrength } from "../fields/weapon-strength.ts"
-import { WeaponDamage } from "../fields/weapon-damage.ts"
-import { SkillDefault } from "@module/data/item/components/skill-default.ts"
-import { Feature } from "@module/data/feature/types.ts"
-import { WeaponBonus } from "@module/data/feature/index.ts"
-import { Nameable } from "@module/util/index.ts"
-import { ItemInst, ItemTemplateInst } from "../helpers.ts"
+import { SkillDefaultField } from "../item/fields/skill-default-field.ts"
+import { ActionType, ActorType, ItemType } from "../constants.ts"
+import { ReplaceableStringField } from "../fields/replaceable-string-field.ts"
+import { ItemInst, ItemTemplateInst } from "../item/helpers.ts"
+import { Feature } from "../feature/types.ts"
+import { WeaponBonus } from "../feature/weapon-bonus.ts"
+import { SkillDefault } from "../item/components/skill-default.ts"
+import { Nameable } from "@module/util/nameable.ts"
 
-class AbstractWeaponTemplate extends ItemDataModel<AbstractWeaponTemplateSchema> {
+class BaseAttack<TSchema extends BaseAttackSchema = BaseAttackSchema> extends BaseAction<TSchema> {
 	protected declare _weaponLevel: number
 
-	static override defineSchema(): AbstractWeaponTemplateSchema {
+	static override defineSchema(): BaseAttackSchema {
 		const fields = foundry.data.fields
+
 		return {
 			...super.defineSchema(),
+			notes: new ReplaceableStringField({
+				required: true,
+				nullable: false,
+				initial: "",
+				label: "GURPS.Item.BasicInformation.FIELDS.Notes.Name",
+			}),
 			strength: new fields.EmbeddedDataField(WeaponStrength),
 			damage: new fields.EmbeddedDataField(WeaponDamage),
 			// Is the weapon currently unready?
 			unready: new fields.BooleanField({ required: true, nullable: false, initial: false }),
+			defaults: new fields.ArrayField(new SkillDefaultField()),
 		}
 	}
 
 	protected get _processedNameForWeapon(): string {
-		const container = this.parent.container
+		const container = this.item
 		if (!(container instanceof Promise) && container !== null) {
 			if (container.hasTemplate(ItemTemplateType.BasicInformation)) return container.system.nameWithReplacements
 			return container.name
@@ -36,7 +46,7 @@ class AbstractWeaponTemplate extends ItemDataModel<AbstractWeaponTemplateSchema>
 
 	get processedNotes(): string {
 		const buffer = new StringBuilder()
-		const container = this.parent.container
+		const container = this.item
 		if (!(container instanceof Promise) && container !== null) {
 			if (container.hasTemplate(ItemTemplateType.BasicInformation)) buffer.push(container.system.processedNotes)
 		}
@@ -78,13 +88,13 @@ class AbstractWeaponTemplate extends ItemDataModel<AbstractWeaponTemplateSchema>
 	skillLevelBaseAdjustment(actor: this["actor"], tooltip: TooltipGURPS | null): number {
 		if (actor === null || !actor.isOfType(ActorType.Character)) return 0
 
-		const container = this.parent.container
+		const container = this.item
 		if (container instanceof Promise || container === null) return 0
 		const tags = container.hasTemplate(ItemTemplateType.BasicInformation) ? container.system.tags : []
 
 		let adj = 0
 		let minST = this.strength.resolve(this, null).min
-		if (!this.isOfType(ItemType.WeaponRanged) || (this.range.musclePowered && !this.usesCrossbowSkill)) {
+		if (!this.isOfType(ActionType.AttackRanged) || (this.range.musclePowered && !this.usesCrossbowSkill)) {
 			minST -= actor.system.strikingStrength
 		} else {
 			minST -= actor.system.liftingStrength
@@ -178,8 +188,8 @@ class AbstractWeaponTemplate extends ItemDataModel<AbstractWeaponTemplateSchema>
 		const actor = this.actor
 		if (actor === null || !actor.isOfType(ActorType.Character)) return []
 		// HACK: to remove if this requires proper async support
-		if (this.parent.container === null || this.parent.container instanceof Promise) return []
-		const parent = this.parent.container
+		if (this.item === null || this.item instanceof Promise) return []
+		const parent = this.item
 
 		const allowed = new Set(allowedFeatureTypes)
 		let bestDef: SkillDefault | null = null
@@ -250,11 +260,11 @@ class AbstractWeaponTemplate extends ItemDataModel<AbstractWeaponTemplateSchema>
 	): void {
 		let tags: string[] = []
 		if (
-			this.parent.container !== null &&
-			!(this.parent.container instanceof Promise) &&
-			this.parent.container.hasTemplate(ItemTemplateType.BasicInformation)
+			this.item !== null &&
+			!(this.item instanceof Promise) &&
+			this.item.hasTemplate(ItemTemplateType.BasicInformation)
 		)
-			tags = this.parent.container.system.tags
+			tags = this.item.system.tags
 
 		if (allowedFeatureTypes.has(f.type)) {
 			if (f.isOfType(...feature.WeaponBonusTypes)) {
@@ -297,44 +307,46 @@ class AbstractWeaponTemplate extends ItemDataModel<AbstractWeaponTemplateSchema>
 	}
 
 	get nameableReplacements(): Map<string, string> {
-		const container = this.parent.container
+		const container = this.item
 		if (!(container instanceof Promise)) {
 			if (container?.hasTemplate(ItemTemplateType.Replacement)) return container.system.nameableReplacements
 		}
 		return new Map<string, string>()
 	}
 
+	/** Namebales */
+	protected _fillWithNameableKeysFromDefaults(m: Map<string, string>, existing: Map<string, string>): void {
+		for (const feature of this.defaults) {
+			feature.fillWithNameableKeys(m, existing)
+		}
+	}
+
 	/** Replacements */
 	get usageWithReplacements(): string {
-		if (!this.hasTemplate(ItemTemplateType.BasicInformation)) return ""
-		return Nameable.apply(this.parent.name, this.nameableReplacements)
+		return Nameable.apply(this.name, this.nameableReplacements)
 	}
 
 	get usageNotesWithReplacements(): string {
-		if (!this.hasTemplate(ItemTemplateType.BasicInformation)) return ""
 		return Nameable.apply(this.notes, this.nameableReplacements)
 	}
 
 	override prepareBaseData(): void {
 		super.prepareBaseData()
-		const container = this.parent.container
+		const container = this.item
 		if (!(container instanceof Promise) && container?.hasTemplate(ItemTemplateType.Replacement)) {
 			container.system.prepareNameableKeys()
 		}
 	}
 }
 
-interface AbstractWeaponTemplate extends ModelPropsFromSchema<AbstractWeaponTemplateSchema> {
-	constructor: typeof AbstractWeaponTemplate
-	notes: string
-	tags: string[]
-	defaults: SkillDefault[]
-}
+interface BaseAttack extends ModelPropsFromSchema<BaseAttackSchema> {}
 
-type AbstractWeaponTemplateSchema = {
+type BaseAttackSchema = BaseActionSchema & {
+	notes: ReplaceableStringField<string, string, true, false, true>
 	strength: fields.EmbeddedDataField<WeaponStrength>
 	damage: fields.EmbeddedDataField<WeaponDamage>
 	unready: fields.BooleanField<boolean, boolean>
+	defaults: fields.ArrayField<SkillDefaultField>
 }
 
-export { AbstractWeaponTemplate, type AbstractWeaponTemplateSchema }
+export { BaseAttack, type BaseAttackSchema }

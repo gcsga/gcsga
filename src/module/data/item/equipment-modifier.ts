@@ -93,7 +93,6 @@ class EquipmentModifierData extends ItemDataModel.mixin(
 		source?: Partial<SourceFromSchema<EquipmentModifierSchema>> & Record<string, unknown>,
 		options?: Record<string, unknown>,
 	): SourceFromSchema<EquipmentModifierSchema> {
-		console.log(source, options)
 		if (source) {
 			if (source.cost_type) {
 				source.cost = emcost.Type.format(source.cost_type, source.cost ?? "0")
@@ -104,11 +103,6 @@ class EquipmentModifierData extends ItemDataModel.mixin(
 		}
 
 		return super.cleanData(source, options) as SourceFromSchema<EquipmentModifierSchema>
-	}
-
-	// Returns the formatted name for display
-	get processedName(): string {
-		return this.nameWithReplacements
 	}
 
 	get enabled(): boolean {

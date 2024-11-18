@@ -49,6 +49,10 @@ class BasicInformationTemplate extends ItemDataModel<BasicInformationTemplateSch
 		return this.tags.join(", ")
 	}
 
+	get processedName(): string {
+		return this.nameWithReplacements
+	}
+
 	get processedNotes(): string {
 		return replaceAllStringFunc(EvalEmbeddedRegex, this.notesWithReplacements, this.actor)
 	}

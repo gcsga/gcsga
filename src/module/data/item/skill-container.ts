@@ -61,10 +61,6 @@ class SkillContainerData extends ItemDataModel.mixin(BasicInformationTemplate, C
 		}
 	}
 
-	get processedName(): string {
-		return this.nameWithReplacements
-	}
-
 	secondaryText(optionChecker: (option: display.Option) => boolean): string {
 		const buffer = new StringBuilder()
 		const settings = SheetSettings.for(this.parent.actor)

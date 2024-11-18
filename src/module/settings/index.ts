@@ -95,8 +95,17 @@ export function registerSystemSettings(): void {
 		default: SSRT_SETTING.STANDARD,
 	})
 
+	game.settings.register(SYSTEM_NAME, SETTINGS.BUCKET_3D6_ICON, {
+		name: "GURPS.Settings.BucektIcon.Name",
+		hint: "GURPS.Settings.BucektIcon.Hint",
+		scope: "client",
+		config: true,
+		type: new foundry.data.fields.FilePathField({ nullable: false, categories: ["IMAGE"] }),
+		default: `/systems/${SYSTEM_NAME}/images/3d6.webp`,
+	})
+
 	// game.settings.registerMenu(SYSTEM_NAME, SETTINGS.DEFAULT_ATTRIBUTES, {
-	// 	name: "gurps.settings.default_attributes.name",
+	// 	name: "",
 	// 	label: "gurps.settings.default_attributes.label",
 	// 	hint: "gurps.settings.default_attributes.hint",
 	// 	icon: "gcs-attribute",

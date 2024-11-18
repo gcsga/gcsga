@@ -23,10 +23,6 @@ class EquipmentModifierContainerData extends ItemDataModel.mixin(
 		return this.mergeSchema(super.defineSchema(), {}) as EquipmentModifierContainerSchema
 	}
 
-	get processedName(): string {
-		return this.nameWithReplacements
-	}
-
 	override cellData(_options: { hash: CellDataOptions } = { hash: {} }): Record<string, CellData> {
 		return {
 			enabled: new CellData({

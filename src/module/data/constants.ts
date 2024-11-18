@@ -25,6 +25,9 @@ enum SETTINGS {
 	// QOL
 	AUTOMATIC_UNREADY = "automatic_unready",
 
+	// Modifeir Bucekt
+	BUCKET_3D6_ICON = "bucket_3d6_icon",
+
 	// Token View
 	MANEUVER_DETAIL = "maneuver_detail",
 	SHOW_TOKEN_MODIFIERS = "enable_token_modifier_window",
@@ -121,6 +124,15 @@ const ItemTypes = [
 	ItemType.WeaponRanged,
 ]
 
+enum ActionType {
+	AttackMelee = "attackMelee",
+	AttackRanged = "attackRanged",
+	Heal = "heal",
+	Utility = "utility",
+}
+
+const ActionTypes = [ActionType.AttackMelee, ActionType.AttackRanged, ActionType.Heal, ActionType.Utility]
+
 // type ItemTypes =
 // 	| ItemType.Trait
 // 	| ItemType.TraitContainer
@@ -146,9 +158,9 @@ const ItemTypes = [
 
 // type EffectType = ItemType.Effect | ItemType.Condition
 
-type WeaponType = ItemType.WeaponMelee | ItemType.WeaponRanged
+// type WeaponType = ItemType.WeaponMelee | ItemType.WeaponRanged
 
-const DefaultHaver = [ItemType.Skill, ItemType.Technique, ItemType.WeaponMelee, ItemType.WeaponRanged]
+// const DefaultHaver = [ItemType.Skill, ItemType.Technique, ItemType.WeaponMelee, ItemType.WeaponRanged]
 
 // const ABSTRACT_CONTAINER_TYPES = new Set([
 // 	ItemType.Trait,
@@ -462,6 +474,8 @@ const SORTABLE_BASE_OPTIONS: Sortable.Options = {
 // ]
 
 export {
+	ActionType,
+	ActionTypes,
 	// ABSTRACT_CONTAINER_TYPES,
 	ActorFlags,
 	ActorType,
@@ -469,13 +483,14 @@ export {
 	// CONTAINER_TYPES,
 	ConditionID,
 	DEFAULT_INITIATIVE_FORMULA,
-	DefaultHaver,
+	// DefaultHaver,
 	EFFECT_ACTION,
 	EffectType,
 	GURPS_COMMANDS,
 	HOOKS,
 	ItemFlags,
 	ItemType,
+	ItemTypes,
 	MANEUVER_DETAIL_SETTING,
 	ManeuverID,
 	RollModifierTags,
@@ -486,8 +501,7 @@ export {
 	SSRT_SETTING,
 	SYSTEM_NAME,
 	gid,
-	ItemTypes,
 }
 
 // export type { EffectTypes, ItemTypes, WeaponType }
-export type { EffectTypes, WeaponType }
+export type { EffectTypes }

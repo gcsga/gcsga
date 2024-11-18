@@ -161,7 +161,7 @@ class TraitModifierData extends ItemDataModel.mixin(BasicInformationTemplate, Fe
 	}
 
 	// Returns the formatted name for display
-	get processedName(): string {
+	override get processedName(): string {
 		const buffer = new StringBuilder()
 		buffer.push(this.nameWithReplacements)
 		if (this.isLeveled) {

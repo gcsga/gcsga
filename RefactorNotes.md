@@ -6,10 +6,13 @@
 
 ## Current Tasks
 
-- Separate Features, Prereqs, etc into their own subsections like inventory
-- Add Effects Tab to Item Sheet
-- Add Effect Sheet
-- Add Effect system fields
+- Create activity
+- Move attacks to activity (reasoning: they don't need to be items and don't directly go on a character, and can't contain other items)
+- Activity Types
+  - Melee Weapon
+  - Ranged Weapon
+  - Utility (temporary status effects)
+  - Healing
 
 ## Left To Do
 
@@ -47,6 +50,11 @@
   - Data Models
 - Conditions (from compendium ?) showing in token status
 - Quench tests
+- Active Effects (& Activities?)
+  - Needs consultation
+  - Add Effects Tab to Item Sheet
+  - Add Effect Sheet
+  - Add Effect system fields
 
 ## Done
 

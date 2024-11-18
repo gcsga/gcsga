@@ -108,6 +108,10 @@ class WeaponMeleeData extends ItemDataModel.mixin(
 		return data
 	}
 
+	override get processedName(): string {
+		return this._processedNameForWeapon
+	}
+
 	/** Nameables */
 	fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string>): void {
 		Nameable.extract(this.parent.name, m, existing)

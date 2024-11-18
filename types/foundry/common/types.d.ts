@@ -1,4 +1,5 @@
 import type { DataModel, Document } from "./abstract/module.d.ts"
+import { DataField } from "./data/fields.js"
 
 declare global {
 	interface DocumentConstructionContext<TParent extends Document | null>
@@ -50,6 +51,7 @@ declare global {
 			| ArrayConstructor
 			| ConstructorOf<DataModel>
 			| Function
+			| DataField
 		/** For string Types, defines the allowable values */
 		choices?: TChoices
 		/** For numeric Types, defines the allowable range */

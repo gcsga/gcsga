@@ -217,7 +217,7 @@ class TraitData extends ItemDataModel.mixin(
 		return costAdjustedForModifiers(this.parent as ItemInst<ItemType.Trait>, await this.allModifiers)
 	}
 
-	get processedName(): string {
+	override get processedName(): string {
 		const buffer = new StringBuilder()
 		buffer.push(this.nameWithReplacements)
 		if (this.can_level) {

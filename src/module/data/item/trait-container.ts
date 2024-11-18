@@ -118,10 +118,6 @@ class TraitContainerData extends ItemDataModel.mixin(
 		}
 	}
 
-	get processedName(): string {
-		return this.nameWithReplacements
-	}
-
 	get enabled(): boolean {
 		const container = this.parent.container as ItemGURPS2 | null
 		return !this.disabled && container?.isOfType(ItemType.TraitContainer) ? container.system.enabled : true
