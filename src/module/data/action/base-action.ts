@@ -14,7 +14,10 @@ abstract class BaseAction<TSchema extends BaseActionSchema = BaseActionSchema> e
 	ItemDataModel,
 	TSchema
 > {
-	static override metadata: ActionMetadata
+	static override metadata: ActionMetadata = {
+		...super.metadata,
+		img: "icons/svg/item-bag.svg",
+	}
 
 	static override defineSchema(): BaseActionSchema {
 		const fields = foundry.data.fields

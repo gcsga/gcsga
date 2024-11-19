@@ -8,7 +8,7 @@ import { SYSTEM_NAME } from "./constants.ts"
 type PseudoDocumentMetaData = {
 	name: string
 	type: string
-	img: string
+	img: FilePath
 	title: string
 	sheetClass: ConstructorOf<foundry.applications.api.DocumentSheetV2>
 }
@@ -42,7 +42,7 @@ class PseudoDocument<
 			img: new fields.FilePathField({
 				required: true,
 				nullable: false,
-				initial: undefined,
+				initial: () => this.metadata.img,
 				categories: ["IMAGE"],
 			}),
 			sort: new fields.IntegerSortField(),
@@ -298,6 +298,17 @@ class PseudoDocument<
 			},
 		})) as TDocument | null
 	}
+
+	/* -------------------------------------------- */
+	/*  Socket Event Handlers                       */
+	/* -------------------------------------------- */
+
+	/**
+	 * Perform preliminary operations before an Activity is created.
+	 * @param {object} _data     The initial data object provided to the document creation request.
+	 * @returns {boolean|void}  A return value of false indicates the creation operation should be cancelled.
+	 */
+	preCreate(_data: object): boolean | void {} // NOTE: not protected because it actually has to be accessed from its parent item
 
 	/** Prepare data related to this DataModel itself, before any derived data is computed. */
 	prepareBaseData(): void {}

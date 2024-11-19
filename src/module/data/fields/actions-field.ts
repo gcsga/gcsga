@@ -92,6 +92,12 @@ class ActionCollection extends Collection<Action> {
 
 	/* -------------------------------------------- */
 
+	get model(): ConstructorOf<foundry.abstract.DataModel> {
+		return this.#model
+	}
+
+	/* -------------------------------------------- */
+
 	override set(key: string, value: Action) {
 		if (!this.#types.has(value.type)) this.#types.set(value.type, new Set())
 		this.#types.get(value.type)?.add(key)

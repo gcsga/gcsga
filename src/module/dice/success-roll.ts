@@ -1,10 +1,13 @@
-import { ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
+import { ActionType, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
 import { BaseRollGURPS, BaseRollOptions } from "./base-roll.ts"
 import { ItemGURPS2 } from "@module/documents/item.ts"
 import { selfctrl } from "@util"
 import { SkillDefaultSchema } from "@module/data/item/components/skill-default.ts"
 import { ActorGURPS2 } from "@module/documents/actor.ts"
 import { ActorTemplateType } from "@module/data/actor/types.ts"
+import { WeaponROFSchema } from "@module/data/action/fields/weapon-rof.ts"
+import { WeaponRecoilSchema } from "@module/data/action/fields/weapon-recoil.ts"
+import { ItemTemplateType } from "@module/data/item/types.ts"
 
 class SuccessRoll extends BaseRollGURPS {
 	static override CHAT_TEMPLATE = `systems/${SYSTEM_NAME}/templates/roll/success-roll.hbs`
@@ -71,12 +74,17 @@ class SuccessRoll extends BaseRollGURPS {
 			return attributeLevel
 		}
 		switch (true) {
+			case !!options.action: {
+				if (options.action.type === ActionType.AttackMelee || options.action.type === ActionType.AttackRanged)
+					return options.action.level
+				return 0
+			}
 			case item.isOfType(ItemType.Trait):
 				return item.system.cr
 			case item.isOfType(ItemType.Skill, ItemType.Technique, ItemType.Spell, ItemType.RitualMagicSpell):
 				return item.system.level.level
-			case item.isOfType(ItemType.WeaponMelee, ItemType.WeaponRanged):
-				return item.system.level
+			// case item.isOfType(ItemType.WeaponMelee, ItemType.WeaponRanged):
+			// 	return item.system.level
 		}
 		return 0
 	}
@@ -101,6 +109,24 @@ class SuccessRoll extends BaseRollGURPS {
 			return data
 		}
 		switch (true) {
+			case !!options.action:
+				{
+					if (!item.hasTemplate(ItemTemplateType.Action)) break
+					const action = item.system.actions.get(options.action.id) ?? null
+					if (action === null) break
+					if (action.isOfType(ActionType.AttackMelee, ActionType.AttackRanged)) {
+						// TODO: check if this is correct
+						data.name = item.hasTemplate(ItemTemplateType.BasicInformation) ? item.system.processedName : ""
+						data.usage = action.processedName
+						data.defaults = action.defaults
+						data.damage = action.damage.resolvedValue(null)
+						if (action.isOfType(ActionType.AttackRanged)) {
+							data.rof = action.rate_of_fire.toObject()
+							data.recoil = action.recoil.toObject()
+						}
+					}
+				}
+				break
 			case item.isOfType(ItemType.Trait): {
 				data.name = item.system.nameWithReplacements
 				data.cr = item.system.cr
@@ -114,18 +140,18 @@ class SuccessRoll extends BaseRollGURPS {
 			}
 			case item.isOfType(ItemType.Spell, ItemType.RitualMagicSpell): {
 				data.name = item.system.nameWithReplacements
-				break
+				// break
 			}
-			case item.isOfType(ItemType.WeaponMelee, ItemType.WeaponRanged): {
-				data.name = item.system.processedName
-				data.usage = item.system.usageWithReplacements
-				data.defaults = item.system.defaults
-				data.damage = item.system.damage.resolvedValue(null)
-				if (item.isOfType(ItemType.WeaponRanged)) {
-					data.ROF = item.system.rate_of_fire.toObject()
-					data.recoil = item.system.recoil.toObject()
-				}
-			}
+			// case item.isOfType(ItemType.WeaponMelee, ItemType.WeaponRanged): {
+			// 	data.name = item.system.processedName
+			// 	data.usage = item.system.usageWithReplacements
+			// 	data.defaults = item.system.defaults
+			// 	data.damage = item.system.damage.resolvedValue(null)
+			// 	if (item.isOfType(ItemType.WeaponRanged)) {
+			// 		data.ROF = item.system.rate_of_fire.toObject()
+			// 		data.recoil = item.system.recoil.toObject()
+			// 	}
+			// }
 		}
 		return data
 	}
@@ -177,6 +203,12 @@ type SuccessRollOptions = BaseRollOptions & {
 		name?: string
 		specialization?: string
 	}
+	action?: {
+		type: ActionType
+		id: string
+		level: number
+		name?: string
+	}
 }
 
 type RollItemData =
@@ -186,7 +218,7 @@ type RollItemData =
 	| AttributeRollItemData
 	| OtherRollItemData
 
-type BaseRollItemData<TType extends ItemType | "attribute"> = {
+type BaseRollItemData<TType extends ItemType | ActionType | "attribute"> = {
 	type: TType
 	uuid: ItemUUID | string
 }
@@ -202,7 +234,7 @@ type SkillRollItemData = BaseRollItemData<ItemType.Skill | ItemType.Technique> &
 	defaults: SourceFromSchema<SkillDefaultSchema>[]
 }
 
-type WeaponRollItemData = BaseRollItemData<ItemType.WeaponMelee | ItemType.WeaponRanged> & {
+type WeaponRollItemData = BaseRollItemData<ActionType.AttackMelee | ActionType.AttackRanged> & {
 	name: string
 	usage: string
 	damage: string

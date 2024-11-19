@@ -1,15 +1,21 @@
-import { ItemType } from "@module/data/constants.ts"
 import { ItemGURPS2 } from "@module/documents/item.ts"
 import { SuccessRoll, SuccessRollOptions } from "./success-roll.ts"
+import { ActionType } from "@module/data/constants.ts"
+import { ItemTemplateType } from "@module/data/item/types.ts"
 
 class ParryRoll extends SuccessRoll {
 	protected override _getTargetFromItem(options: SuccessRollOptions): number {
-		if (!options.item) return 0
+		if (!options.item || !options.action) return 0
+		if (!options.action) return 0
 		const item = fromUuid(options.item.uuid)
 		if (!(item instanceof ItemGURPS2)) return 0
-		if (!item.isOfType(ItemType.WeaponMelee)) return 0
+		if (!item.hasTemplate(ItemTemplateType.Action)) return 0
 
-		return item.system.parry.resolve(item.system, null).modifier
+		const action = item.system.actions.get(options.action.id) ?? null
+		if (action === null) return 0
+		if (!action.isOfType(ActionType.AttackMelee)) return 0
+
+		return action.parry.resolve(action, null).modifier
 	}
 }
 

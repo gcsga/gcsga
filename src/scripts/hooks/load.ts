@@ -125,8 +125,8 @@ export const Load = {
 			// [ItemType.LegacyItem]: "gcs-equipment",
 			// [ItemType.Effect]: "gcs-effect",
 			// [ItemType.Condition]: "gcs-condition",
-			[ItemType.WeaponMelee]: "gcs-melee-weapon",
-			[ItemType.WeaponRanged]: "gcs-ranged-weapon",
+			// [ItemType.WeaponMelee]: "gcs-melee-weapon",
+			// [ItemType.WeaponRanged]: "gcs-ranged-weapon",
 		}
 
 		// Make available immediately on load for module subclassing

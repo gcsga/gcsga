@@ -7,6 +7,8 @@ import { ItemGURPS2 } from "./item.ts"
 import { type TokenDocumentGURPS } from "./token.ts"
 import { ActorDataModel } from "@module/data/actor/abstract.ts"
 import { ActorSystemFlags } from "./actor-system-flags.ts"
+import { AttackMelee } from "@module/data/action/attack-melee.ts"
+import { AttackRanged } from "@module/data/action/attack-ranged.ts"
 
 class ActorGURPS2<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null> extends Actor<TParent> {
 	declare items: foundry.abstract.EmbeddedCollection<ItemGURPS2<this>>
@@ -177,6 +179,14 @@ class ActorGURPS2<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS
 
 	// Map of item collections
 	declare itemCollections: ItemCollectionsMap<this>
+
+	/* -------------------------------------------- */
+
+	declare meleeWeapons: AttackMelee[]
+
+	/* -------------------------------------------- */
+
+	declare rangedWeapons: AttackRanged[]
 
 	/* -------------------------------------------- */
 

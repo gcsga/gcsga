@@ -320,13 +320,13 @@ function evalWeaponDamage(e: Evaluator, args: string): string {
 	const name = evalToString(e, trimS(arg, `"`))
 	;[arg] = nextArg(args)
 	const usage = evalToString(e, trimS(arg, `"`))
-	for (const w of actor.parent.itemCollections.meleeWeapons) {
-		if (equalFold(w.system.processedName, name) && equalFold(w.system.usageWithReplacements, usage))
-			return w.system.damage.resolvedValue(null)
+	for (const w of actor.parent.meleeWeapons) {
+		if (equalFold(w.processedName, name) && equalFold(w.usageWithReplacements, usage))
+			return w.damage.resolvedValue(null)
 	}
-	for (const w of actor.parent.itemCollections.rangedWeapons) {
-		if (equalFold(w.system.processedName, name) && equalFold(w.system.usageWithReplacements, usage))
-			return w.system.damage.resolvedValue(null)
+	for (const w of actor.parent.rangedWeapons) {
+		if (equalFold(w.processedName, name) && equalFold(w.usageWithReplacements, usage))
+			return w.damage.resolvedValue(null)
 	}
 	return ""
 }
