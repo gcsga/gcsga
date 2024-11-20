@@ -1,5 +1,5 @@
 <fieldset>
-	<legend>{{localize "GURPS.Item.WeaponMelee.DetailsLegend"}}</legend>
+	<legend>{{localize "GURPS.Action.AttackMelee.DetailsLegend"}}</legend>
 
 	<!-- Notes -->
 	{{formField fields.notes value=source.notes localize=true editable=editable replacements=replacements}}
@@ -10,7 +10,7 @@
 			<!-- Can Parry? -->
 			{{formInput fields.parry.fields.canParry value=source.parry.canParry editable=editable}}
 			<!-- Label -->
-			{{localize "GURPS.Item.WeaponMelee.FIELDS.Parry.Name"}}
+			{{localize "GURPS.Action.AttackMelee.FIELDS.Parry.Name"}}
 		</label>
 		<div class="form-fields">
 			<!-- Modifier -->
@@ -23,7 +23,7 @@
 				{{formInput fields.parry.fields.fencing value=source.parry.fencing disabled=(not
 				source.parry.canParry)}}
 				<!-- Label -->
-				{{localize "GURPS.Item.WeaponMelee.FIELDS.Parry.Fencing"}}
+				{{localize "GURPS.Action.AttackMelee.FIELDS.Parry.Fencing"}}
 			</label>
 			<!-- Unbalanced -->
 			<label>
@@ -31,7 +31,7 @@
 				{{formInput fields.parry.fields.unbalanced value=source.parry.unbalanced disabled=(not
 				source.parry.canParry)}}
 				<!-- Label -->
-				{{localize "GURPS.Item.WeaponMelee.FIELDS.Parry.Unbalanced"}}
+				{{localize "GURPS.Action.AttackMelee.FIELDS.Parry.Unbalanced"}}
 			</label>
 		</div>
 	</div>
@@ -44,7 +44,7 @@
 			<!-- Can Block? -->
 			{{formInput fields.block.fields.canBlock value=source.block.canBlock editable=editable}}
 			<!-- Label -->
-			{{localize "GURPS.Item.WeaponMelee.FIELDS.Block.Name"}}
+			{{localize "GURPS.Action.AttackMelee.FIELDS.Block.Name"}}
 		</label>
 		<div class="form-fields">
 			<!-- Modifier -->
@@ -55,11 +55,11 @@
 
 	<hr />
 
-	{{> "gurps.fields-weapon-damage"}}
+	{{> "gurps.fields-attack-damage"}}
 
 	<!-- Minimum ST -->
 	<div class="form-group">
-		<label>{{localize "GURPS.Item.Weapon.FIELDS.Strength.Name"}}</label>
+		<label>{{localize "GURPS.Action.BaseAttack.FIELDS.Strength.Name"}}</label>
 		<div class="form-fields">
 			{{formInput fields.strength.fields.min value=source.strength.min editable=editable}}
 
@@ -67,7 +67,7 @@
 				<!-- Two-Handed -->
 				{{formInput fields.strength.fields.twoHanded value=source.strength.twoHanded editable=editable}}
 				<!-- Label -->
-				{{localize "GURPS.Item.Weapon.FIELDS.Strength.TwoHanded"}}
+				{{localize "GURPS.Action.BaseAttack.FIELDS.Strength.TwoHanded"}}
 			</label>
 
 			<label>
@@ -75,7 +75,7 @@
 				{{formInput fields.strength.fields.twoHandedUnready value=source.strength.twoHandedUnready
 				editable=editable}}
 				<!-- Label -->
-				{{localize "GURPS.Item.Weapon.FIELDS.Strength.TwoHandedUnready"}}
+				{{localize "GURPS.Action.BaseAttack.FIELDS.Strength.TwoHandedUnready"}}
 			</label>
 		</div>
 	</div>

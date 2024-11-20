@@ -21,10 +21,6 @@
 	&.note_container {
 		--filter-header: hue-rotate(279deg) saturate(0.27) brightness(1.15);
 	}
-	&.melee_weapon,
-	&.ranged_weapon {
-		--filter-header: hue-rotate(194deg) saturate(1) brightness(0.81);
-	}
 }
 
 .gurps.active-effect.sheet {
@@ -33,8 +29,16 @@
 	}
 }
 
+.gurps.action.sheet {
+	&.attackMelee,
+	&.attackRanged {
+		--filter-header: hue-rotate(194deg) saturate(1) brightness(0.81);
+	}
+}
+
 .theme-light .gurps.item.sheet,
-.theme-light .gurps.active-effect.sheet {
+.theme-light .gurps.active-effect.sheet,
+.theme-light .gurps.action.sheet {
 	--background-color: var(--gurps-color-light-blue-1);
 	input,
 	select,
@@ -47,7 +51,8 @@
 }
 
 .gurps.item.sheet,
-.gurps.active-effect.sheet {
+.gurps.active-effect.sheet,
+.gurps.action.sheet {
 	--background-color: var(--gurps-color-dark-gray);
 	input,
 	select,
@@ -60,7 +65,8 @@
 }
 
 .gurps.item.sheet,
-.gurps.active-effect.sheet {
+.gurps.active-effect.sheet,
+.gurps.action.sheet {
 	@import "header";
 
 	min-width: 600px;
@@ -200,7 +206,8 @@
 }
 
 .gurps.item.sheet.minimized,
-.gurps.active-effect.sheet.minimized {
+.gurps.active-effect.sheet.minimized,
+.gurps.action.sheet.minimized {
 	min-width: unset;
 	> header.window-header {
 		// Make Window Icon and Title visible in minimized sheet

@@ -30,6 +30,12 @@
 		"ActiveEffect": {
 			"effect": "Effect",
 			"condition": "Condition"
+		},
+		"Action": {
+			"attackMelee": "Melee Attack",
+			"attackRanged": "Ranged Attack",
+			"utility": "Utility Action",
+			"heal": "Healing Action"
 		}
 	},
 	"GURPS": {
@@ -68,6 +74,85 @@
 				"Modifier": { "Name": "Modifier" },
 				"Tags": { "Name": "Tags" },
 				"Cost": { "Name": "Cost", "Id": "Attribute ID", "Value": "Value" }
+			}
+		},
+		"Action": {
+			"AttackMelee": {
+				"DetailsLegend": "Melee Attack Details",
+				"FIELDS": {
+					"Parry": {
+						"Name": "Parry",
+						"Fencing": "Fencing",
+						"Unbalanced": "Unbalanced"
+					},
+					"Block": { "Name": "Block" }
+				}
+			},
+			"AttackRanged": {
+				"DetailsLegend": "Ranged Attack Details",
+				"FIELDS": {
+					"Accuracy": {
+						"Name": "Accuracy",
+						"Scope": "Scope",
+						"Jet": "Jet"
+					},
+					"Range": {
+						"Name": "Range",
+						"HalfDamage": "½ Damage",
+						"Minimum": "Minimum",
+						"MusclePowered": "Muscle-powered",
+						"InMiles": "Ranges are in miles"
+					},
+					"RateOfFire": {
+						"Name": "Rate of Fire",
+						"Mode1": "Mode 1",
+						"Mode2": "Mode 2",
+						"ShotsPerAttack": "per attack with",
+						"SecondaryProjectiles": "secondary projectiles",
+						"FullAutoOnly": "Fully Automatic Only",
+						"HighCyclicControlledBursts": "High-cyclic Controlled Bursts"
+					},
+					"Shots": {
+						"Name": "Shots",
+						"InChamber": "In Chamber",
+						"Duration": "Duratin",
+						"ReloadTime": "Reload Time",
+						"ReloadTimeIsPerShot": "In Chamber",
+						"Thrown": "Thrown Weapon"
+					},
+					"Bulk": {
+						"Name": "Bulk",
+						"Giant": "For Giants",
+						"RetractingStock": "Retracting Stock"
+					},
+					"Recoil": {
+						"Name": "Recoil",
+						"Slug": "For Slugs"
+					}
+				}
+			},
+			"BaseAttack": {
+				"FIELDS": {
+					"Strength": {
+						"Name": "Minimum ST",
+						"TwoHanded": "Two-handed",
+						"TwoHandedUnready": "Two-handed & unready",
+						"Bipod": "Has bipod",
+						"Mounted": "Mounted",
+						"MusketRest": "Uses a musket rest"
+					},
+					"Damage": {
+						"Name": "Damage",
+						"Leveled": "(leveled)",
+						"ModifierPerDie": "per die",
+						"ArmorDivisor": "Armor Divisor",
+						"Type": "Type",
+						"StMul": "Multiply ST used for sw or thr damage calculation by",
+						"Fragmentation": "Fragmentation",
+						"FragmentationArmorDivisor": "Armor Divisor",
+						"FragmentationType": "Type"
+					}
+				}
 			}
 		},
 		"Item": {
@@ -285,83 +370,6 @@
 				"FormattedLegend": "Markdown Preview",
 				"FIELDS": {
 					"Text": { "Name": "Notes" }
-				}
-			},
-			"Weapon": {
-				"FIELDS": {
-					"Strength": {
-						"Name": "Minimum ST",
-						"TwoHanded": "Two-handed",
-						"TwoHandedUnready": "Two-handed & unready",
-						"Bipod": "Has bipod",
-						"Mounted": "Mounted",
-						"MusketRest": "Uses a musket rest"
-					},
-					"Damage": {
-						"Name": "Damage",
-						"Leveled": "(leveled)",
-						"ModifierPerDie": "per die",
-						"ArmorDivisor": "Armor Divisor",
-						"Type": "Type",
-						"StMul": "Multiply ST used for sw or thr damage calculation by",
-						"Fragmentation": "Fragmentation",
-						"FragmentationArmorDivisor": "Armor Divisor",
-						"FragmentationType": "Type"
-					}
-				}
-			},
-			"WeaponMelee": {
-				"DetailsLegend": "Melee Weapon Details",
-				"FIELDS": {
-					"Parry": {
-						"Name": "Parry",
-						"Fencing": "Fencing",
-						"Unbalanced": "Unbalanced"
-					},
-					"Block": { "Name": "Block" }
-				}
-			},
-			"WeaponRanged": {
-				"DetailsLegend": "Ranged Weapon Details",
-				"FIELDS": {
-					"Accuracy": {
-						"Name": "Accuracy",
-						"Scope": "Scope",
-						"Jet": "Jet"
-					},
-					"Range": {
-						"Name": "Range",
-						"HalfDamage": "½ Damage",
-						"Minimum": "Minimum",
-						"MusclePowered": "Muscle-powered",
-						"InMiles": "Ranges are in miles"
-					},
-					"RateOfFire": {
-						"Name": "Rate of Fire",
-						"Mode1": "Mode 1",
-						"Mode2": "Mode 2",
-						"ShotsPerAttack": "per attack with",
-						"SecondaryProjectiles": "secondary projectiles",
-						"FullAutoOnly": "Fully Automatic Only",
-						"HighCyclicControlledBursts": "High-cyclic Controlled Bursts"
-					},
-					"Shots": {
-						"Name": "Shots",
-						"InChamber": "In Chamber",
-						"Duration": "Duratin",
-						"ReloadTime": "Reload Time",
-						"ReloadTimeIsPerShot": "In Chamber",
-						"Thrown": "Thrown Weapon"
-					},
-					"Bulk": {
-						"Name": "Bulk",
-						"Giant": "For Giants",
-						"RetractingStock": "Retracting Stock"
-					},
-					"Recoil": {
-						"Name": "Recoil",
-						"Slug": "For Slugs"
-					}
 				}
 			},
 			"TraitModifier": {

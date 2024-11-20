@@ -1,0 +1,16 @@
+<li
+	class="item"
+	data-action-name="{{action.name}}"
+	data-action-id="{{action.id}}"
+	data-uuid="{{action.uuid}}"
+	draggable="false"
+>
+	<div class="item-row">
+		<!-- Cell Data -->
+		{{#each action.cells as |cell key|}} {{cell.element}} {{/each}}
+		<!-- Buttons -->
+		<div class="item-detail item-controls">
+			{{#each action.buttons as |button index|}} {{button.element}}{{/each}}
+		</div>
+	</div>
+</li>

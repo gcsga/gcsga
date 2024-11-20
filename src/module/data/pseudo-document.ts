@@ -5,15 +5,19 @@ import { ItemGURPS2 } from "@module/documents/item.ts"
 import { ErrorGURPS, htmlClosest, htmlQuery, htmlQueryAll } from "@util"
 import { SYSTEM_NAME } from "./constants.ts"
 
-type PseudoDocumentMetaData = {
-	name: string
-	type: string
-	img: FilePath
-	title: string
-	sheetClass: ConstructorOf<foundry.applications.api.DocumentSheetV2>
+type PseudoDocumentConfig = {
+	dataModels?: Record<string, typeof PseudoDocument>
 }
 
-class PseudoDocument<
+type PseudoDocumentMetaData = {
+	name: string
+	type?: string
+	img: FilePath
+	title: string
+	sheetClass: ConstructorOf<foundry.applications.api.ApplicationV2>
+}
+
+abstract class PseudoDocument<
 	TParent extends ItemDataModel = ItemDataModel,
 	TSchema extends PseudoDocumentSchema = PseudoDocumentSchema,
 > extends foundry.abstract.DataModel<TParent, TSchema> {
@@ -36,7 +40,7 @@ class PseudoDocument<
 				nullable: false,
 				blank: false,
 				readonly: false,
-				initial: () => this.metadata.type,
+				initial: () => this.metadata.type!,
 			}),
 			name: new fields.StringField({ required: true, nullable: false, initial: undefined }),
 			img: new fields.FilePathField({
@@ -54,7 +58,7 @@ class PseudoDocument<
 	/**
 	 * Existing sheets of a specific type for a specific document.
 	 */
-	protected static _sheets: Map<string, foundry.applications.api.DocumentSheetV2> = new Map()
+	static _sheets: Map<string, foundry.applications.api.ApplicationV2> = new Map()
 
 	/* -------------------------------------------- */
 	/*  Model Configuration                         */
@@ -69,11 +73,12 @@ class PseudoDocument<
 	/**
 	 * Configuration object that defines types.
 	 */
-	static get documentConfig(): Record<string, typeof PseudoDocument> {
-		return (CONFIG.GURPS as any)[`${this.documentName.toLowerCase()}Types`]
+	static get documentConfig(): PseudoDocumentConfig {
+		if (!(this.documentName in CONFIG.GURPS)) return {}
+		return (CONFIG.GURPS as any)[this.documentName]
 	}
 
-	get documentConfig() {
+	get documentConfig(): PseudoDocumentConfig {
 		return this.constructor.documentConfig
 	}
 
@@ -143,7 +148,7 @@ class PseudoDocument<
 	/**
 	 * Lazily obtain a ApplicationV2 instance used to configure this PseudoDocument, or null if no sheet is available.
 	 */
-	get sheet(): foundry.applications.api.DocumentSheetV2 | null {
+	get sheet(): foundry.applications.api.ApplicationV2 | null {
 		const cls = this.constructor.metadata.sheetClass
 		if (!cls) return null
 		if (!this.constructor._sheets.has(this.uuid)) {
@@ -161,8 +166,8 @@ class PseudoDocument<
 	 */
 	async update(updates: DeepPartial<this["_source"]>, options: object = {}): Promise<this> {
 		const functionName = `update${this.documentName}`
-		if (Object.hasOwn(this.item, functionName)) {
-			const result = await (this.item as any)[functionName](this.id, updates, options)
+		if (functionName in this.item.system) {
+			const result = await (this.item.system as any)[functionName](this.id, updates, options)
 			return result
 		}
 		throw ErrorGURPS(`Containing Item has no function "${functionName}"`)
@@ -190,8 +195,8 @@ class PseudoDocument<
 	 */
 	async delete(options: object = {}): Promise<PseudoDocument> {
 		const functionName = `delete${this.documentName}`
-		if (Object.hasOwn(this.item, functionName)) {
-			return await (this.item as any)[functionName](this.id, options)
+		if (functionName in this.item.system) {
+			return await (this.item.system as any)[functionName](this.id, options)
 		}
 		throw ErrorGURPS(`Containing Item has no function "${functionName}"`)
 	}
@@ -252,11 +257,11 @@ class PseudoDocument<
 			name: "",
 			type,
 			types: types.reduce((arr: object[], type) => {
-				const label = this.documentConfig[type]?.metadata.title
+				const label = this.documentConfig?.dataModels?.[type]?.metadata.title ?? ""
 				arr.push({
 					type,
 					label: game.i18n.has(label) ? game.i18n.localize(label) : type,
-					icon: this.documentConfig[type]?.metadata?.img,
+					icon: this.documentConfig?.dataModels?.[type]?.metadata?.img,
 				})
 				return arr
 			}, []),
@@ -292,11 +297,19 @@ class PseudoDocument<
 						const fd = new FormDataExtended(form)
 						const createData = foundry.utils.mergeObject(data, fd.object, { inplace: false })
 						if (!(createData.name as string | undefined)?.trim()) delete createData.name
-						;(parent as any)[`create${this.documentName}`](createData.type, createData)
+						;(parent as any).system[`create${this.documentName}`](createData.type, createData)
 					},
 				},
 			},
 		})) as TDocument | null
+	}
+
+	testUserPermission(
+		user: foundry.documents.BaseUser,
+		permission: DocumentOwnershipString | DocumentOwnershipLevel,
+		{ exact }: { exact?: boolean } = {},
+	): boolean {
+		return this.item.testUserPermission(user, permission, { exact })
 	}
 
 	/* -------------------------------------------- */
@@ -310,8 +323,12 @@ class PseudoDocument<
 	 */
 	preCreate(_data: object): boolean | void {} // NOTE: not protected because it actually has to be accessed from its parent item
 
+	/* -------------------------------------------- */
+
 	/** Prepare data related to this DataModel itself, before any derived data is computed. */
 	prepareBaseData(): void {}
+
+	/* -------------------------------------------- */
 
 	/**
 	 * Apply transformations of derivations to the values of the source data object.

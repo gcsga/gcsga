@@ -232,35 +232,6 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 
 	/* -------------------------------------------- */
 
-	// #onMoveItem(event: Sortable.MoveEvent): boolean {
-	// 	// Won't work for items in compendiums
-	// 	if (this.item.pack) return false
-	//
-	// 	const isSeparateSheet = htmlClosest(event.target, "form") !== htmlClosest(event.related, "form")
-	// 	if (!this.isEditable || isSeparateSheet) return false
-	//
-	// 	const contents = (this.item as ItemTemplateInst<ItemTemplateType.Container>).system
-	// 		.allContents as Collection<ItemGURPS2>
-	// 	const sourceItem = contents.get(event.dragged?.dataset.itemId, { strict: true })
-	//
-	// 	const containerRows = this.element.querySelectorAll("li[data-is-container] > .item-row")
-	// 	for (const row of containerRows) {
-	// 		row.classList.remove("drop-highlight")
-	// 	}
-	//
-	// 	const targetSection = htmlClosest(event.related, ".items-section[data-types]")?.dataset.types?.split(",") ?? []
-	// 	if (targetSection.length === 0) return false
-	// 	if (targetSection.includes(sourceItem.type)) return true
-	//
-	// 	return false
-	// }
-	//
-	// /* -------------------------------------------- */
-	//
-	// async #onDropItem(_event: Sortable.SortableEvent & { originalEvent?: DragEvent }): Promise<void> { }
-
-	/* -------------------------------------------- */
-
 	protected async _onDropActiveEffect(_event: DragEvent, data: object) {
 		const effect = await ActiveEffectGURPS.fromDropData(data)
 		if (!this.item.isOwner || !effect || this.item.uuid === effect.parent?.uuid || this.item.uuid === effect.origin)
@@ -767,7 +738,6 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		const list: ItemCell[] = []
 		let i = 0
 		for (const item of await embeds) {
-			console.log(item)
 			const listItem: ItemCell = {
 				name: item.name,
 				id: item.id,
@@ -777,7 +747,6 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 				cells: item.cellData(),
 				buttons: item.sheetButtons,
 			}
-			console.log(listItem)
 			list.push(listItem)
 			i += 1
 		}

@@ -2,11 +2,12 @@ import fields = foundry.data.fields
 import { PseudoDocument, PseudoDocumentMetaData, PseudoDocumentSchema } from "../pseudo-document.ts"
 import { ItemDataModel } from "../item/abstract.ts"
 import { AppliedEffectField } from "./fields/applied-effect-field.ts"
-import { ActionType } from "../constants.ts"
+import { ActionType, DOCUMENTS } from "../constants.ts"
 import { ActionInstances } from "./types.ts"
 import { ErrorGURPS } from "@util"
 import { CellDataOptions, CellData } from "../item/components/cell-data.ts"
 import { SheetButton } from "../item/components/sheet-button.ts"
+import { ActionSheetGURPS } from "@module/applications/action/action-sheet.ts"
 
 type ActionMetadata = PseudoDocumentMetaData
 
@@ -14,10 +15,12 @@ abstract class BaseAction<TSchema extends BaseActionSchema = BaseActionSchema> e
 	ItemDataModel,
 	TSchema
 > {
-	static override metadata: ActionMetadata = {
+	static override metadata: ActionMetadata = Object.freeze({
 		...super.metadata,
+		name: DOCUMENTS.ACTION,
 		img: "icons/svg/item-bag.svg",
-	}
+		sheetClass: ActionSheetGURPS,
+	})
 
 	static override defineSchema(): BaseActionSchema {
 		const fields = foundry.data.fields
@@ -34,8 +37,12 @@ abstract class BaseAction<TSchema extends BaseActionSchema = BaseActionSchema> e
 
 	/* -------------------------------------------- */
 
+	async getSheetData(_context: Record<string, unknown>): Promise<void> {}
+
+	/* -------------------------------------------- */
+
 	cellData(_options: CellDataOptions = {}): Record<string, CellData> {
-		throw ErrorGURPS(`Action#cellData must be implemented.`)
+		throw ErrorGURPS(`${DOCUMENTS.ACTION}#cellData must be implemented.`)
 	}
 
 	/* -------------------------------------------- */

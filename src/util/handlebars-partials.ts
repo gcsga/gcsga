@@ -5,7 +5,7 @@ export async function preloadHandlebarsTemplates(): Promise<void> {
 		// Shared Partials
 		`systems/${SYSTEM_NAME}/templates/shared/list-roll-modifiers.hbs`,
 
-		// Item Detsils Partials
+		// Item Details Partials
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-container.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-defaults.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-equipment-modifier.hbs`,
@@ -21,12 +21,10 @@ export async function preloadHandlebarsTemplates(): Promise<void> {
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-trait-container.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-trait-modifier.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-trait.hbs`,
-		`systems/${SYSTEM_NAME}/templates/items/parts/details-weapon-melee.hbs`,
-		`systems/${SYSTEM_NAME}/templates/items/parts/details-weapon-ranged.hbs`,
-		`systems/${SYSTEM_NAME}/templates/items/parts/fields-weapon-damage.hbs`,
 
 		// Item Embeds Partials
 		`systems/${SYSTEM_NAME}/templates/items/parts/embeds-effect.hbs`,
+		`systems/${SYSTEM_NAME}/templates/items/parts/embeds-action.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/embeds-entry.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/embeds-equipment-modifier.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/embeds-equipment.hbs`,
@@ -38,6 +36,11 @@ export async function preloadHandlebarsTemplates(): Promise<void> {
 		`systems/${SYSTEM_NAME}/templates/items/parts/embeds-weapon-melee.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/embeds-weapon-ranged.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/embeds-weapon-ranged.hbs`,
+
+		// Action Details Partials
+		`systems/${SYSTEM_NAME}/templates/actions/parts/details-attack-melee.hbs`,
+		`systems/${SYSTEM_NAME}/templates/actions/parts/details-attack-ranged.hbs`,
+		`systems/${SYSTEM_NAME}/templates/actions/parts/fields-attack-damage.hbs`,
 	]
 
 	const paths = <Record<string, string>>{}

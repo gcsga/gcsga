@@ -2,6 +2,10 @@ import Sortable from "sortablejs"
 
 const SYSTEM_NAME = "gcsga"
 
+enum DOCUMENTS {
+	ACTION = "Action",
+}
+
 enum COMPENDIA {
 	CONDITIONS = "conditions",
 	MANEUVERS = "maneuvers",
@@ -415,6 +419,7 @@ const GURPS_COMMANDS = (() => {
 enum HOOKS {
 	ADD_MODIFEIR = "addModifier",
 	DROP_ITEM_SHEET_DATA = "dropItemSheetData",
+	DROP_ACTION_SHEET_DATA = "dropActionSheetData",
 	GET_ITEM_CONTEXT_OPTIONS = "getItemContextOptions",
 	GET_ACTION_CONTEXT_OPTIONS = "getActionContextOptions",
 	GET_EFFECT_CONTEXT_OPTIONS = "getEffectContextOptions",
@@ -484,6 +489,7 @@ export {
 	// CONTAINER_TYPES,
 	ConditionID,
 	DEFAULT_INITIATIVE_FORMULA,
+	DOCUMENTS,
 	// DefaultHaver,
 	EFFECT_ACTION,
 	EffectType,

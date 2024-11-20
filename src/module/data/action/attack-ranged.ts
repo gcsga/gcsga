@@ -8,8 +8,24 @@ import { WeaponRange } from "./fields/weapon-range.ts"
 import { WeaponRecoil } from "./fields/weapon-recoil.ts"
 import { WeaponROF } from "./fields/weapon-rof.ts"
 import { WeaponShots } from "./fields/weapon-shots.ts"
+import { ActionType } from "../constants.ts"
+import { ActionMetadata } from "./base-action.ts"
 
 class AttackRanged extends BaseAttack<AttackRangedSchema> {
+	static override metadata: ActionMetadata = Object.freeze({
+		...super.metadata,
+		type: ActionType.AttackMelee,
+		title: "GURPS.Action.AttackRanged.Title",
+	})
+
+	/* -------------------------------------------- */
+
+	override async getSheetData(context: Record<string, unknown>): Promise<void> {
+		context.detailsParts = ["gurps.details-attack-ranged"]
+	}
+
+	/* -------------------------------------------- */
+
 	static override defineSchema(): AttackRangedSchema {
 		const fields = foundry.data.fields
 
@@ -23,6 +39,8 @@ class AttackRanged extends BaseAttack<AttackRangedSchema> {
 			recoil: new fields.EmbeddedDataField(WeaponRecoil),
 		}
 	}
+
+	/* -------------------------------------------- */
 
 	override cellData(_options: CellDataOptions = {}): Record<string, CellData> {
 		function addBuffer(tooltip: string, buffer: TooltipGURPS): string {

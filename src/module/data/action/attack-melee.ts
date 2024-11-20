@@ -7,16 +7,21 @@ import { TooltipGURPS } from "@util"
 import { ActionType, ItemTypes } from "../constants.ts"
 import { CellDataOptions, CellData } from "../item/components/cell-data.ts"
 import { ActionMetadata } from "./base-action.ts"
-import { ItemSheetGURPS } from "@module/applications/item/item-sheet.ts"
 
 class AttackMelee extends BaseAttack<AttackMeleeSchema> {
-	static override metadata: ActionMetadata = {
-		name: "Action",
+	static override metadata: ActionMetadata = Object.freeze({
+		...super.metadata,
 		type: ActionType.AttackMelee,
-		img: "icon/svg/item-bag.svg",
-		title: "test",
-		sheetClass: ItemSheetGURPS,
+		title: "GURPS.Action.AttackMelee.Title",
+	})
+
+	/* -------------------------------------------- */
+
+	override async getSheetData(context: Record<string, unknown>): Promise<void> {
+		context.detailsParts = ["gurps.details-attack-melee"]
 	}
+
+	/* -------------------------------------------- */
 
 	static override defineSchema(): AttackMeleeSchema {
 		const fields = foundry.data.fields
@@ -28,6 +33,8 @@ class AttackMelee extends BaseAttack<AttackMeleeSchema> {
 			block: new fields.EmbeddedDataField(WeaponBlock),
 		}
 	}
+
+	/* -------------------------------------------- */
 
 	override cellData(options: CellDataOptions = {}): Record<string, CellData> {
 		const { type } = options

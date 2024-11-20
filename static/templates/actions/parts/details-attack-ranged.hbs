@@ -1,17 +1,17 @@
 <fieldset>
-	<legend>{{localize "GURPS.Item.WeaponRanged.DetailsLegend"}}</legend>
+	<legend>{{localize "GURPS.Action.AttackRanged.DetailsLegend"}}</legend>
 
 	<!-- Notes -->
 	{{formField fields.notes value=source.notes localize=true editable=editable replacements=replacements}}
 
 	<!-- Accuracy -->
 	<div class="form-group">
-		<label>{{localize "GURPS.Item.WeaponRanged.FIELDS.Accuracy.Name"}}</label>
+		<label>{{localize "GURPS.Action.AttackRanged.FIELDS.Accuracy.Name"}}</label>
 		<div class="form-fields">
 			<!-- Base -->
 			{{formInput fields.accuracy.fields.base value=source.accuracy.base editable=editable}}
 
-			<label>{{localize "GURPS.Item.WeaponRanged.FIELDS.Accuracy.Scope"}}</label>
+			<label>{{localize "GURPS.Action.AttackRanged.FIELDS.Accuracy.Scope"}}</label>
 
 			<!-- Scope -->
 			{{formInput fields.accuracy.fields.scope value=source.accuracy.scope editable=editable}}
@@ -20,29 +20,29 @@
 				<!-- Jet -->
 				{{formInput fields.accuracy.fields.jet value=source.accuracy.jet editable=editable}}
 				<!-- Label -->
-				{{localize "GURPS.Item.WeaponRanged.FIELDS.Accuracy.Jet"}}
+				{{localize "GURPS.Action.AttackRanged.FIELDS.Accuracy.Jet"}}
 			</label>
 		</div>
 	</div>
 
 	<hr />
 
-	{{> "gurps.fields-weapon-damage"}}
+	{{> "gurps.fields-attack-damage"}}
 
 	<!-- Range -->
 	<div class="form-group">
-		<label>{{localize "GURPS.Item.WeaponRanged.FIELDS.Range.Name"}}</label>
+		<label>{{localize "GURPS.Action.AttackRanged.FIELDS.Range.Name"}}</label>
 		<div class="form-fields">
-			<label>{{localize "GURPS.Item.WeaponRanged.FIELDS.RateOfFire.Mode1"}}</label>
+			<label>{{localize "GURPS.Action.AttackRanged.FIELDS.RateOfFire.Mode1"}}</label>
 			<!-- Max -->
 			{{formInput fields.range.fields.max value=source.range.max editable=editable}}
 
-			<label>{{localize "GURPS.Item.WeaponRanged.FIELDS.Range.HalfDamage"}}</label>
+			<label>{{localize "GURPS.Action.AttackRanged.FIELDS.Range.HalfDamage"}}</label>
 
 			<!-- Half Damage -->
 			{{formInput fields.range.fields.halfDamage value=source.range.halfDamage editable=editable}}
 
-			<label>{{localize "GURPS.Item.WeaponRanged.FIELDS.Range.Minimum"}}</label>
+			<label>{{localize "GURPS.Action.AttackRanged.FIELDS.Range.Minimum"}}</label>
 
 			<!-- Half Damage -->
 			{{formInput fields.range.fields.min value=source.range.min editable=editable}}
@@ -55,14 +55,14 @@
 				<!-- Muscle Powered-->
 				{{formInput fields.range.fields.musclePowered value=source.range.musclePowered editable=editable}}
 				<!-- Label -->
-				{{localize "GURPS.Item.WeaponRanged.FIELDS.Range.MusclePowered"}}
+				{{localize "GURPS.Action.AttackRanged.FIELDS.Range.MusclePowered"}}
 			</label>
 
 			<label>
 				<!-- Muscle Powered-->
 				{{formInput fields.range.fields.inMiles value=source.range.inMiles editable=editable}}
 				<!-- Label -->
-				{{localize "GURPS.Item.WeaponRanged.FIELDS.Range.InMiles"}}
+				{{localize "GURPS.Action.AttackRanged.FIELDS.Range.InMiles"}}
 			</label>
 		</div>
 	</div>
@@ -71,14 +71,14 @@
 
 	<!-- Rate of Fire -->
 	<div class="form-group">
-		<label>{{localize "GURPS.Item.WeaponRanged.FIELDS.RateOfFire.Name"}}</label>
+		<label>{{localize "GURPS.Action.AttackRanged.FIELDS.RateOfFire.Name"}}</label>
 		<div class="form-fields">
-			<label>{{localize "GURPS.Item.WeaponRanged.FIELDS.RateOfFire.Mode1"}}</label>
+			<label>{{localize "GURPS.Action.AttackRanged.FIELDS.RateOfFire.Mode1"}}</label>
 			<!-- Shots Per Attack -->
 			{{formInput fields.rate_of_fire.fields.mode1.fields.shotsPerAttack
 			value=source.rate_of_fire.mode1.shotsPerAttack}}
 
-			<label>{{localize "GURPS.Item.WeaponRanged.FIELDS.RateOfFire.ShotsPerAttack"}}</label>
+			<label>{{localize "GURPS.Action.AttackRanged.FIELDS.RateOfFire.ShotsPerAttack"}}</label>
 
 			<!-- Shots Per Attack -->
 			{{formInput fields.rate_of_fire.fields.mode1.fields.secondaryProjectiles
@@ -93,7 +93,7 @@
 				{{formInput fields.rate_of_fire.fields.mode1.fields.fullAutoOnly
 				value=source.rate_of_fire.mode1.fullAutoOnly}}
 				<!-- Label -->
-				{{localize "GURPS.Item.WeaponRanged.FIELDS.RateOfFire.FullAutoOnly"}}
+				{{localize "GURPS.Action.AttackRanged.FIELDS.RateOfFire.FullAutoOnly"}}
 			</label>
 
 			<label>
@@ -101,19 +101,19 @@
 				{{formInput fields.rate_of_fire.fields.mode1.fields.highCyclicControlledBursts
 				value=source.rate_of_fire.mode1.highCyclicControlledBursts}}
 				<!-- Label -->
-				{{localize "GURPS.Item.WeaponRanged.FIELDS.RateOfFire.HighCyclicControlledBursts"}}
+				{{localize "GURPS.Action.AttackRanged.FIELDS.RateOfFire.HighCyclicControlledBursts"}}
 			</label>
 		</div>
 	</div>
 	<div class="form-group">
 		<label></label>
 		<div class="form-fields">
-			<label>{{localize "GURPS.Item.WeaponRanged.FIELDS.RateOfFire.Mode2"}}</label>
+			<label>{{localize "GURPS.Action.AttackRanged.FIELDS.RateOfFire.Mode2"}}</label>
 			<!-- Shots Per Attack -->
 			{{formInput fields.rate_of_fire.fields.mode2.fields.shotsPerAttack
 			value=source.rate_of_fire.mode2.shotsPerAttack}}
 
-			<label>{{localize "GURPS.Item.WeaponRanged.FIELDS.RateOfFire.ShotsPerAttack"}}</label>
+			<label>{{localize "GURPS.Action.AttackRanged.FIELDS.RateOfFire.ShotsPerAttack"}}</label>
 
 			<!-- Shots Per Attack -->
 			{{formInput fields.rate_of_fire.fields.mode2.fields.secondaryProjectiles
@@ -128,7 +128,7 @@
 				{{formInput fields.rate_of_fire.fields.mode2.fields.fullAutoOnly
 				value=source.rate_of_fire.mode2.fullAutoOnly}}
 				<!-- Label -->
-				{{localize "GURPS.Item.WeaponRanged.FIELDS.RateOfFire.FullAutoOnly"}}
+				{{localize "GURPS.Action.AttackRanged.FIELDS.RateOfFire.FullAutoOnly"}}
 			</label>
 
 			<label>
@@ -136,7 +136,7 @@
 				{{formInput fields.rate_of_fire.fields.mode2.fields.highCyclicControlledBursts
 				value=source.rate_of_fire.mode2.highCyclicControlledBursts}}
 				<!-- Label -->
-				{{localize "GURPS.Item.WeaponRanged.FIELDS.RateOfFire.HighCyclicControlledBursts"}}
+				{{localize "GURPS.Action.AttackRanged.FIELDS.RateOfFire.HighCyclicControlledBursts"}}
 			</label>
 		</div>
 	</div>
@@ -145,16 +145,16 @@
 
 	<!-- Shots -->
 	<div class="form-group">
-		<label>{{localize "GURPS.Item.WeaponRanged.FIELDS.Shots.Name"}}</label>
+		<label>{{localize "GURPS.Action.AttackRanged.FIELDS.Shots.Name"}}</label>
 		<div class="form-fields">
 			<!-- Count -->
 			{{formInput fields.shots.fields.count value=source.shots.count editable=editable}}
 
-			<label>{{localize "GURPS.Item.WeaponRanged.FIELDS.Shots.InChamber"}}</label>
+			<label>{{localize "GURPS.Action.AttackRanged.FIELDS.Shots.InChamber"}}</label>
 			<!-- In Chamber -->
 			{{formInput fields.shots.fields.inChamber value=source.shots.inChamber editable=editable}}
 
-			<label>{{localize "GURPS.Item.WeaponRanged.FIELDS.Shots.Duration"}}</label>
+			<label>{{localize "GURPS.Action.AttackRanged.FIELDS.Shots.Duration"}}</label>
 			<!-- Duration -->
 			{{formInput fields.shots.fields.duration value=source.shots.duration editable=editable}}
 		</div>
@@ -162,7 +162,7 @@
 	<div class="form-group">
 		<label></label>
 		<div class="form-fields">
-			<label>{{localize "GURPS.Item.WeaponRanged.FIELDS.Shots.ReloadTime"}}</label>
+			<label>{{localize "GURPS.Action.AttackRanged.FIELDS.Shots.ReloadTime"}}</label>
 			<!-- Reload Time -->
 			{{formInput fields.shots.fields.reloadTime value=source.shots.reloadTIme editable=editable}}
 
@@ -171,14 +171,14 @@
 				{{formInput fields.shots.fields.reloadTimeIsPerShot value=source.shots.reloadTimeIsPerShot
 				editable=editable}}
 				<!-- Label -->
-				{{localize "GURPS.Item.WeaponRanged.FIELDS.Shots.ReloadTimeIsPerShot"}}
+				{{localize "GURPS.Action.AttackRanged.FIELDS.Shots.ReloadTimeIsPerShot"}}
 			</label>
 
 			<label>
 				<!-- Thrown -->
 				{{formInput fields.shots.fields.thrown value=source.shots.thrown editable=editable}}
 				<!-- Label -->
-				{{localize "GURPS.Item.WeaponRanged.FIELDS.Shots.Thrown"}}
+				{{localize "GURPS.Action.AttackRanged.FIELDS.Shots.Thrown"}}
 			</label>
 		</div>
 	</div>
@@ -187,12 +187,12 @@
 
 	<!-- Bulk -->
 	<div class="form-group">
-		<label>{{localize "GURPS.Item.WeaponRanged.FIELDS.Bulk.Name"}}</label>
+		<label>{{localize "GURPS.Action.AttackRanged.FIELDS.Bulk.Name"}}</label>
 		<div class="form-fields">
 			<!-- Normal -->
 			{{formInput fields.bulk.fields.normal value=source.bulk.normal editable=editable}}
 
-			<label>{{localize "GURPS.Item.WeaponRanged.FIELDS.Bulk.Giant"}}</label>
+			<label>{{localize "GURPS.Action.AttackRanged.FIELDS.Bulk.Giant"}}</label>
 
 			<!-- Giant -->
 			{{formInput fields.bulk.fields.giant value=source.bulk.giant editable=editable}}
@@ -201,7 +201,7 @@
 				<!-- Retracting Stock -->
 				{{formInput fields.bulk.fields.retractingStock value=source.bulk.retractingStock editable=editable}}
 				<!-- Label -->
-				{{localize "GURPS.Item.WeaponRanged.FIELDS.Bulk.RetractingStock"}}
+				{{localize "GURPS.Action.AttackRanged.FIELDS.Bulk.RetractingStock"}}
 			</label>
 		</div>
 	</div>
@@ -210,12 +210,12 @@
 
 	<!-- Recoil -->
 	<div class="form-group">
-		<label>{{localize "GURPS.Item.WeaponRanged.FIELDS.Recoil.Name"}}</label>
+		<label>{{localize "GURPS.Action.AttackRanged.FIELDS.Recoil.Name"}}</label>
 		<div class="form-fields">
 			<!-- Shot -->
 			{{formInput fields.recoil.fields.shot value=source.recoil.shot editable=editable}}
 
-			<label>{{localize "GURPS.Item.WeaponRanged.FIELDS.Recoil.Slug"}}</label>
+			<label>{{localize "GURPS.Action.AttackRanged.FIELDS.Recoil.Slug"}}</label>
 
 			<!-- Slug -->
 			{{formInput fields.recoil.fields.slug value=source.recoil.slug editable=editable}}
@@ -226,7 +226,7 @@
 
 	<!-- Minimum ST -->
 	<div class="form-group">
-		<label>{{localize "GURPS.Item.Weapon.FIELDS.Strength.Name"}}</label>
+		<label>{{localize "GURPS.Action.BaseAttack.FIELDS.Strength.Name"}}</label>
 		<div class="form-fields">
 			{{formInput fields.strength.fields.min value=source.strength.min editable=editable}}
 
@@ -234,7 +234,7 @@
 				<!-- Two-Handed -->
 				{{formInput fields.strength.fields.twoHanded value=source.strength.twoHanded editable=editable}}
 				<!-- Label -->
-				{{localize "GURPS.Item.Weapon.FIELDS.Strength.TwoHanded"}}
+				{{localize "GURPS.Action.BaseAttack.FIELDS.Strength.TwoHanded"}}
 			</label>
 
 			<label>
@@ -242,7 +242,7 @@
 				{{formInput fields.strength.fields.twoHandedUnready value=source.strength.twoHandedUnready
 				editable=editable}}
 				<!-- Label -->
-				{{localize "GURPS.Item.Weapon.FIELDS.Strength.TwoHandedUnready"}}
+				{{localize "GURPS.Action.BaseAttack.FIELDS.Strength.TwoHandedUnready"}}
 			</label>
 		</div>
 	</div>
@@ -253,21 +253,21 @@
 				<!-- Bipod  -->
 				{{formInput fields.strength.fields.bipod value=source.strength.bipod editable=editable}}
 				<!-- Label -->
-				{{localize "GURPS.Item.Weapon.FIELDS.Strength.Bipod"}}
+				{{localize "GURPS.Action.BaseAttack.FIELDS.Strength.Bipod"}}
 			</label>
 
 			<label>
 				<!-- Mounted -->
 				{{formInput fields.strength.fields.mounted value=source.strength.mounted editable=editable}}
 				<!-- Label -->
-				{{localize "GURPS.Item.Weapon.FIELDS.Strength.Mounted"}}
+				{{localize "GURPS.Action.BaseAttack.FIELDS.Strength.Mounted"}}
 			</label>
 
 			<label>
 				<!-- Musket Rest -->
 				{{formInput fields.strength.fields.musketRest value=source.strength.musketRest editable=editable}}
 				<!-- Label -->
-				{{localize "GURPS.Item.Weapon.FIELDS.Strength.MusketRest"}}
+				{{localize "GURPS.Action.BaseAttack.FIELDS.Strength.MusketRest"}}
 			</label>
 		</div>
 	</div>
