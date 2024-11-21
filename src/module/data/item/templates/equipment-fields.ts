@@ -329,7 +329,7 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 
 		if (!(modifiers instanceof Promise))
 			for (const modifier of modifiers) {
-				modifier.system.fillWithNameableKeys(m, modifier.system.nameableReplacements)
+				modifier.system.fillWithNameableKeys(m, modifier.system.replacements)
 			}
 
 		for (const attack of attacks) {

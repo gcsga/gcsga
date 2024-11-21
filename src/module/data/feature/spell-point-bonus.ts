@@ -43,7 +43,7 @@ class SpellPointBonus extends BaseFeature<SpellPointBonusSchema> {
 	override toFormElement(enabled: boolean): HTMLElement {
 		const prefix = `system.features.${this.index}`
 		const element = super.toFormElement(enabled)
-		const replacements = this.nameableReplacements
+		const replacements = this.replacements
 
 		if (!enabled) {
 			element.append(createDummyElement(`${prefix}.match`, this.match))

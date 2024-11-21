@@ -111,9 +111,9 @@ abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema
 		return new Handlebars.SafeString(this.toFormElement(enabled).outerHTML)
 	}
 
-	get nameableReplacements(): Map<string, string> {
+	get replacements(): Map<string, string> {
 		return this.parent instanceof ItemDataModel && this.parent.hasTemplate(ItemTemplateType.Replacement)
-			? this.parent.nameableReplacements
+			? this.parent.replacements
 			: new Map()
 	}
 

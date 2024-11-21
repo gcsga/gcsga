@@ -111,16 +111,6 @@ class ActionSheetGURPS extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 			template: `systems/${SYSTEM_NAME}/templates/items/tabs/item-details.hbs`,
 			scrollable: [""],
 		},
-		embeds: {
-			id: "embeds",
-			template: `systems/${SYSTEM_NAME}/templates/items/tabs/item-embeds.hbs`,
-			scrollable: [""],
-		},
-		replacements: {
-			id: "replacements",
-			template: `systems/${SYSTEM_NAME}/templates/items/tabs/item-replacements.hbs`,
-			scrollable: [""],
-		},
 	}
 
 	/* -------------------------------------------- */
@@ -255,18 +245,6 @@ class ActionSheetGURPS extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 				icon: "",
 				label: "GURPS.Sheets.Item.Tabs.Details",
 			},
-			embeds: {
-				id: "embeds",
-				group: "primary",
-				icon: "",
-				label: "GURPS.Sheets.Item.Tabs.Embeds",
-			},
-			replacements: {
-				id: "replacements",
-				group: "primary",
-				icon: "",
-				label: "GURPS.Sheets.Item.Tabs.Replacements",
-			},
 		}
 		return this._markTabs(tabs)
 	}
@@ -379,7 +357,7 @@ class ActionSheetGURPS extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 	): Promise<void> {
 		event.preventDefault()
 		event.stopImmediatePropagation()
-		await this.item.update(formData.object)
+		await this.action.update(formData.object)
 	}
 
 	/* -------------------------------------------- */

@@ -44,7 +44,7 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 
 	satisfied(actor: ActorInst<ActorType.Character>, exclude: unknown, tooltip: TooltipGURPS | null): boolean {
 		let replacements = new Map<string, string>()
-		if (Nameable.isAccesser(exclude)) replacements = exclude.nameableReplacements
+		if (Nameable.isAccesser(exclude)) replacements = exclude.replacements
 		let satisfied = false
 		let techLevel: string | null = null
 		if (exclude instanceof ItemGURPS2 && exclude.isOfType(ItemType.Skill, ItemType.Technique)) {
@@ -96,7 +96,7 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 
 	override toFormElement(enabled: boolean): HTMLElement {
 		const prefix = `system.prereqs.${this.index}`
-		const replacements = this.nameableReplacements
+		const replacements = this.replacements
 
 		// Root element
 		const element = super.toFormElement(enabled)

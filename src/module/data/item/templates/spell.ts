@@ -230,35 +230,35 @@ class SpellTemplate extends ItemDataModel<SpellTemplateSchema> {
 
 	/**  Replacements */
 	get powerSourceWithReplacements(): string {
-		return Nameable.apply(this.power_source, this.nameableReplacements)
+		return Nameable.apply(this.power_source, this.replacements)
 	}
 
 	get classWithReplacements(): string {
-		return Nameable.apply(this.spell_class, this.nameableReplacements)
+		return Nameable.apply(this.spell_class, this.replacements)
 	}
 
 	get resistWithReplacements(): string {
-		return Nameable.apply(this.resist, this.nameableReplacements)
+		return Nameable.apply(this.resist, this.replacements)
 	}
 
 	get castingCostWithReplacements(): string {
-		return Nameable.apply(this.casting_cost, this.nameableReplacements)
+		return Nameable.apply(this.casting_cost, this.replacements)
 	}
 
 	get maintenanceCostWithReplacements(): string {
-		return Nameable.apply(this.maintenance_cost, this.nameableReplacements)
+		return Nameable.apply(this.maintenance_cost, this.replacements)
 	}
 
 	get castingTimeWithReplacements(): string {
-		return Nameable.apply(this.casting_time, this.nameableReplacements)
+		return Nameable.apply(this.casting_time, this.replacements)
 	}
 
 	get durationWithReplacements(): string {
-		return Nameable.apply(this.duration, this.nameableReplacements)
+		return Nameable.apply(this.duration, this.replacements)
 	}
 
 	get collegeWithReplacements(): string[] {
-		return Nameable.applyToList(this.college, this.nameableReplacements)
+		return Nameable.applyToList(this.college, this.replacements)
 	}
 }
 
@@ -266,7 +266,7 @@ interface SpellTemplate extends ModelPropsFromSchema<SpellTemplateSchema> {
 	get attacks(): (AttackMelee | AttackRanged)[]
 	get meleeAttacks(): AttackMelee[]
 	get rangedAttacks(): AttackRanged[]
-	get nameableReplacements(): Map<string, string>
+	get replacements(): Map<string, string>
 	get processedName(): string
 	get processedNotes(): string
 	get difficulty(): AttributeDifficulty

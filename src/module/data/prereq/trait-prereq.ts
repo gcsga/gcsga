@@ -45,7 +45,7 @@ class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 
 	satisfied(actor: ActorInst<ActorType.Character>, exclude: unknown, tooltip: TooltipGURPS | null): boolean {
 		let replacements = new Map<string, string>()
-		if (Nameable.isAccesser(exclude)) replacements = exclude.nameableReplacements
+		if (Nameable.isAccesser(exclude)) replacements = exclude.replacements
 		let satisfied = false
 		for (const t of actor.itemCollections.traits) {
 			if (exclude === t || this.name.matches(replacements, t.system.nameWithReplacements)) continue
@@ -82,7 +82,7 @@ class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 
 	override toFormElement(enabled: boolean): HTMLElement {
 		const prefix = `system.prereqs.${this.index}`
-		const replacements = this.nameableReplacements
+		const replacements = this.replacements
 
 		// Root element
 		const element = super.toFormElement(enabled)

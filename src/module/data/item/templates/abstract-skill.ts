@@ -163,7 +163,7 @@ class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 
 	/**  Replacements */
 	get specializationWithReplacements(): string {
-		if (this.isOfType(ItemType.Skill)) return Nameable.apply(this.specialization, this.nameableReplacements)
+		if (this.isOfType(ItemType.Skill)) return Nameable.apply(this.specialization, this.replacements)
 		return ""
 	}
 }

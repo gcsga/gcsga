@@ -1,17 +1,12 @@
 import { ItemDataModel, ItemDatabaseUpdateOperation } from "@module/data/item/abstract.ts"
-import fields = foundry.data.fields
 import { Nameable } from "@module/util/nameable.ts"
-import { RecordField } from "@module/data/fields/record-field.ts"
 import { ItemGURPS2 } from "@module/documents/item.ts"
+import { ReplacementsField } from "../fields/replacements-field.ts"
 
 class ReplacementTemplate extends ItemDataModel<ReplacementTemplateSchema> {
 	static override defineSchema(): ReplacementTemplateSchema {
-		const fields = foundry.data.fields
 		return {
-			replacements: new RecordField(
-				new fields.StringField({ required: true, nullable: false }),
-				new fields.StringField({ required: true, nullable: true }),
-			),
+			replacements: new ReplacementsField(),
 		}
 	}
 
@@ -21,11 +16,6 @@ class ReplacementTemplate extends ItemDataModel<ReplacementTemplateSchema> {
 		userId: string,
 	) {
 		super._onUpdate(changed, options, userId)
-	}
-
-	/** The replacements to be used with nameables */
-	get nameableReplacements(): Map<string, string> {
-		return new Map(Object.entries(this.replacements) as [string, string][])
 	}
 
 	override prepareBaseData(): void {
@@ -38,19 +28,15 @@ class ReplacementTemplate extends ItemDataModel<ReplacementTemplateSchema> {
 	 * nameable key updates in their containers
 	 */
 	prepareNameableKeys(): void {
-		const replacements = new Map<string, string | null>()
-		this.fillWithNameableKeys(replacements, this.nameableReplacements)
-		for (const key of this.nameableReplacements.keys()) {
-			// if (!replacements.has(key)) replacements.set(`-=${key}`, null)
+		const replacements = new Map<string, string>()
+		this.fillWithNameableKeys(replacements, this.replacements)
+		for (const key of this.replacements.keys()) {
 			if (!replacements.has(key)) replacements.delete(key)
 		}
-		this.replacements = Object.fromEntries(replacements.entries())
+		this.replacements = new Map(replacements.entries())
 	}
 
-	fillWithNameableKeys(
-		m: Map<string, string | null>,
-		existing: Map<string, string> = this.nameableReplacements,
-	): void {
+	fillWithNameableKeys(m: Map<string, string | null>, existing: Map<string, string> = this.replacements): void {
 		Nameable.extract(this.parent.name, m, existing)
 	}
 }
@@ -60,10 +46,7 @@ interface ReplacementTemplate
 		ModelPropsFromSchema<ReplacementTemplateSchema> {}
 
 type ReplacementTemplateSchema = {
-	replacements: RecordField<
-		fields.StringField<string, string, true, false, false>,
-		fields.StringField<string, string, true, true, false>
-	>
+	replacements: ReplacementsField<true, false, true>
 }
 
 export { ReplacementTemplate, type ReplacementTemplateSchema }

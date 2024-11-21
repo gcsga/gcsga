@@ -36,7 +36,7 @@ class SkillData extends ItemDataModel.mixin(
 	SkillDefaultTemplate,
 	AbstractSkillTemplate,
 ) {
-	static override _systemType = ItemType.Skill
+	// static override _systemType = ItemType.Skill
 
 	// static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
 
@@ -205,8 +205,8 @@ class SkillData extends ItemDataModel.mixin(
 		if (!this.defaulted_from) return null
 		if (!this.defaulted_from.skillBased) return null
 		return actor.system.bestSkillNamed(
-			this.defaulted_from.nameWithReplacements(this.nameableReplacements),
-			this.defaulted_from.specializationWithReplacements(this.nameableReplacements),
+			this.defaulted_from.nameWithReplacements(this.replacements),
+			this.defaulted_from.specializationWithReplacements(this.replacements),
 			true,
 		)
 	}
@@ -244,7 +244,7 @@ class SkillData extends ItemDataModel.mixin(
 		let bestDef: SkillDefault | null = null
 		let best = Number.MIN_SAFE_INTEGER
 		for (const def of this.resolveToSpecificDefaults()) {
-			if (def.equivalent(this.nameableReplacements, excluded) || this.inDefaultChain(def, new Set())) {
+			if (def.equivalent(this.replacements, excluded) || this.inDefaultChain(def, new Set())) {
 				continue
 			}
 			const level = this.calcSkillDefaultLevel(def, excludes)
@@ -260,10 +260,10 @@ class SkillData extends ItemDataModel.mixin(
 	calcSkillDefaultLevel(def: SkillDefault, excludes: Set<string>): number {
 		const actor = this.actor
 		if (actor === null || !actor.isOfType(ActorType.Character)) return 0
-		let level = def.skillLevel(actor, this.nameableReplacements, true, excludes, !this.isOfType(ItemType.Technique))
+		let level = def.skillLevel(actor, this.replacements, true, excludes, !this.isOfType(ItemType.Technique))
 		if (def.skillBased) {
-			const defName = def.nameWithReplacements(this.nameableReplacements)
-			const defSpec = def.specializationWithReplacements(this.nameableReplacements)
+			const defName = def.nameWithReplacements(this.replacements)
+			const defSpec = def.specializationWithReplacements(this.replacements)
 			const other = actor?.system.bestSkillNamed(defName, defSpec, true, excludes) ?? null
 			if (other !== null) {
 				level -= actor.system.skillBonusFor(defName, defSpec, this.tags)
@@ -278,8 +278,8 @@ class SkillData extends ItemDataModel.mixin(
 		if (!actor.isOfType(ActorType.Character)) return false
 
 		for (const one of actor.system.skillNamed(
-			def.nameWithReplacements(this.nameableReplacements),
-			def.specializationWithReplacements(this.nameableReplacements),
+			def.nameWithReplacements(this.replacements),
+			def.specializationWithReplacements(this.replacements),
 			true,
 			null,
 		)) {
@@ -298,8 +298,8 @@ class SkillData extends ItemDataModel.mixin(
 			else {
 				if (!actor.isOfType(ActorType.Character)) continue
 				for (const one of actor.system.skillNamed(
-					def.nameWithReplacements(this.nameableReplacements),
-					def.specializationWithReplacements(this.nameableReplacements),
+					def.nameWithReplacements(this.replacements),
+					def.specializationWithReplacements(this.replacements),
 					true,
 					new Set([this.processedName]),
 				)) {
@@ -330,7 +330,7 @@ class SkillData extends ItemDataModel.mixin(
 	/** Namebales */
 	override fillWithNameableKeys(
 		m: Map<string, string>,
-		existing: Map<string, string> = this.nameableReplacements,
+		existing: Map<string, string> = this.replacements,
 	): void {
 		super.fillWithNameableKeys(m, existing)
 

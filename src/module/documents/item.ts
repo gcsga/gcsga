@@ -19,8 +19,8 @@ class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extend
 	/* -------------------------------------------- */
 	/*  Getters                                     */
 	/* -------------------------------------------- */
-	get nameableReplacements(): Map<string, string> {
-		if (Nameable.isAccesser(this.system)) return this.system.nameableReplacements
+	get replacements(): Map<string, string> {
+		if (Nameable.isAccesser(this.system)) return this.system.replacements
 		return new Map()
 	}
 	/* -------------------------------------------- */

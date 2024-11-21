@@ -55,7 +55,7 @@ class BaseAttack<TSchema extends BaseAttackSchema = BaseAttackSchema> extends Ba
 	}
 
 	get usesCrossbowSkill(): boolean {
-		const replacements = this.nameableReplacements
+		const replacements = this.replacements
 		return this.defaults.some(def => def.nameWithReplacements(replacements) === "Crossbow")
 	}
 
@@ -71,7 +71,7 @@ class BaseAttack<TSchema extends BaseAttackSchema = BaseAttackSchema> extends Ba
 		const adj =
 			this.skillLevelBaseAdjustment(actor, primaryTooltip) + this.skillLevelPostAdjustment(actor, primaryTooltip)
 		let best = Number.MIN_SAFE_INTEGER
-		const replacements = this.nameableReplacements
+		const replacements = this.replacements
 		for (const def of this.defaults) {
 			let level = def.skillLevelFast(actor, replacements, false, new Set(), true)
 			if (level !== Number.MIN_SAFE_INTEGER) {
@@ -154,7 +154,7 @@ class BaseAttack<TSchema extends BaseAttackSchema = BaseAttackSchema> extends Ba
 	extractSkillBonusForThisWeapon(f: Feature, tooltip: TooltipGURPS | null): number {
 		if (f.isOfType(feature.Type.SkillBonus)) {
 			if (f.selection_type === skillsel.Type.ThisWeapon) {
-				if (f.specialization.matches(this.nameableReplacements, this.usageWithReplacements)) {
+				if (f.specialization.matches(this.replacements, this.usageWithReplacements)) {
 					f.addToTooltip(tooltip)
 					return f.adjustedAmount
 				}
@@ -194,7 +194,7 @@ class BaseAttack<TSchema extends BaseAttackSchema = BaseAttackSchema> extends Ba
 		const allowed = new Set(allowedFeatureTypes)
 		let bestDef: SkillDefault | null = null
 		let best = Number.MIN_SAFE_INTEGER
-		const replacements = this.nameableReplacements
+		const replacements = this.replacements
 		for (const one of this.defaults) {
 			if (one.skillBased) {
 				const level = one.skillLevelFast(actor, replacements, false, new Set(), true)
@@ -272,7 +272,7 @@ class BaseAttack<TSchema extends BaseAttackSchema = BaseAttackSchema> extends Ba
 				const savedDieCount = f.dieCount
 				f.featureLevel = f.derivedLevel
 				f.dieCount = dieCount
-				const replacements = this.nameableReplacements
+				const replacements = this.replacements
 
 				switch (f.selection_type) {
 					case wsel.Type.WithRequiredSkill:
@@ -306,10 +306,10 @@ class BaseAttack<TSchema extends BaseAttackSchema = BaseAttackSchema> extends Ba
 		}
 	}
 
-	get nameableReplacements(): Map<string, string> {
+	get replacements(): Map<string, string> {
 		const container = this.item
 		if (!(container instanceof Promise)) {
-			if (container?.hasTemplate(ItemTemplateType.Replacement)) return container.system.nameableReplacements
+			if (container?.hasTemplate(ItemTemplateType.Replacement)) return container.system.replacements
 		}
 		return new Map<string, string>()
 	}
@@ -330,11 +330,11 @@ class BaseAttack<TSchema extends BaseAttackSchema = BaseAttackSchema> extends Ba
 
 	/** Replacements */
 	get usageWithReplacements(): string {
-		return Nameable.apply(this.name, this.nameableReplacements)
+		return Nameable.apply(this.name, this.replacements)
 	}
 
 	get usageNotesWithReplacements(): string {
-		return Nameable.apply(this.notes, this.nameableReplacements)
+		return Nameable.apply(this.notes, this.replacements)
 	}
 
 	override prepareBaseData(): void {

@@ -230,7 +230,7 @@ class RitualMagicSpellData extends ItemDataModel.mixin(
 	/** Nameables */
 	override fillWithNameableKeys(
 		m: Map<string, string>,
-		existing: Map<string, string> = this.nameableReplacements,
+		existing: Map<string, string> = this.replacements,
 	): void {
 		super.fillWithNameableKeys(m, existing)
 
@@ -258,7 +258,7 @@ class RitualMagicSpellData extends ItemDataModel.mixin(
 
 	/**  Replacements */
 	get skillNameWithReplacements(): string {
-		return Nameable.apply(this.power_source, this.nameableReplacements)
+		return Nameable.apply(this.power_source, this.replacements)
 	}
 }
 

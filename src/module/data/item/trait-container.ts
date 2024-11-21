@@ -1,21 +1,31 @@
 import { ItemDataModel } from "./abstract.ts"
 import fields = foundry.data.fields
-import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
-import { StringBuilder, align, cell, container, display, selfctrl } from "@util"
-import { PrereqTemplate, PrereqTemplateSchema } from "./templates/prereqs.ts"
-import { ContainerTemplate, ContainerTemplateSchema } from "./templates/container.ts"
+import {
+	BasicInformationTemplate,
+	BasicInformationTemplateSchema,
+	ContainerTemplate,
+	ContainerTemplateSchema,
+	PrereqTemplate,
+	PrereqTemplateSchema,
+	ReplacementTemplate,
+	ReplacementTemplateSchema,
+} from "./templates/index.ts"
 import { ItemType } from "../constants.ts"
-import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
-import { CellData, CellDataOptions } from "./components/cell-data.ts"
-import { SheetSettings } from "../sheet-settings.ts"
-import { ItemGURPS2 } from "@module/documents/item.ts"
-import { ItemInst, calculateModifierPoints } from "./helpers.ts"
+import { StringBuilder, align, cell, container, display, selfctrl } from "@util"
+import {
+	ReplaceableStringField,
+	ToggleableBooleanField,
+	ToggleableNumberField,
+	ToggleableStringField,
+} from "../fields/index.ts"
 import { TemplatePicker } from "./fields/template-picker.ts"
-import { Nameable } from "@module/util/index.ts"
+import { CellData, CellDataOptions } from "./components/cell-data.ts"
+import { ItemGURPS2 } from "@module/documents/item.ts"
 import { MaybePromise } from "../types.ts"
+import { ItemInst, calculateModifierPoints } from "./helpers.ts"
 import { ItemTemplateType } from "./types.ts"
-import { ToggleableBooleanField, ToggleableNumberField, ToggleableStringField } from "../fields/index.ts"
-import { ReplaceableStringField } from "../fields/replaceable-string-field.ts"
+import { SheetSettings } from "../sheet-settings.ts"
+import { Nameable } from "@module/util/nameable.ts"
 
 class TraitContainerData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -23,8 +33,6 @@ class TraitContainerData extends ItemDataModel.mixin(
 	ContainerTemplate,
 	ReplacementTemplate,
 ) {
-	static override _systemType = ItemType.TraitContainer
-
 	static override childTypes = new Set([ItemType.Trait, ItemType.TraitContainer])
 	static override modifierTypes = new Set([ItemType.TraitModifier, ItemType.TraitModifierContainer])
 
@@ -281,21 +289,21 @@ class TraitContainerData extends ItemDataModel.mixin(
 
 	/** Replacements */
 	override get nameWithReplacements(): string {
-		return Nameable.apply(this.parent.name, this.nameableReplacements)
+		return Nameable.apply(this.parent.name, this.replacements)
 	}
 
 	override get notesWithReplacements(): string {
-		return Nameable.apply(this.notes, this.nameableReplacements)
+		return Nameable.apply(this.notes, this.replacements)
 	}
 
 	get userDescWithReplacements(): string {
-		return Nameable.apply(this.userdesc, this.nameableReplacements)
+		return Nameable.apply(this.userdesc, this.replacements)
 	}
 
 	/** Nameables */
 	override fillWithNameableKeys(
 		m: Map<string, string>,
-		existing: Map<string, string> = this.nameableReplacements,
+		existing: Map<string, string> = this.replacements,
 	): void {
 		super.fillWithNameableKeys(m, existing)
 
@@ -311,7 +319,7 @@ class TraitContainerData extends ItemDataModel.mixin(
 
 		if (!(modifiers instanceof Promise))
 			for (const modifier of modifiers) {
-				modifier.system.fillWithNameableKeys(m, modifier.system.nameableReplacements)
+				modifier.system.fillWithNameableKeys(m, modifier.system.replacements)
 			}
 	}
 }

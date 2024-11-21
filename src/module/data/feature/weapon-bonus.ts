@@ -314,7 +314,7 @@ class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 
 	private _getFormElementFilters(enabled: boolean): HTMLElement[] {
 		const prefix = `system.features.${this.index}`
-		const replacements = this.nameableReplacements
+		const replacements = this.replacements
 
 		const rowElement1 = document.createElement("div")
 		rowElement1.classList.add("form-fields", "secondary")

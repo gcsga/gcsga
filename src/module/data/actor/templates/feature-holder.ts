@@ -173,7 +173,7 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 				let replacements: Map<string, string> = new Map()
 				const na = bonus.owner
 				if (Nameable.isAccesser(na)) {
-					replacements = na.nameableReplacements
+					replacements = na.replacements
 				}
 				if (
 					bonus.name.matches(replacements, name) &&
@@ -209,7 +209,7 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 			let replacements: Map<string, string> = new Map()
 			const na = bonus.owner
 			if (Nameable.isAccesser(na)) {
-				replacements = na.nameableReplacements
+				replacements = na.replacements
 			}
 			if (
 				bonus.name.matches(replacements, name) &&
@@ -237,7 +237,7 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 			let replacements: Map<string, string> = new Map()
 			const na = bonus.owner
 			if (Nameable.isAccesser(na)) {
-				replacements = na.nameableReplacements
+				replacements = na.replacements
 			}
 			if (
 				bonus.tags.matchesList(replacements, ...tags) &&
@@ -264,7 +264,7 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 			let replacements: Map<string, string> = new Map()
 			const na = bonus.owner
 			if (Nameable.isAccesser(na)) {
-				replacements = na.nameableReplacements
+				replacements = na.replacements
 			}
 			if (
 				bonus.tags.matchesList(replacements, ...tags) &&
@@ -307,7 +307,7 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 				let replacements: Map<string, string> = new Map()
 				const na = bonus.owner
 				if (Nameable.isAccesser(na)) {
-					replacements = na.nameableReplacements
+					replacements = na.replacements
 				}
 				if (
 					bonus.name.matches(replacements, name) &&
@@ -341,7 +341,7 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 				let replacements: Map<string, string> = new Map()
 				const na = bonus.owner
 				if (Nameable.isAccesser(na)) {
-					replacements = na.nameableReplacements
+					replacements = na.replacements
 				}
 				if (
 					bonus.name.matches(replacements, name) &&
@@ -367,7 +367,7 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 				let replacements: Map<string, string> = new Map()
 				const na = bonus.owner
 				if (Nameable.isAccesser(na)) {
-					replacements = na.nameableReplacements
+					replacements = na.replacements
 				}
 				if (
 					bonus.name.matches(replacements, name) &&

@@ -510,12 +510,14 @@ class HandlebarsHelpersGURPS {
 		return criteria ? "disabled" : ""
 	}
 
-	// static dropdown(item: ItemGURPS2 | ItemSource): string {
-	// 	if (!itemIsOfType(item, "container")) return `<div class="dropdown"></div>`
-	// 	if (item.system.open)
-	// 		return `<div class="dropdown"><a class="dropdown-toggle open gcs-circled-chevron-down"></a></div>`
-	// 	return `<div class="dropdown"><a class="dropdown-toggle closed gcs-circled-chevron-right"></a></div>`
-	// }
+	// Block helper. Use values "key" and "value" within the block
+	static eachInMap(map: Map<string, unknown>, options: Handlebars.HelperOptions) {
+		let out = ""
+		;[...map.keys()].forEach((prop: string) => {
+			out += options.fn({ key: prop, value: map.get(prop) })
+		})
+		return out
+	}
 }
 
 export function registerHandlebarsHelpers(): void {
@@ -563,6 +565,7 @@ export function registerHandlebarsHelpers(): void {
 		studyInfo: HandlebarsHelpersGURPS.studyInfo,
 		sum: HandlebarsHelpersGURPS.sum,
 		textareaFormat: HandlebarsHelpersGURPS.textareaFormat,
+		eachInMap: HandlebarsHelpersGURPS.eachInMap,
 	})
 }
 

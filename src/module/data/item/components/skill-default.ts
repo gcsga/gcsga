@@ -66,7 +66,7 @@ class SkillDefault extends foundry.abstract.DataModel<ItemDataModel, SkillDefaul
 		const element = document.createElement("li")
 
 		const replacements = this.item.hasTemplate(ItemTemplateType.Replacement)
-			? this.item.system.nameableReplacements
+			? this.item.system.replacements
 			: new Map()
 
 		const choices = Object.entries(

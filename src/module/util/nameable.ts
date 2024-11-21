@@ -3,7 +3,7 @@ interface NameableFiller {
 }
 
 interface NameableAccesser {
-	get nameableReplacements(): Map<string, string>
+	get replacements(): Map<string, string>
 }
 
 interface NameableApplier extends NameableAccesser, NameableFiller {
@@ -53,7 +53,7 @@ function isFiller(e: unknown): e is NameableFiller {
 }
 
 function isAccesser(e: unknown): e is NameableAccesser {
-	return typeof e === "object" && e !== null && "nameableReplacements" in e
+	return typeof e === "object" && e !== null && "replacements" in e
 }
 
 function isApplier(e: unknown): e is NameableApplier {

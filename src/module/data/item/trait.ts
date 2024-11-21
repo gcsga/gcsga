@@ -38,7 +38,7 @@ class TraitData extends ItemDataModel.mixin(
 	ReplacementTemplate,
 	StudyTemplate,
 ) {
-	static override _systemType = ItemType.Trait
+	// static override _systemType = ItemType.Trait
 
 	static override modifierTypes = new Set([ItemType.TraitModifier, ItemType.TraitModifierContainer])
 	// static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
@@ -311,13 +311,13 @@ class TraitData extends ItemDataModel.mixin(
 
 	/** Replacements */
 	get userDescWithReplacements(): string {
-		return Nameable.apply(this.userdesc, this.nameableReplacements)
+		return Nameable.apply(this.userdesc, this.replacements)
 	}
 
 	/** Nameables */
 	override fillWithNameableKeys(
 		m: Map<string, string>,
-		existing: Map<string, string> = this.nameableReplacements,
+		existing: Map<string, string> = this.replacements,
 	): void {
 		super.fillWithNameableKeys(m, existing)
 
@@ -337,7 +337,7 @@ class TraitData extends ItemDataModel.mixin(
 		const attacks = this.attacks
 
 		for (const modifier of modifiers) {
-			modifier.system.fillWithNameableKeys(m, modifier.system.nameableReplacements)
+			modifier.system.fillWithNameableKeys(m, modifier.system.replacements)
 		}
 		for (const attack of attacks) {
 			attack.fillWithNameableKeys(m, existing)

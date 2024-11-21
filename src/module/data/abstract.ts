@@ -33,7 +33,7 @@ class SystemDataModel<
 	/**
 	 * System type that this system data model represents (e.g. "character", "npc", "vehicle").
 	 */
-	static _systemType: string
+	// static _systemType: string
 
 	/* -------------------------------------------- */
 

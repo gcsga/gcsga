@@ -46,7 +46,7 @@ class WeaponBlock extends WeaponField<BaseAttack, WeaponBlockSchema> {
 				const postAdj = w.skillLevelPostAdjustment(actor, primaryTooltip)
 				let best = Number.MIN_SAFE_INTEGER
 				for (const def of w.defaults) {
-					let level = def.skillLevelFast(actor, w.nameableReplacements, false, new Set(), true)
+					let level = def.skillLevelFast(actor, w.replacements, false, new Set(), true)
 					if (level === Number.MIN_SAFE_INTEGER) continue
 					level += preAdj
 					if (def.type !== gid.Block) level = Math.trunc(level / 2)

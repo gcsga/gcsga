@@ -39,7 +39,7 @@ class EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema> 
 		hasEquipmentPenalty: { value: boolean },
 	): boolean {
 		let replacements: Map<string, string> = new Map()
-		if (Nameable.isAccesser(exclude)) replacements = exclude.nameableReplacements
+		if (Nameable.isAccesser(exclude)) replacements = exclude.replacements
 		let satisfied = false
 		for (const eqp of actor.itemCollections.equipment) {
 			satisfied =
@@ -72,7 +72,7 @@ class EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema> 
 	override toFormElement(enabled: boolean): HTMLElement {
 		const prefix = `system.prereqs.${this.index}`
 		const replacements = this.item.hasTemplate(ItemTemplateType.Replacement)
-			? this.item.system.nameableReplacements
+			? this.item.system.replacements
 			: new Map()
 
 		const element = document.createElement("li")

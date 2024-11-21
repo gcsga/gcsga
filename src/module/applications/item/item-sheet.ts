@@ -385,7 +385,7 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			},
 		}
 		if (this.item.hasTemplate(ItemTemplateType.Replacement)) {
-			const replacements = this.item.system.nameableReplacements
+			const replacements = this.item.system.replacements
 			if (replacements.size === 0) delete tabs.replacements
 		} else {
 			delete tabs.replacements
@@ -668,7 +668,7 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			obj.childTypes = [...this.item.system.childTypes]
 		}
 		if (this.item.hasTemplate(ItemTemplateType.Replacement)) {
-			const replacements = this.item.system.nameableReplacements
+			const replacements = this.item.system.replacements
 			obj.replacements = replacements
 		}
 		return obj

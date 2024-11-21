@@ -1,6 +1,6 @@
 <section class="tab {{tab.cssClass}}" data-group="primary" data-tab="replacements">
 	<fieldset>
-		{{#each system.replacements as |value key|}}
+		{{#eachInMap system.replacements}}
 		<!-- Divider between entries	 -->
 		{{#unless @first}}
 		<hr />
@@ -13,6 +13,6 @@
 			</div>
 		</div>
 
-		{{/each}}
+		{{/eachInMap}}
 	</fieldset>
 </section>

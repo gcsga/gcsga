@@ -85,7 +85,7 @@ class EquipmentData extends ItemDataModel.mixin(
 	/** Nameables */
 	override fillWithNameableKeys(
 		m: Map<string, string>,
-		existing: Map<string, string> = this.nameableReplacements,
+		existing: Map<string, string> = this.replacements,
 	): void {
 		super.fillWithNameableKeys(m, existing)
 

@@ -58,7 +58,7 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 
 	satisfied(actor: ActorInst<ActorType.Character>, exclude: unknown, tooltip: TooltipGURPS | null): boolean {
 		let replacements = new Map<string, string>()
-		if (Nameable.isAccesser(exclude)) replacements = exclude.nameableReplacements
+		if (Nameable.isAccesser(exclude)) replacements = exclude.replacements
 		let techLevel: string | null = null
 		if (exclude instanceof ItemGURPS2 && exclude.isOfType(ItemType.Spell, ItemType.RitualMagicSpell))
 			techLevel = exclude.system.tech_level
@@ -128,7 +128,7 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 
 	override toFormElement(enabled: boolean): HTMLElement {
 		const prefix = `system.prereqs.${this.index}`
-		const replacements = this.nameableReplacements
+		const replacements = this.replacements
 
 		const element = document.createElement("li")
 		element.classList.add("prereq")

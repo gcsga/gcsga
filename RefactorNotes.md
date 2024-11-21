@@ -7,7 +7,6 @@
 ## Current Tasks
 
 - Implement ActionSheet
-  - Fix portrait
   - Implement update action
 - Fix Actor#meleeWeapons and Actor#rangedWeapons for gcs/functions
 - Change reference to updateAction and deleteAction to system data functions and actually implement them.

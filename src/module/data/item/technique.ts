@@ -227,7 +227,7 @@ class TechniqueData extends ItemDataModel.mixin(
 	get modifierNotes(): string {
 		if (!this.actor) return ""
 		return game.i18n.format("GURPS.SkillDefault.Notes", {
-			name: this.default.fullName(this.actor, this.nameableReplacements),
+			name: this.default.fullName(this.actor, this.replacements),
 			modifier: this.default.modifier.signedString(),
 		})
 	}
@@ -239,8 +239,8 @@ class TechniqueData extends ItemDataModel.mixin(
 		if (!this.default) return null
 		if (!this.default.skillBased) return null
 		return actor.system.bestSkillNamed(
-			this.default.nameWithReplacements(this.nameableReplacements),
-			this.default.specializationWithReplacements(this.nameableReplacements),
+			this.default.nameWithReplacements(this.replacements),
+			this.default.specializationWithReplacements(this.replacements),
 			true,
 		)
 	}
@@ -268,7 +268,7 @@ class TechniqueData extends ItemDataModel.mixin(
 
 		return calculateTechniqueLevel(
 			this.parent.actor,
-			this.nameableReplacements,
+			this.replacements,
 			this.nameWithReplacements,
 			this.specializationWithReplacements,
 			this.tags,
@@ -289,8 +289,8 @@ class TechniqueData extends ItemDataModel.mixin(
 		}
 
 		const sk = actor.system.bestSkillNamed(
-			this.default.nameWithReplacements(this.nameableReplacements),
-			this.default.specializationWithReplacements(this.nameableReplacements),
+			this.default.nameWithReplacements(this.replacements),
+			this.default.specializationWithReplacements(this.replacements),
 			false,
 		)
 		const satisfied = sk !== null && (sk.type === ItemType.Technique || sk.system.points > 0)
@@ -299,13 +299,13 @@ class TechniqueData extends ItemDataModel.mixin(
 			if (sk === null) {
 				tooltip.push(
 					game.i18n.format("GURPS.Prereq.Technique.Skill", {
-						name: this.default.fullName(actor, this.nameableReplacements),
+						name: this.default.fullName(actor, this.replacements),
 					}),
 				)
 			} else {
 				tooltip.push(
 					game.i18n.format("GURPS.Prereq.Technique.SkillWithPoints", {
-						name: this.default.fullName(actor, this.nameableReplacements),
+						name: this.default.fullName(actor, this.replacements),
 					}),
 				)
 			}
@@ -316,7 +316,7 @@ class TechniqueData extends ItemDataModel.mixin(
 	/** Namebales */
 	override fillWithNameableKeys(
 		m: Map<string, string>,
-		existing: Map<string, string> = this.nameableReplacements,
+		existing: Map<string, string> = this.replacements,
 	): void {
 		super.fillWithNameableKeys(m, existing)
 

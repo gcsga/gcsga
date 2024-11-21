@@ -65,8 +65,8 @@ abstract class BasePrereq<TSchema extends BasePrereqSchema = BasePrereqSchema> e
 		return game.i18n.localize("GURPS.Prereq.DoesNotHave")
 	}
 
-	get nameableReplacements(): Map<string, string> {
-		return this.item.hasTemplate(ItemTemplateType.Replacement) ? this.item.system.nameableReplacements : new Map()
+	get replacements(): Map<string, string> {
+		return this.item.hasTemplate(ItemTemplateType.Replacement) ? this.item.system.replacements : new Map()
 	}
 
 	get element(): Handlebars.SafeString {
