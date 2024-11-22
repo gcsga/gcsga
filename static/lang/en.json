@@ -78,6 +78,7 @@
 		},
 		"Action": {
 			"AttackMelee": {
+				"Title": "Melee Attack",
 				"DetailsLegend": "Melee Attack Details",
 				"FIELDS": {
 					"Parry": {
@@ -89,6 +90,7 @@
 				}
 			},
 			"AttackRanged": {
+				"Title": "Ranged Attack",
 				"DetailsLegend": "Ranged Attack Details",
 				"FIELDS": {
 					"Accuracy": {

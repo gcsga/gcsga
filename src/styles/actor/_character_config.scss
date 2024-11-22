@@ -1,170 +1,170 @@
-.window-app.gurps.points-sheet {
-	form {
-		.fieldblock {
-			display: grid;
-			grid-auto-flow: row;
-			row-gap: 4px;
-			column-gap: 9px;
-			vertical-align: middle;
-			padding: 2px 16px;
-		}
-		a {
-			width: 17px;
-			margin: 2px;
-			padding: 0px 2px;
-			color: rgb(var(--color-icon-button));
-			&:hover {
-				color: rgb(var(--color-icon-button-rollover));
-				text-shadow: none;
-			}
-			&:active {
-				color: rgb(var(--color-icon-button-rollover));
-				border-radius: 4px;
-			}
-		}
-	}
-}
-
-.window-app.gurps.character-config {
-	form {
-		overflow: hidden;
-		.content {
-			height: calc(100% - 28px);
-			overflow-y: scroll;
-		}
-	}
-	span.ref {
-		padding: 0;
-		text-decoration: underline;
-		color: rgb(var(--color-link));
-		&:hover {
-			color: rgb(var(--color-link-rollover));
-		}
-		&:active {
-			color: rgb(var(--color-link-pressed));
-		}
-	}
-	#details,
-	.fieldblock {
-		display: grid;
-		grid-auto-flow: row;
-		row-gap: 4px;
-		column-gap: 9px;
-		vertical-align: middle;
-		padding: 2px 16px;
-	}
-	.field {
-		display: grid;
-		grid-auto-flow: column;
-	}
-	.fieldblock {
-		grid-template-columns: min-content auto;
-		hr,
-		.title {
-			font: var(--font-system);
-			grid-column: 1 / span 2;
-		}
-		label {
-			white-space: nowrap;
-			text-align: right;
-		}
-	}
-	hr {
-		border: 1px solid rgb(var(--color-divider));
-		width: 100%;
-		margin: 0;
-	}
-	textarea {
-		grid-column: 1 / span 2;
-		width: 100%;
-		line-height: 16px;
-		margin-bottom: 5px;
-	}
-	.tab a {
-		width: 17px;
-		margin: 2px;
-		padding: 0px 2px;
-		color: rgb(var(--color-icon-button));
-		&:hover {
-			color: rgb(var(--color-icon-button-rollover));
-			text-shadow: none;
-		}
-		&:active {
-			color: rgb(var(--color-icon-button-rollover));
-			border-radius: 4px;
-		}
-	}
-	.tab[data-tab="body-type"] .fieldblock .item-list {
-		grid-column: 1 / span 2;
-		border: 1px solid rgb(var(--color-divider));
-	}
-	.tab[data-tab="attributes"],
-	.tab[data-tab="body-type"],
-	.tab[data-tab="resource-trackers"],
-	.tab[data-tab="move-types"] {
-		div.add {
-			display: grid;
-			grid-auto-flow: column;
-			white-space: nowrap;
-			gap: 5px;
-			justify-content: start;
-			color: rgb(var(--color-icon-button));
-			align-items: center;
-		}
-		.thresholds,
-		.overrides {
-			grid-column: 1 / span 2;
-			border: 1px solid rgb(var(--color-divider));
-		}
-		.item-list {
-			.item {
-				background-color: rgb(var(--color-content));
-				display: grid;
-				grid-template-columns: 0fr 1fr;
-				&.border-top {
-					border-top: 1px solid rgb(var(--color-drop-area));
-				}
-				&.border-bottom {
-					border-bottom: 1px solid rgb(var(--color-drop-area));
-				}
-				.controls {
-					display: grid;
-					gap: 5px;
-					padding: 5px;
-					height: min-content;
-					grid-template:
-						"drag trash"
-						"empty add";
-					> :not(.disabled) {
-						color: rgb(var(--color-icon-button));
-						&:hover {
-							color: rgb(var(--color-icon-button-rollover));
-							text-shadow: none;
-						}
-						&:active {
-							color: rgb(var(--color-icon-button-rollover));
-							text-shadow: none;
-						}
-					}
-					> .disabled {
-						color: rgba(var(--color-icon-button), 0.6);
-						cursor: default;
-						pointer-events: none;
-					}
-					.gcs-grip {
-						grid-area: drag;
-					}
-					.gcs-trash {
-						grid-area: trash;
-					}
-					.gcs-circled-add {
-						grid-area: add;
-					}
-				}
-			}
-			.item:nth-child(2n) {
-				background-color: rgb(var(--color-banding));
-			}
-		}
-	}
-}
+// .window-app.gurps.points-sheet {
+// 	form {
+// 		.fieldblock {
+// 			display: grid;
+// 			grid-auto-flow: row;
+// 			row-gap: 4px;
+// 			column-gap: 9px;
+// 			vertical-align: middle;
+// 			padding: 2px 16px;
+// 		}
+// 		a {
+// 			width: 17px;
+// 			margin: 2px;
+// 			padding: 0px 2px;
+// 			color: rgb(var(--color-icon-button));
+// 			&:hover {
+// 				color: rgb(var(--color-icon-button-rollover));
+// 				text-shadow: none;
+// 			}
+// 			&:active {
+// 				color: rgb(var(--color-icon-button-rollover));
+// 				border-radius: 4px;
+// 			}
+// 		}
+// 	}
+// }
+//
+// .window-app.gurps.character-config {
+// 	form {
+// 		overflow: hidden;
+// 		.content {
+// 			height: calc(100% - 28px);
+// 			overflow-y: scroll;
+// 		}
+// 	}
+// 	span.ref {
+// 		padding: 0;
+// 		text-decoration: underline;
+// 		color: rgb(var(--color-link));
+// 		&:hover {
+// 			color: rgb(var(--color-link-rollover));
+// 		}
+// 		&:active {
+// 			color: rgb(var(--color-link-pressed));
+// 		}
+// 	}
+// 	#details,
+// 	.fieldblock {
+// 		display: grid;
+// 		grid-auto-flow: row;
+// 		row-gap: 4px;
+// 		column-gap: 9px;
+// 		vertical-align: middle;
+// 		padding: 2px 16px;
+// 	}
+// 	.field {
+// 		display: grid;
+// 		grid-auto-flow: column;
+// 	}
+// 	.fieldblock {
+// 		grid-template-columns: min-content auto;
+// 		hr,
+// 		.title {
+// 			font: var(--font-system);
+// 			grid-column: 1 / span 2;
+// 		}
+// 		label {
+// 			white-space: nowrap;
+// 			text-align: right;
+// 		}
+// 	}
+// 	hr {
+// 		border: 1px solid rgb(var(--color-divider));
+// 		width: 100%;
+// 		margin: 0;
+// 	}
+// 	textarea {
+// 		grid-column: 1 / span 2;
+// 		width: 100%;
+// 		line-height: 16px;
+// 		margin-bottom: 5px;
+// 	}
+// 	.tab a {
+// 		width: 17px;
+// 		margin: 2px;
+// 		padding: 0px 2px;
+// 		color: rgb(var(--color-icon-button));
+// 		&:hover {
+// 			color: rgb(var(--color-icon-button-rollover));
+// 			text-shadow: none;
+// 		}
+// 		&:active {
+// 			color: rgb(var(--color-icon-button-rollover));
+// 			border-radius: 4px;
+// 		}
+// 	}
+// 	.tab[data-tab="body-type"] .fieldblock .item-list {
+// 		grid-column: 1 / span 2;
+// 		border: 1px solid rgb(var(--color-divider));
+// 	}
+// 	.tab[data-tab="attributes"],
+// 	.tab[data-tab="body-type"],
+// 	.tab[data-tab="resource-trackers"],
+// 	.tab[data-tab="move-types"] {
+// 		div.add {
+// 			display: grid;
+// 			grid-auto-flow: column;
+// 			white-space: nowrap;
+// 			gap: 5px;
+// 			justify-content: start;
+// 			color: rgb(var(--color-icon-button));
+// 			align-items: center;
+// 		}
+// 		.thresholds,
+// 		.overrides {
+// 			grid-column: 1 / span 2;
+// 			border: 1px solid rgb(var(--color-divider));
+// 		}
+// 		.item-list {
+// 			.item {
+// 				background-color: rgb(var(--color-content));
+// 				display: grid;
+// 				grid-template-columns: 0fr 1fr;
+// 				&.border-top {
+// 					border-top: 1px solid rgb(var(--color-drop-area));
+// 				}
+// 				&.border-bottom {
+// 					border-bottom: 1px solid rgb(var(--color-drop-area));
+// 				}
+// 				.controls {
+// 					display: grid;
+// 					gap: 5px;
+// 					padding: 5px;
+// 					height: min-content;
+// 					grid-template:
+// 						"drag trash"
+// 						"empty add";
+// 					> :not(.disabled) {
+// 						color: rgb(var(--color-icon-button));
+// 						&:hover {
+// 							color: rgb(var(--color-icon-button-rollover));
+// 							text-shadow: none;
+// 						}
+// 						&:active {
+// 							color: rgb(var(--color-icon-button-rollover));
+// 							text-shadow: none;
+// 						}
+// 					}
+// 					> .disabled {
+// 						color: rgba(var(--color-icon-button), 0.6);
+// 						cursor: default;
+// 						pointer-events: none;
+// 					}
+// 					.gcs-grip {
+// 						grid-area: drag;
+// 					}
+// 					.gcs-trash {
+// 						grid-area: trash;
+// 					}
+// 					.gcs-circled-add {
+// 						grid-area: add;
+// 					}
+// 				}
+// 			}
+// 			.item:nth-child(2n) {
+// 				background-color: rgb(var(--color-banding));
+// 			}
+// 		}
+// 	}
+// }

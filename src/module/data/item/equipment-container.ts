@@ -33,8 +33,8 @@ class EquipmentContainerData extends ItemDataModel.mixin(
 		context.detailsParts = ["gurps.details-equipment", "gurps.details-prereqs", "gurps.details-features"]
 		context.embedsParts = [
 			"gurps.embeds-equipment-modifier",
-			"gurps.embeds-weapon-melee",
-			"gurps.embeds-weapon-ranged",
+			"gurps.embeds-attack-melee",
+			"gurps.embeds-attack-ranged",
 			"gurps.embeds-equipment",
 		]
 	}

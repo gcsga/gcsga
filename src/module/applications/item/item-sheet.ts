@@ -1,4 +1,4 @@
-import { ActionType, HOOKS, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
+import { ActionType, DOCUMENTS, HOOKS, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
 import { ItemTemplateType } from "@module/data/item/types.ts"
 import { AttributePrereq } from "@module/data/prereq/index.ts"
 import { PrereqList, PrereqListSchema } from "@module/data/prereq/prereq-list.ts"
@@ -6,7 +6,7 @@ import { PrereqTypes } from "@module/data/prereq/types.ts"
 import { SkillDefault } from "@module/data/item/components/skill-default.ts"
 import { ItemGURPS2 } from "@module/documents/item.ts"
 import { prereq, study } from "@util/enum/index.ts"
-import { generateId } from "@util/misc.ts"
+import { ErrorGURPS, generateId } from "@util/misc.ts"
 import { ActiveEffectGURPS } from "@module/documents/active-effect.ts"
 import { MaybePromise } from "@module/data/types.ts"
 import { Weight } from "@util/weight.ts"
@@ -14,7 +14,8 @@ import { SheetSettings } from "@module/data/sheet-settings.ts"
 import { ItemCell } from "@module/data/item/components/cell-data.ts"
 import { ELEMENTS } from "../components/index.ts"
 import { Study } from "@module/data/study.ts"
-import { Action } from "@module/data/action/types.ts"
+import { Action, ActionSchema } from "@module/data/action/types.ts"
+import { htmlClosest } from "@util/html.ts"
 
 const { api, sheets } = foundry.applications
 
@@ -93,7 +94,10 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			toggleCheckbox: this.#onToggleCheckbox,
 			toggleDropdown: this.#onToggleDropdown,
 		},
-		dragDrop: [{ dragSelector: ".item-list .item", dropSelector: null }],
+		dragDrop: [
+			{ dragSelector: ".item-list .item", dropSelector: null },
+			{ dragSelector: ".action-list .action", dropSelector: null },
+		],
 	}
 
 	/* -------------------------------------------- */
@@ -175,6 +179,9 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		} else if (this.item.hasTemplate(ItemTemplateType.Container) && li.dataset.itemId) {
 			const item = await this.item.system.getContainedItem(li.dataset.itemId)
 			dragData = item?.toDragData()
+		} else if (this.item.hasTemplate(ItemTemplateType.Action) && li.dataset.actionId) {
+			const action = this.item.system.actions.get(li.dataset.actionId)
+			dragData = action?.toDragData()
 		}
 
 		if (!dragData) return
@@ -226,8 +233,48 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 				return this._onDropActiveEffect(event, data)
 			case "Item":
 				return this._onDropItem(event, data)
+			case DOCUMENTS.ACTION:
+				// TODO: fix types
+				return this._onDropAction(
+					event,
+					data as unknown as { data: DeepPartial<SourceFromSchema<ActionSchema> & { _id: string }> },
+				)
 		}
 		return false
+	}
+
+	/* -------------------------------------------- */
+
+	protected async _onDropAction(
+		event: DragEvent,
+		{ data }: { data: DeepPartial<SourceFromSchema<ActionSchema> & { _id: string }> },
+	): Promise<ItemGURPS2 | null | undefined> {
+		const { _id: id, type } = data
+		if (!this.item.hasTemplate(ItemTemplateType.Action)) {
+			throw ErrorGURPS(
+				`ItemSheetGURPS#_onDropAction Erorr: Item with id "${this.item.id} does not contain the Action template."`,
+			)
+		}
+
+		const source = this.item.system.actions.get(id!) ?? null
+
+		if (source !== null) {
+			const targetId = htmlClosest(event.target, ".action[data-action-id")?.dataset.actionId ?? ""
+			const target = this.item.system.actions.get(targetId)
+			if (!target || target === source) return null
+			const siblings = this.item.system.actions.filter(e => e._id !== id)
+			const sortUpdates = SortingHelpers.performIntegerSort(source, { target, siblings })
+			const updateData = Object.fromEntries(
+				sortUpdates.map(({ target, update }) => {
+					return [target._id, { sort: update.sort }]
+				}),
+			)
+
+			return this.item.update({ "system.actions": updateData })
+		} else {
+			delete data._id
+			return this.item.system.createAction(type as ActionType, data, { renderSheet: false })
+		}
 	}
 
 	/* -------------------------------------------- */
@@ -712,20 +759,6 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 				context.attacksMelee = await this._prepareActionEmbedList(this.item.system.meleeAttacks)
 				context.attacksRanged = await this._prepareActionEmbedList(this.item.system.rangedAttacks)
 			}
-			// context.weaponsMelee = await this._prepareItemEmbedList(
-			// 	(await this.item.system.itemTypes)[ItemType.WeaponMelee],
-			// 	{
-			// 		type: this.item.type as ItemType,
-			// 		level: 0,
-			// 	},
-			// )
-			// context.weaponsRanged = await this._prepareItemEmbedList(
-			// 	(await this.item.system.itemTypes)[ItemType.WeaponRanged],
-			// 	{
-			// 		type: this.item.type as ItemType,
-			// 		level: 0,
-			// 	},
-			// )
 		}
 		return context
 	}

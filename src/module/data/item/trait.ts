@@ -52,8 +52,8 @@ class TraitData extends ItemDataModel.mixin(
 		]
 		context.embedsParts = [
 			"gurps.embeds-trait-modifier",
-			"gurps.embeds-weapon-melee",
-			"gurps.embeds-weapon-ranged",
+			"gurps.embeds-attack-melee",
+			"gurps.embeds-attack-ranged",
 			"gurps.embeds-effect",
 		]
 	}

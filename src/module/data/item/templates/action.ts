@@ -19,6 +19,16 @@ class ActionTemplate extends ItemDataModel<ActionTemplateSchema> {
 	async createAction(
 		type: ActionType,
 		data: DeepPartial<SourceFromSchema<ActionSchema>>,
+		{ renderSheet }: { renderSheet: true },
+	): Promise<foundry.applications.api.ApplicationV2>
+	async createAction(
+		type: ActionType,
+		data: DeepPartial<SourceFromSchema<ActionSchema>>,
+		{ renderSheet }: { renderSheet: false },
+	): Promise<null>
+	async createAction(
+		type: ActionType,
+		data: DeepPartial<SourceFromSchema<ActionSchema>>,
 		{ renderSheet }: { renderSheet: boolean; [key: string]: unknown } = { renderSheet: true },
 	): Promise<foundry.applications.api.ApplicationV2 | null> {
 		const cls = ActionInstances[type]

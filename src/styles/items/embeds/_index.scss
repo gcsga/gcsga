@@ -15,11 +15,13 @@ section[data-tab="embeds"] {
 			border-bottom: 1px solid #3a3d41; // Thin border separating the header
 		}
 
-		> ul.item-list {
+		> ul.item-list,
+		> ul.action-list {
 			min-height: 1.625rem;
 		}
 
-		ul.item-list {
+		ul.item-list,
+		ul.action-list {
 			list-style: none;
 			padding: 0;
 			margin: 0;

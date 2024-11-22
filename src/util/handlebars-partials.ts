@@ -33,9 +33,8 @@ export async function preloadHandlebarsTemplates(): Promise<void> {
 		`systems/${SYSTEM_NAME}/templates/items/parts/embeds-spell.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/embeds-trait-modifier.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/embeds-trait.hbs`,
-		`systems/${SYSTEM_NAME}/templates/items/parts/embeds-weapon-melee.hbs`,
-		`systems/${SYSTEM_NAME}/templates/items/parts/embeds-weapon-ranged.hbs`,
-		`systems/${SYSTEM_NAME}/templates/items/parts/embeds-weapon-ranged.hbs`,
+		`systems/${SYSTEM_NAME}/templates/items/parts/embeds-attack-melee.hbs`,
+		`systems/${SYSTEM_NAME}/templates/items/parts/embeds-attack-ranged.hbs`,
 
 		// Action Details Partials
 		`systems/${SYSTEM_NAME}/templates/actions/parts/details-attack-melee.hbs`,

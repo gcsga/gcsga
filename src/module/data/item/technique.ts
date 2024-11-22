@@ -79,7 +79,7 @@ class TechniqueData extends ItemDataModel.mixin(
 			"gurps.details-defaults",
 			"gurps.details-study",
 		]
-		context.embedsParts = ["gurps.embeds-weapon-melee", "gurps.embeds-weapon-ranged"]
+		context.embedsParts = ["gurps.embeds-attack-melee", "gurps.embeds-attack-ranged"]
 	}
 
 	static override defineSchema(): TechniqueSchema {

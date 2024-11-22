@@ -39,8 +39,8 @@ class TraitContainerData extends ItemDataModel.mixin(
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
 		context.detailsParts = ["gurps.details-trait-container", "gurps.details-prereqs"]
 		context.embedsParts = [
-			"gurps.embeds-weapon-melee",
-			"gurps.embeds-weapon-ranged",
+			"gurps.embeds-attack-melee",
+			"gurps.embeds-attack-ranged",
 			"gurps.embeds-trait-modifier",
 			"gurps.embeds-trait",
 		]

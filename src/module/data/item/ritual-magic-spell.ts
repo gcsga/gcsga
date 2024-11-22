@@ -41,7 +41,7 @@ class RitualMagicSpellData extends ItemDataModel.mixin(
 
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
 		context.detailsParts = ["gurps.details-ritual-magic-spell", "gurps.details-prereqs", "gurps.details-study"]
-		context.embedsParts = ["gurps.embeds-weapon-melee", "gurps.embeds-weapon-ranged"]
+		context.embedsParts = ["gurps.embeds-attack-melee", "gurps.embeds-attack-ranged"]
 	}
 
 	static override defineSchema(): RitualMagicSpellSchema {
