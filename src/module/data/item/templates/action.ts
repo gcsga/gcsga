@@ -57,7 +57,7 @@ class ActionTemplate extends ItemDataModel<ActionTemplateSchema> {
 	async deleteAction(id: string): Promise<ItemGURPS2 | undefined> {
 		const action = this.actions.get(id)
 		if (!action) return this.parent
-		await Promise.allSettled(action.constructor._sheets.values().map(e => e.close()))
+		await Promise.allSettled([...action.constructor._sheets.values()].map(e => e.close()))
 		return this.parent.update({ [`system.actions.-=${id}`]: null })
 	}
 

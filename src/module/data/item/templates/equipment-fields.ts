@@ -177,7 +177,7 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 
 	override cellData(options: CellDataOptions = {}): Record<string, CellData> {
 		const { level } = options
-		let dim = this.quantity === 0
+		const dim = this.quantity === 0
 		const weightUnits = SheetSettings.for(this.actor).default_weight_units
 
 		return {

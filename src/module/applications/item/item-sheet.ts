@@ -405,7 +405,7 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 	/* -------------------------------------------- */
 
 	_getTabs(): Record<string, Partial<ApplicationTab>> {
-		let tabs: Record<string, Partial<ApplicationTab>> = {
+		const tabs: Record<string, Partial<ApplicationTab>> = {
 			description: {
 				id: "description",
 				group: "primary",
@@ -466,7 +466,7 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 
 	static async #onEditImage(this: ItemSheetGURPS, event: Event): Promise<void> {
 		const img = event.currentTarget as HTMLImageElement
-		let current = this.document.img
+		const current = this.document.img
 		const fp = new FilePicker({
 			type: "image",
 			current: current,
@@ -668,6 +668,10 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 				if (alternate) row.classList.add("banding")
 				alternate = !alternate
 			}
+			for (const row of list.querySelectorAll("li.action")) {
+				if (alternate) row.classList.add("banding")
+				alternate = !alternate
+			}
 		}
 	}
 
@@ -765,9 +769,7 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 
 	/* -------------------------------------------- */
 
-	protected async _prepareActionEmbedList(
-		embeds: MaybePromise<Collection<Action> | Array<Action>>,
-	): Promise<ItemCell[]> {
+	protected async _prepareActionEmbedList(embeds: MaybePromise<Collection<Action> | Action[]>): Promise<ItemCell[]> {
 		const list: ItemCell[] = []
 		let i = 0
 		for (const item of await embeds) {
@@ -789,7 +791,7 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 	/* -------------------------------------------- */
 
 	protected async _prepareItemEmbedList(
-		embeds: MaybePromise<Collection<ItemGURPS2> | Array<ItemGURPS2>>,
+		embeds: MaybePromise<Collection<ItemGURPS2> | ItemGURPS2[]>,
 		{ type, level }: { type: ItemType; level: number },
 	): Promise<ItemCell[]> {
 		const list: ItemCell[] = []

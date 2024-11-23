@@ -171,11 +171,13 @@ class AncestryOptions extends foundry.abstract.DataModel<AncestryData | Weighted
 		if (choice !== "") return choice
 		return DEFAULTS.EYE
 	}
+
 	randomSkin(not: string): string {
 		const choice = WeightedStringOption.choose(this.skin_options, not)
 		if (choice !== "") return choice
 		return DEFAULTS.SKIN
 	}
+
 	randoHandedness(not: string): string {
 		const choice = WeightedStringOption.choose(this.handedness_options, not)
 		if (choice !== "") return choice

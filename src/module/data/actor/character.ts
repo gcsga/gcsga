@@ -126,7 +126,7 @@ class CharacterDataGURPS extends ActorDataModel.mixin(
 	override resolveVariable(variableName: string): string {
 		if (this.variableResolverExclusions.has(variableName)) return ""
 		const v = this.cachedVariables.get(variableName)
-		if (!!v) return v
+		if (v) return v
 		this.variableResolverExclusions.add(variableName)
 		try {
 			if (gid.SizeModifier === variableName) {

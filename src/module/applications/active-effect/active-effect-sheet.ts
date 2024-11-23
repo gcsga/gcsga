@@ -154,7 +154,7 @@ class ActiveEffectSheetGURPS extends api.HandlebarsApplicationMixin(api.Document
 
 	static async #onEditImage(this: ActiveEffectSheetGURPS, event: Event): Promise<void> {
 		const img = event.currentTarget as HTMLImageElement
-		let current = this.document.img
+		const current = this.document.img
 		const fp = new FilePicker({
 			type: "image",
 			current: current,

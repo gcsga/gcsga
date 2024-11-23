@@ -232,7 +232,7 @@ class ActionSheetGURPS extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 	/* -------------------------------------------- */
 
 	_getTabs(): Record<string, Partial<ApplicationTab>> {
-		let tabs: Record<string, Partial<ApplicationTab>> = {
+		const tabs: Record<string, Partial<ApplicationTab>> = {
 			description: {
 				id: "description",
 				group: "primary",
@@ -273,7 +273,7 @@ class ActionSheetGURPS extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 
 	static async #onEditImage(this: ActionSheetGURPS, event: Event): Promise<void> {
 		const img = event.currentTarget as HTMLImageElement
-		let current = this.action.img
+		const current = this.action.img
 		const fp = new FilePicker({
 			type: "image",
 			current: current,

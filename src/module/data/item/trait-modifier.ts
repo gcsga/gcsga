@@ -117,7 +117,7 @@ class TraitModifierData extends ItemDataModel.mixin(BasicInformationTemplate, Fe
 		// TODO: get rid of when we figure out Promise handling
 		if (container instanceof Promise) return null
 		if (container === null) return null
-		let i = 0
+		const i = 0
 		while (!container.isOfType(ItemType.Trait, ItemType.TraitContainer) && i < ItemDataModel.MAX_DEPTH) {
 			container = container.container
 			if (container instanceof Promise) return null
@@ -215,10 +215,7 @@ class TraitModifierData extends ItemDataModel.mixin(BasicInformationTemplate, Fe
 	}
 
 	/** Nameables */
-	override fillWithNameableKeys(
-		m: Map<string, string>,
-		existing: Map<string, string> = this.replacements,
-	): void {
+	override fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string> = this.replacements): void {
 		if (this.disabled) return
 
 		Nameable.extract(this.notes, m, existing)

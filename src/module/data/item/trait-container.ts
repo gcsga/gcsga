@@ -301,10 +301,7 @@ class TraitContainerData extends ItemDataModel.mixin(
 	}
 
 	/** Nameables */
-	override fillWithNameableKeys(
-		m: Map<string, string>,
-		existing: Map<string, string> = this.replacements,
-	): void {
+	override fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string> = this.replacements): void {
 		super.fillWithNameableKeys(m, existing)
 
 		Nameable.extract(this.notes, m, existing)
@@ -326,7 +323,6 @@ class TraitContainerData extends ItemDataModel.mixin(
 
 interface TraitContainerData extends ModelPropsFromSchema<TraitContainerSchema> {
 	get children(): MaybePromise<Collection<ItemInst<ItemType.Trait | ItemType.TraitContainer>>>
-	// get weapons(): MaybePromise<Collection<ItemInst<ItemType.WeaponMelee | ItemType.WeaponRanged>>>
 }
 
 type TraitContainerSchema = BasicInformationTemplateSchema &

@@ -150,9 +150,9 @@ class InventoryElement extends HTMLElement {
 	/* -------------------------------------------- */
 
 	protected _onOpenContextMenu(element: HTMLElement): void {
-		if (!!element.dataset.itemId) return this._onOpenItemContextMenu(element)
-		if (!!element.dataset.actionId) return this._onOpenActionContextMenu(element)
-		if (!!element.dataset.effectId) return this._onOpenEffectContextMenu(element)
+		if (element.dataset.itemId) return this._onOpenItemContextMenu(element)
+		if (element.dataset.actionId) return this._onOpenActionContextMenu(element)
+		if (element.dataset.effectId) return this._onOpenEffectContextMenu(element)
 		return this._onOpenItemListContextMenu(element)
 	}
 

@@ -1,5 +1,5 @@
 import { ActorDataInstances, ActorDataTemplates, ActorTemplateType } from "@module/data/actor/types.ts"
-import { ActorType, SYSTEM_NAME } from "@module/data/constants.ts"
+import { ActionType, ActorType, SYSTEM_NAME } from "@module/data/constants.ts"
 import { Evaluator } from "@module/util/index.ts"
 import { ItemCollectionsMap } from "@system/item-collections.ts"
 import { ActiveEffectGURPS } from "./active-effect.ts"
@@ -9,6 +9,7 @@ import { ActorDataModel } from "@module/data/actor/abstract.ts"
 import { ActorSystemFlags } from "./actor-system-flags.ts"
 import { AttackMelee } from "@module/data/action/attack-melee.ts"
 import { AttackRanged } from "@module/data/action/attack-ranged.ts"
+import { ItemTemplateType } from "@module/data/item/types.ts"
 
 class ActorGURPS2<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null> extends Actor<TParent> {
 	declare items: foundry.abstract.EmbeddedCollection<ItemGURPS2<this>>
@@ -182,11 +183,29 @@ class ActorGURPS2<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS
 
 	/* -------------------------------------------- */
 
-	declare meleeWeapons: AttackMelee[]
+	get meleeAttacks(): AttackMelee[] {
+		const attacks: AttackMelee[] = []
+		this.items.forEach(item => {
+			if (!item.hasTemplate(ItemTemplateType.Action)) return
+			item.system.actions.forEach(e => {
+				if (e.isOfType(ActionType.AttackMelee)) attacks.push(e)
+			})
+		})
+		return attacks
+	}
 
 	/* -------------------------------------------- */
 
-	declare rangedWeapons: AttackRanged[]
+	get rangedAttacks(): AttackRanged[] {
+		const attacks: AttackRanged[] = []
+		this.items.forEach(item => {
+			if (!item.hasTemplate(ItemTemplateType.Action)) return
+			item.system.actions.forEach(e => {
+				if (e.isOfType(ActionType.AttackRanged)) attacks.push(e)
+			})
+		})
+		return attacks
+	}
 
 	/* -------------------------------------------- */
 

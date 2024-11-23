@@ -645,7 +645,7 @@ export class StringField<
 	protected _validateType(value: unknown): boolean | void
 
 	static _getChoices(options: {
-		choices: Record<any, any> | Array<any>
+		choices: Record<any, any> | any[]
 		labelAttr?: string
 		valueAttr?: string
 		localize?: boolean

@@ -59,8 +59,7 @@ class BasicInformationTemplate extends ItemDataModel<BasicInformationTemplateSch
 
 	/** Replacements */
 	get nameWithReplacements(): string {
-		if (this.hasTemplate(ItemTemplateType.Replacement))
-			return Nameable.apply(this.parent.name, this.replacements)
+		if (this.hasTemplate(ItemTemplateType.Replacement)) return Nameable.apply(this.parent.name, this.replacements)
 		return this.parent.name
 	}
 

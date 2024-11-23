@@ -37,6 +37,7 @@ class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 			}),
 		}
 	}
+
 	static override _cleanData(
 		source?: DeepPartial<SourceFromSchema<AbstractSkillTemplateSchema>> & { [key: string]: unknown },
 		_options?: Record<string, unknown>,

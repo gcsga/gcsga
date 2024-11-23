@@ -8,16 +8,6 @@
 
 - Implement ActionSheet
   - Implement dragdrop
-- Fix Actor#meleeWeapons and Actor#rangedWeapons for gcs/functions
-- Change reference to updateAction and deleteAction to system data functions and actually implement them.
-- Change actions from array to map/embedded collection
-- Create activity
-- Move attacks to activity (reasoning: they don't need to be items and don't directly go on a character, and can't contain other items)
-- Activity Types
-  - Melee Weapon
-  - Ranged Weapon
-  - Utility (temporary status effects)
-  - Healing
 
 ## Left To Do
 

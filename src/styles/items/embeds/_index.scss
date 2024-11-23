@@ -29,7 +29,8 @@ section[data-tab="embeds"] {
 			border-radius: 0 0 0.25rem 0.25rem;
 		}
 
-		li.item {
+		li.item,
+		li.action {
 			margin-bottom: 0;
 			background-color: #25282b; // Slightly darker shade for odd rows
 			color: #e1e1e1; // Off-white text color

@@ -17,7 +17,7 @@ class ToggleableStringField<
 	protected override _toInput(
 		config?: (ToggleableFormInputConfig<string> & Partial<SelectInputConfig>) | undefined,
 	): HTMLElement | HTMLCollection {
-		const options = !!config?.options
+		const options = config?.options
 			? Object.values(config.options).reduce((acc: Record<string, string>, c) => {
 					acc[c.value] = c.label
 					return acc

@@ -61,10 +61,10 @@ class ContainerTemplate extends ItemDataModel<ContainerTemplateSchema> {
 
 		const types = Object.fromEntries(ItemTypes.map((t: ItemType) => [t, []]))
 		for (const item of contents) {
-			//@ts-expect-error ill-defined types for now
+			// @ts-expect-error ill-defined types for now
 			types[item.type].push(item as any)
 		}
-		//@ts-expect-error ill-defined types for now
+		// @ts-expect-error ill-defined types for now
 		return types
 	}
 
@@ -73,10 +73,10 @@ class ContainerTemplate extends ItemDataModel<ContainerTemplateSchema> {
 
 		const types = Object.fromEntries(ItemTypes.map((t: ItemType) => [t, []]))
 		for (const item of contents.values()) {
-			//@ts-expect-error ill-defined types for now
+			// @ts-expect-error ill-defined types for now
 			types[item.type].push(item)
 		}
-		//@ts-expect-error ill-defined types for now
+		// @ts-expect-error ill-defined types for now
 		return types
 	}
 

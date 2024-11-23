@@ -21,13 +21,11 @@ class AppliedEffectField extends fields.SchemaField<AppliedEffectFieldSchema> {
 	): ModelPropsFromSchema<AppliedEffectFieldSchema> {
 		const obj = super.initialize(value, model, options)
 		const item = model
-		console.log(item)
 
 		Object.defineProperty(obj, "effect", {
 			get(): ActiveEffectGURPS {
-				// TODO: fix
-				console.log(item)
-				return item?.effects.get(this._id)
+				// TODO: review
+				return (item as unknown as Item).effects.get(this._id) as ActiveEffectGURPS
 			},
 			configurable: true,
 		})
