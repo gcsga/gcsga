@@ -4,17 +4,12 @@
 /* ---------------------------- */
 
 // Shared Variables
-@import "variables",
-	// System Setting Menus
-	"settings",
-	// Actor Sheets
-	"actors",
-	// Item Sheets
-	"items",
-	// Custom GCS Font
-	"fonts",
-	// Applications
-	"applications";
+@use "variables";
+@use "settings";
+@use "actors";
+@use "items";
+@use "fonts";
+@use "applications";
 
 // @import // GCS font and emojis
 // 	"fonts",

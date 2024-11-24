@@ -311,7 +311,7 @@ const DEFAULT_MOVE_TYPE_SETTINGS: Partial<SourceFromSchema<MoveTypeDefSchema>>[]
 
 const DEFAULT_BODY_TYPE: DeepPartial<SourceFromSchema<ActorBodySchema>> = {
 	name: "Humanoid",
-	roll: "3d6",
+	roll: { count: 3, sides: 6, modifier: 0, multiplier: 1 },
 	locations: [
 		{
 			id: "eye",

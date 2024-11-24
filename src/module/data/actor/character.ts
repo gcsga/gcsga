@@ -20,6 +20,7 @@ import { DiceGURPS } from "../dice.ts"
 import { CharacterEncumbrance } from "./fields/character-encumbrance.ts"
 import { equalFold } from "../item/components/index.ts"
 import { ActorDataModel } from "./abstract.ts"
+import { ActorBody } from "../hit-location.ts"
 
 class CharacterDataGURPS extends ActorDataModel.mixin(
 	FeatureHolderTemplate,
@@ -109,6 +110,8 @@ class CharacterDataGURPS extends ActorDataModel.mixin(
 					{ parent: this },
 				),
 		)
+
+		this.body.updateRollRanges()
 	}
 
 	protected _clearCache(): void {
@@ -236,6 +239,10 @@ class CharacterDataGURPS extends ActorDataModel.mixin(
 
 	get encumbrance(): CharacterEncumbrance {
 		return CharacterEncumbrance.for(this.parent)
+	}
+
+	get body(): ActorBody {
+		return this.settings.body_type
 	}
 
 	/**

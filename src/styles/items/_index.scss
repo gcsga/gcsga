@@ -1,25 +1,34 @@
+@use "sass:meta";
 .gurps.item.sheet {
 	&.trait,
-	&.trait_container {
+	&.traitContainer,
+	&.traitModifier,
+	&.traitModifierContainer {
 		--filter-header: hue-rotate(46deg) saturate(0.58) brightness(1.39);
 	}
 	&.skill,
 	&.technique,
-	&.skill_container {
+	&.skillContainer {
 		--filter-header: hue-rotate(256deg) saturate(0.32) brightness(1.29);
 	}
 	&.spell,
-	&.ritual_magic_spell,
-	&.spell_container {
+	&.ritualMagicSpell,
+	&.spellContainer {
 		--filter-header: hue-rotate(359deg) saturate(0.57) brightness(0.86);
 	}
-	&.equipment_gcs,
-	&.equipment_container {
+	&.equipment,
+	&.equipmentContainer,
+	&.equipmentModifier,
+	&.equipmentModifierContainer {
 		--filter-header: hue-rotate(192deg) saturate(1) brightness(1.2);
 	}
 	&.note,
-	&.note_container {
+	&.noteContainer {
 		--filter-header: hue-rotate(279deg) saturate(0.27) brightness(1.15);
+	}
+	&.weaponMelee,
+	&.weaponRanged {
+		--filter-header: hue-rotate(194deg) saturate(1) brightness(0.81);
 	}
 }
 
@@ -42,6 +51,7 @@
 	--background-color: var(--gurps-color-light-blue-1);
 	input,
 	select,
+	prose-mirror,
 	span.input-disabled {
 		--input-background-color: var(--gurps-color-light-blue-2);
 		--checkbox-background-color: var(--gurps-color-light-blue-2);
@@ -56,6 +66,7 @@
 	--background-color: var(--gurps-color-dark-gray);
 	input,
 	select,
+	prose-mirror,
 	span.input-disabled {
 		--input-background-color: var(--gurps-color-dark-blue);
 		--checkbox-background-color: var(--gurps-color-dark-blue);
@@ -67,7 +78,7 @@
 .gurps.item.sheet,
 .gurps.active-effect.sheet,
 .gurps.action.sheet {
-	@import "header";
+	@include meta.load-css("header");
 
 	min-width: 600px;
 	border-radius: 0.625rem;
@@ -108,6 +119,7 @@
 		input[type="text"],
 		input[type="checkbox"],
 		input[type="number"],
+		prose-mirror,
 		span.input-disabled {
 			height: 1.5rem;
 			line-height: 1.5rem;
@@ -122,6 +134,12 @@
 					color: transparent;
 				}
 			}
+		}
+
+		prose-mirror {
+			background: var(--input-background-color);
+			color: var(--input-text-color);
+			border-radius: 0.375rem;
 		}
 
 		span.input-disabled {
@@ -201,8 +219,10 @@
 		}
 	}
 
-	@import "details_prereqs", "details_features", "details_study";
-	@import "embeds";
+	@include meta.load-css("details_prereqs");
+	@include meta.load-css("details_features");
+	@include meta.load-css("details_study");
+	@include meta.load-css("embeds");
 }
 
 .gurps.item.sheet.minimized,

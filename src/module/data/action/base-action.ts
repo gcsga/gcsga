@@ -18,7 +18,7 @@ abstract class BaseAction<TSchema extends BaseActionSchema = BaseActionSchema> e
 	static override metadata: ActionMetadata = Object.freeze({
 		...super.metadata,
 		name: DOCUMENTS.ACTION,
-		img: "icons/svg/item-bag.svg",
+		img: "/icons/svg/item-bag.svg",
 		sheetClass: ActionSheetGURPS,
 	})
 

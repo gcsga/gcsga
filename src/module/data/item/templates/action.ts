@@ -49,6 +49,7 @@ class ActionTemplate extends ItemDataModel<ActionTemplateSchema> {
 
 	updateAction(id: string, updates: object): Promise<ItemGURPS2 | undefined> {
 		if (!this.actions.has(id)) throw ErrorGURPS(`Action of ID ${id} could not be found to update`)
+		console.log(updates)
 		return this.parent.update({ [`system.actions.${id}`]: updates })
 	}
 

@@ -2,12 +2,13 @@ import fields = foundry.data.fields
 import { ActorType, gid } from "@data"
 import { equalFold } from "@module/data/item/components/string-criteria.ts"
 import { StringBuilder, TooltipGURPS, generateId } from "@util"
-import { DiceGURPS } from "./dice.ts"
 import { type ActorGURPS2 } from "@module/documents/actor.ts"
+import { DiceField } from "./item/fields/dice-field.ts"
+import { SheetSettings } from "./sheet-settings.ts"
 
 type ActorBodySchema = {
 	name: fields.StringField<string, string, true, false, true>
-	roll: fields.StringField<string, string, true, false, true>
+	roll: DiceField<true, false, true>
 	locations: fields.ArrayField<fields.EmbeddedDataField<HitLocation>>
 	sub_tables: fields.ArrayField<
 		fields.EmbeddedDataField<HitLocationSubTable>,
@@ -33,13 +34,13 @@ type HitLocationSchema = {
 
 type HitLocationSubTableSchema = {
 	id: fields.StringField<string, string, true, false, true>
-	roll: fields.StringField<string, string, true, false, true>
+	roll: DiceField<true, false, true>
 }
 
 // This is the root actor body object.
 // It contains flat arrays of hit locations and sub-tables as fields,
 // And contains accessors for a hierarchical list of hit locations and sub-tables
-class ActorBody extends foundry.abstract.DataModel<ActorGURPS2, ActorBodySchema> {
+class ActorBody extends foundry.abstract.DataModel<SheetSettings, ActorBodySchema> {
 	static override defineSchema(): ActorBodySchema {
 		const fields = foundry.data.fields
 		return {
@@ -49,10 +50,10 @@ class ActorBody extends foundry.abstract.DataModel<ActorGURPS2, ActorBodySchema>
 				initial: "Humanoid",
 				label: "GURPS.HitLocation.Table.FIELDS.Name.Name",
 			}),
-			roll: new fields.StringField({
+			roll: new DiceField({
 				required: true,
 				nullable: false,
-				initial: "3d6",
+				initial: { count: 3, sides: 6, modifier: 0, multiplier: 1 },
 				label: "GURPS.HitLocation.Table.FIELDS.Roll.Name",
 			}),
 			locations: new fields.ArrayField(new fields.EmbeddedDataField(HitLocation), {
@@ -67,7 +68,7 @@ class ActorBody extends foundry.abstract.DataModel<ActorGURPS2, ActorBodySchema>
 	}
 
 	get actor(): ActorGURPS2 {
-		return this.parent
+		return this.parent.actor
 	}
 
 	// Hierarchical list of hit locatios with included sub tables
@@ -77,6 +78,17 @@ class ActorBody extends foundry.abstract.DataModel<ActorGURPS2, ActorBodySchema>
 
 	get owningLocation(): null {
 		return null
+	}
+
+	get depth(): number {
+		// All locations as children to the actor body will, as a result, have depth 0.
+		// This is intentional.
+		return -1
+	}
+
+	updateRollRanges(): void {
+		let start = this.roll.minimum(false)
+		if (this.hitLocations) for (const location of this.hitLocations) start = location.updateRollRange(start)
 	}
 
 	// Remove any orphaned sub_tables or locations
@@ -123,7 +135,7 @@ class ActorBody extends foundry.abstract.DataModel<ActorGURPS2, ActorBodySchema>
 interface ActorBody extends ModelPropsFromSchema<ActorBodySchema> {}
 
 class HitLocation extends foundry.abstract.DataModel<ActorBody, HitLocationSchema> {
-	declare rollRange: string
+	rollRange: string = "-"
 
 	static override defineSchema(): HitLocationSchema {
 		const fields = foundry.data.fields
@@ -208,6 +220,10 @@ class HitLocation extends foundry.abstract.DataModel<ActorBody, HitLocationSchem
 		return this.owningTable.hitLocations.indexOf(this) === this.owningTable.hitLocations.length - 1
 	}
 
+	get depth(): number {
+		return this.owningTable.depth + 1
+	}
+
 	updateRollRange(start: number): number {
 		switch (this.slots) {
 			case 0:
@@ -239,7 +255,6 @@ class HitLocation extends foundry.abstract.DataModel<ActorBody, HitLocationSchem
 				"<br>",
 			)
 		}
-
 		drMap = this.actor.isOfType(ActorType.Character)
 			? this.actor.system.addDRBonusesFor(this.id, tooltip, drMap)
 			: new Map()
@@ -301,11 +316,11 @@ class HitLocationSubTable extends foundry.abstract.DataModel<ActorBody, HitLocat
 
 		return {
 			id: new fields.StringField({ required: true, nullable: false, initial: generateId }),
-			roll: new fields.StringField({
+			roll: new DiceField({
 				required: true,
 				nullable: false,
-				initial: "1d6",
-				label: "GURPS.HitLocation.Table.FIELDS.SubRoll.Name",
+				initial: { count: 1, sides: 6, modifier: 0, multiplier: 1 },
+				label: "GURPS.HitLocation.Table.FIELDS.Roll.Name",
 			}),
 		}
 	}
@@ -322,16 +337,16 @@ class HitLocationSubTable extends foundry.abstract.DataModel<ActorBody, HitLocat
 		return this.parent.locations.filter(e => e.owningTableId === this.id)
 	}
 
-	get processedRoll(): DiceGURPS {
-		return DiceGURPS.fromString(this.roll)
-	}
-
 	get trueIndex(): number {
 		return this.parent.sub_tables.indexOf(this)
 	}
 
+	get depth(): number {
+		return this.owningLocation.depth
+	}
+
 	updateRollRanges(): void {
-		let start = this.processedRoll.minimum(false)
+		let start = this.roll.minimum(false)
 		if (this.hitLocations) for (const location of this.hitLocations) start = location.updateRollRange(start)
 	}
 }

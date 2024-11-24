@@ -732,6 +732,10 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		context.tab = context.tabs[partId]
 
 		if (partId === "details") {
+			if (this.item.hasTemplate(ItemTemplateType.BasicInformation)) {
+				context.enrichedDescription = await this.item.system.enrichedDescription
+			}
+
 			switch (this.item.type) {
 				case ItemType.Skill:
 				case ItemType.Technique:

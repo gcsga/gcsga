@@ -18,6 +18,7 @@ class BasicInformationTemplate extends ItemDataModel<BasicInformationTemplateSch
 				nullable: false,
 				initial: "",
 			}),
+			description: new fields.HTMLField({ required: true, nullable: false, initial: "" }),
 			notes: new ReplaceableStringField({
 				required: true,
 				nullable: false,
@@ -57,6 +58,14 @@ class BasicInformationTemplate extends ItemDataModel<BasicInformationTemplateSch
 		return replaceAllStringFunc(EvalEmbeddedRegex, this.notesWithReplacements, this.actor)
 	}
 
+	get enrichedDescription(): Promise<string> {
+		let text = this.description
+		text = replaceAllStringFunc(EvalEmbeddedRegex, text, this.actor)
+		return TextEditor.enrichHTML(text, {
+			async: false,
+		})
+	}
+
 	/** Replacements */
 	get nameWithReplacements(): string {
 		if (this.hasTemplate(ItemTemplateType.Replacement)) return Nameable.apply(this.parent.name, this.replacements)
@@ -76,6 +85,7 @@ interface BasicInformationTemplate
 type BasicInformationTemplateSchema = {
 	container: fields.ForeignDocumentField<string>
 	name: ReplaceableStringField<string, string, true, false, true>
+	description: fields.HTMLField<string, string, true, false, true>
 	notes: ReplaceableStringField<string, string, true, false, true>
 	tags: StringArrayField<true, false, true>
 	vtt_notes: ToggleableStringField<string, string, true, false, true>

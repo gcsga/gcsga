@@ -8,6 +8,7 @@ import { viteStaticCopy } from "vite-plugin-static-copy"
 import tsconfigPaths from "vite-tsconfig-paths"
 import packageJSON from "./package.json" assert { type: "json" }
 import { execSync } from "child_process"
+import { visualizer } from "rollup-plugin-visualizer"
 
 // TODO: reimplement
 // const CONDITION_SOURCES = ((): ItemSource & { system: SourceFromSchema<ConditionData> }[] => {
@@ -27,7 +28,7 @@ const config = Vite.defineConfig(({ command, mode }): Vite.UserConfig => {
 	// 	"AbstractDamageRoll.parser = { SyntaxError: peg$SyntaxError, parse: peg$parse };",
 	// )
 
-	const plugins = [checker({ typescript: true }), tsconfigPaths()]
+	const plugins = [checker({ typescript: true }), tsconfigPaths(), visualizer()]
 	// Handle minification after build to allow for tree-shaking and whitespace minification
 	// "Note the build.minify option does not minify whitespaces when using the 'es' format in lib mode, as it removes
 	// pure annotations and breaks tree-shaking."

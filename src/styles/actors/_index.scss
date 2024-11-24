@@ -1,8 +1,12 @@
+@use "sass:meta";
 .gurps.character.sheet {
-	@import "header";
+	--filter-header: hue-rotate(152deg) saturate(0.34) brightness(1.13);
+	@include meta.load-css("header");
+
+	@include meta.load-css("combat");
 
 	section.tab[data-tab="equipment"] {
-		@import "equipment";
+		@include meta.load-css("equipment");
 	}
 
 	section.window-content {

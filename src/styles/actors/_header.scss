@@ -1,9 +1,5 @@
-&.character {
-	--filter-header: hue-rotate(152deg) saturate(0.34) brightness(1.13);
-}
-
 // Transparent buttons to apply own background to window header
-> header.window-header {
+header.window-header {
 	background: transparent;
 	position: relative;
 	z-index: 1;

@@ -19,39 +19,8 @@
 // 	--color-combat: #004f7e; // WEAPON
 // }
 
-&.trait,
-&.traitContainer,
-&.traitModifier,
-&.traitModifierContainer {
-	--filter-header: hue-rotate(46deg) saturate(0.58) brightness(1.39);
-}
-&.skill,
-&.technique,
-&.skillContainer {
-	--filter-header: hue-rotate(256deg) saturate(0.32) brightness(1.29);
-}
-&.spell,
-&.ritualMagicSpell,
-&.spellContainer {
-	--filter-header: hue-rotate(359deg) saturate(0.57) brightness(0.86);
-}
-&.equipment,
-&.equipmentContainer,
-&.equipmentModifier,
-&.equipmentModifierContainer {
-	--filter-header: hue-rotate(192deg) saturate(1) brightness(1.2);
-}
-&.note,
-&.noteContainer {
-	--filter-header: hue-rotate(279deg) saturate(0.27) brightness(1.15);
-}
-&.weaponMelee,
-&.weaponRanged {
-	--filter-header: hue-rotate(194deg) saturate(1) brightness(0.81);
-}
-
 // Transparent buttons to apply own background to window header
-> header.window-header {
+header.window-header {
 	background: transparent;
 	position: relative;
 	z-index: 1;

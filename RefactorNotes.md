@@ -3,6 +3,7 @@
 ## Bugs
 
 - source data retains unused replacement values
+- Changing default hit locations requires reload before taking effecct
 
 ## Current Tasks
 

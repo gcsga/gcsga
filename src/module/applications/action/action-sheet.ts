@@ -1,7 +1,8 @@
 import { Action } from "@module/data/action/types.ts"
 import { HOOKS, SYSTEM_NAME } from "@module/data/constants.ts"
+import { ItemTemplateInst } from "@module/data/item/helpers.ts"
+import { ItemTemplateType } from "@module/data/item/types.ts"
 import { ActiveEffectGURPS } from "@module/documents/active-effect.ts"
-import { ItemGURPS2 } from "@module/documents/item.ts"
 
 const { api } = foundry.applications
 
@@ -10,11 +11,10 @@ interface ActionSheetConfiguration extends ApplicationConfiguration {
 }
 
 class ActionSheetGURPS extends api.HandlebarsApplicationMixin(api.ApplicationV2) {
-	action: Action
-
 	constructor(options: ActionSheetConfiguration) {
 		super(options)
-		this.action = options.document
+		this.#item = options.document.item as any
+		this.#actionId = options.document.id
 		this.#dragDrop = this.#createDragDropHandlers()
 		this._mode = this.item.isOwned ? this.constructor.MODES.PLAY : this.constructor.MODES.EDIT
 	}
@@ -31,8 +31,16 @@ class ActionSheetGURPS extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 
 	/* -------------------------------------------- */
 
-	get item(): ItemGURPS2 {
-		return this.action.item
+	#actionId: string
+	get action(): Action {
+		return this.item.system.actions.get(this.#actionId)!
+	}
+
+	/* -------------------------------------------- */
+
+	#item: ItemTemplateInst<ItemTemplateType.Action>
+	get item(): ItemTemplateInst<ItemTemplateType.Action> {
+		return this.#item
 	}
 
 	/* -------------------------------------------- */
@@ -264,9 +272,8 @@ class ActionSheetGURPS extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 
 	static async #onViewImage(this: ActionSheetGURPS, event: Event): Promise<void> {
 		event.preventDefault()
-		const title = this.item.name
-		// const title = this.item.system.identified === false ? this.item.system.unidentified.name : this.item.name
-		new ImagePopout(this.item.img, { title, uuid: this.item.uuid }).render(true)
+		const title = this.action.name
+		new ImagePopout(this.action.img, { title, uuid: this.action.uuid as DocumentUUID }).render(true)
 	}
 
 	/* -------------------------------------------- */
@@ -279,13 +286,13 @@ class ActionSheetGURPS extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 			current: current,
 			callback: async (path: FilePath) => {
 				img.src = path
-				await this.item.update({ img: path })
+				await this.action.update({ img: path })
 				return this.render()
 			},
 			top: this.position.top! + 40,
 			left: this.position.left! + 10,
 		})
-		await fp.browse(this.item.img)
+		await fp.browse(this.action.img)
 	}
 
 	/* -------------------------------------------- */

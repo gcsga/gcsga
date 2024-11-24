@@ -1,4 +1,7 @@
-@import "color_config", "sheet_settings_config", "attributes_config", "hit_locations_config";
+@use "color_config";
+@use "sheet_settings_config";
+@use "attributes_config";
+@use "hit_locations_config";
 
 .button-parent {
 	display: grid;

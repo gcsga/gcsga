@@ -47,8 +47,6 @@ export const Load = {
 
 		// @ts-expect-error infinite type
 		CONFIG.Item.dataModels = {
-			// [ItemType.Condition]: ItemInstance.ConditionData,
-			// [ItemType.Effect]: ItemInstance.EffectData,
 			[ItemType.EquipmentContainer]: ItemInstance.EquipmentContainerData,
 			[ItemType.EquipmentModifierContainer]: ItemInstance.EquipmentModifierContainerData,
 			[ItemType.EquipmentModifier]: ItemInstance.EquipmentModifierData,
@@ -61,12 +59,11 @@ export const Load = {
 			[ItemType.SpellContainer]: ItemInstance.SpellContainerData,
 			[ItemType.Spell]: ItemInstance.SpellData,
 			[ItemType.Technique]: ItemInstance.TechniqueData,
+			// @ts-expect-error doesn't like  type
 			[ItemType.TraitContainer]: ItemInstance.TraitContainerData,
 			[ItemType.TraitModifierContainer]: ItemInstance.TraitModifierContainerData,
 			[ItemType.TraitModifier]: ItemInstance.TraitModifierData,
 			[ItemType.Trait]: ItemInstance.TraitData,
-			// [ItemType.WeaponMelee]: ItemInstance.WeaponMeleeData,
-			// [ItemType.WeaponRanged]: ItemInstance.WeaponRangedData,
 		}
 
 		CONFIG.ActiveEffect.dataModels = {

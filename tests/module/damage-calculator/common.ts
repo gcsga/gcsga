@@ -21,7 +21,7 @@ export class _Attacker implements DamageAttacker {
 
 const _dummyHitLocationTable = {
 	name: "humanoid",
-	roll: "3d",
+	roll: DiceGURPS.fromString("3d6"),
 	locations: <ModelPropsFromSchema<HitLocationSchema>[]>[],
 }
 
