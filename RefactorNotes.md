@@ -2,6 +2,8 @@
 
 ## Bugs
 
+- Add "max" and "min" to thresholds
+- add progress bar to pool bars.
 - source data retains unused replacement values
 - Changing default hit locations requires reload before taking effecct
 

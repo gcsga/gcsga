@@ -3,6 +3,7 @@ import type { AttributeDef } from "./attribute-definition.ts"
 import { threshold } from "@util"
 import { VariableResolver, evaluateToNumber } from "@module/util/index.ts"
 import { ResourceTrackerDef } from "../resource-tracker/resource-tracker-definition.ts"
+import { ActorGURPS2 } from "@module/documents/actor.ts"
 
 class PoolThreshold extends foundry.abstract.DataModel<AttributeDef | ResourceTrackerDef, PoolThresholdSchema> {
 	static override defineSchema(): PoolThresholdSchema {
@@ -37,7 +38,11 @@ class PoolThreshold extends foundry.abstract.DataModel<AttributeDef | ResourceTr
 		}
 	}
 
-	threshold(actor: VariableResolver): number {
+	get actor(): ActorGURPS2 {
+		return this.parent.actor
+	}
+
+	threshold(actor: VariableResolver = this.actor.system): number {
 		return evaluateToNumber(this.expression, actor)
 	}
 }

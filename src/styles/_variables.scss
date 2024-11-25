@@ -1,7 +1,46 @@
+// Colors
 :root {
 	--gurps-color-light-blue-1: #e5fcf5;
 	--gurps-color-light-blue-2: #b3dec1;
 	--gurps-color-dark-blue: #21263d;
 	--gurps-color-dark-gray: #121212;
 	--gurps-color-orange-1: #ffc826;
+
+	--gurps-color-dark-gray-2: #2c2f33;
+	--gurps-color-dark-gray-3: #25282b;
+	--gurps-color-dark-gray-4: #2f3338;
+
+	--gurps-color-light-gray-1: #d1d1d1;
+	--gurps-color-light-gray-2: #e1e1e1;
+
+	--gurps-color-green-1: #007f00;
+	--gurps-color-red-1: #bf0000;
+	--gurps-color-blue-1: #0047ab;
+	--gurps-color-white-1: #f0f0e0;
+}
+
+// Color Assignments (Dark Theme)
+:root {
+	// Tables
+	--gurps-color-bg-table-header: var(--gurps-color-dark-gray-2);
+	--gurps-color-fg-table-header: var(--gurps-color-light-gray-1);
+	--gurps-color-bg-table-body: var(--gurps-color-dark-gray-3);
+	--gurps-color-bg-table-banding: var(--gurps-color-dark-gray-4);
+	--gurps-color-fg-table-body: var(--gurps-color-light-gray-2);
+
+	// Modifiers
+	--gurps-color-fg-modifier: var(--gurps-color-white-1);
+	--gurps-color-bg-modifier-pos: var(--gurps-color-green-1);
+	--gurps-color-bg-modifier-neg: var(--gurps-color-red-1);
+	--gurps-color-bg-modifier-neutral: var(--gurps-color-blue-1);
+}
+
+// Color Assignments (Light Theme)
+.theme-light {
+	// Tables
+	--gurps-color-bg-table-header: var(--gurps-color-dark-gray-2);
+	--gurps-color-fg-table-header: var(--gurps-color-light-gray-1);
+	--gurps-color-bg-table-body: var(--gurps-color-dark-gray-3);
+	--gurps-color-bg-table-banding: var(--gurps-color-dark-gray-4);
+	--gurps-color-fg-table-body: var(--gurps-color-light-gray-2);
 }

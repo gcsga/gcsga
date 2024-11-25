@@ -23,25 +23,26 @@ class HitLocationTableElement extends HTMLElement {
 
 	_buildElements(): HTMLElement[] {
 		if (this.actor?.isOfType(ActorType.Character)) {
-			const headerEl = document.createElement("tr")
+			const headerEl = document.createElement("thead")
+			const headerRowEl = document.createElement("tr")
 
 			const rollEl = document.createElement("th")
 			rollEl.innerText = "Roll"
-			headerEl.append(rollEl)
+			headerRowEl.append(rollEl)
 
 			const locationEl = document.createElement("th")
 			locationEl.innerText = "Location"
-			headerEl.append(locationEl)
+			headerRowEl.append(locationEl)
 
 			const drEl = document.createElement("th")
 			drEl.innerText = "DR"
-			headerEl.append(drEl)
+			headerRowEl.append(drEl)
 
 			const notesEl = document.createElement("th")
 			notesEl.innerText = "Notes"
-			headerEl.append(notesEl)
+			headerRowEl.append(notesEl)
 
-			const arr: HTMLElement[] = [headerEl]
+			headerEl.append(headerRowEl)
 
 			const getLocationElements = (location: HitLocation): HTMLElement[] => {
 				const el = document.createElement("tr")
@@ -57,6 +58,9 @@ class HitLocationTableElement extends HTMLElement {
 				locationEl.innerText = location.table_name
 				const penaltyEl = document.createElement("a")
 				penaltyEl.innerText = String(location.hit_penalty)
+				if (location.hit_penalty < 0) penaltyEl.classList.add("negative")
+				else if (location.hit_penalty > 0) penaltyEl.classList.add("positive")
+				else penaltyEl.classList.add("neutral")
 				locationEl.append(penaltyEl)
 				el.append(locationEl)
 
@@ -76,8 +80,12 @@ class HitLocationTableElement extends HTMLElement {
 				return [el]
 			}
 
-			this.actor.system.body.hitLocations.forEach(e => arr.push(...getLocationElements(e)))
-			return arr
+			const bodyEl = document.createElement("tbody")
+			this.actor.system.body.hitLocations.forEach(e => bodyEl.append(...getLocationElements(e)))
+
+			const tableEl = document.createElement("table")
+			tableEl.append(headerEl, bodyEl)
+			return [tableEl]
 		}
 		return []
 	}
