@@ -524,10 +524,10 @@
 // 	// 	definitions: TDef[],
 // 	// ): ModelPropsFromSchema<ResourceTrackerSchema>[]
 // 	// generateNewAttributes<TDef extends MoveTypeDef>(definitions: TDef[]): ModelPropsFromSchema<MoveTypeSchema>[]
-// 	// generateNewAttributes<TDef extends AbstractAttributeDef>(
+// 	// generateNewAttributes<TDef extends AbstractStatDef>(
 // 	// 	definitions: TDef[],
-// 	// ): ModelPropsFromSchema<AbstractAttributeSchema>[] {
-// 	// 	const values: ModelPropsFromSchema<AbstractAttributeSchema>[] = []
+// 	// ): ModelPropsFromSchema<AbstractStatSchema>[] {
+// 	// 	const values: ModelPropsFromSchema<AbstractStatSchema>[] = []
 // 	// 	definitions.forEach(definition => {
 // 	// 		values.push(definition.generateNewAttribute().toObject())
 // 	// 	})

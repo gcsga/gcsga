@@ -1,22 +1,18 @@
 import fields = foundry.data.fields
-import type { TokenPool } from "@module/data/types.ts"
-import type { ResourceTrackerDef } from "./resource-tracker-definition.ts"
+import { ActorDataModel } from "@module/data/actor/abstract.ts"
 import { SheetSettings } from "@module/data/sheet-settings.ts"
-import {
-	AbstractAttribute,
-	AbstractAttributeConstructionOptions,
-	AbstractAttributeSchema,
-} from "../abstract-attribute/index.ts"
+import type { TokenPool } from "@module/data/types.ts"
+import { AbstractStat, AbstractStatConstructionOptions, AbstractStatSchema } from "../abstract-stat/index.ts"
 import { PoolThreshold } from "../attribute/index.ts"
-import { ActorDataModel } from "../actor/abstract.ts"
+import type { ResourceTrackerDef } from "./resource-tracker-definition.ts"
 
-class ResourceTracker extends AbstractAttribute<ActorDataModel, ResourceTrackerSchema> {
+class ResourceTracker extends AbstractStat<ActorDataModel, ResourceTrackerSchema> {
 	order: number
 	// damage?: number
 
 	constructor(
 		data: DeepPartial<SourceFromSchema<ResourceTrackerSchema>>,
-		options?: AbstractAttributeConstructionOptions<ActorDataModel>,
+		options?: AbstractStatConstructionOptions<ActorDataModel>,
 	) {
 		super(data, options)
 		this.order = options?.order ?? 0
@@ -65,10 +61,10 @@ class ResourceTracker extends AbstractAttribute<ActorDataModel, ResourceTrackerS
 }
 
 interface ResourceTracker
-	extends AbstractAttribute<ActorDataModel, ResourceTrackerSchema>,
+	extends AbstractStat<ActorDataModel, ResourceTrackerSchema>,
 		ModelPropsFromSchema<ResourceTrackerSchema> {}
 
-type ResourceTrackerSchema = AbstractAttributeSchema & {
+type ResourceTrackerSchema = AbstractStatSchema & {
 	damage: fields.NumberField<number, number, true, false, true>
 }
 

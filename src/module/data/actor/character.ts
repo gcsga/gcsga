@@ -13,9 +13,9 @@ import { AttributeHolderTemplate, AttributeHolderTemplateSchema } from "./templa
 import { CharacterBonus, CharacterBonusSchema } from "./fields/bonus.ts"
 import { Int, attribute, encumbrance, progression, threshold } from "@util"
 import { ItemInst } from "../item/helpers.ts"
-import { ResourceTracker, ResourceTrackerSchema } from "../resource-tracker/index.ts"
-import { MoveType, MoveTypeSchema } from "../move-type/index.ts"
-import { AttributeGURPS } from "../attribute/index.ts"
+import { ResourceTracker, ResourceTrackerSchema } from "../stat/resource-tracker/index.ts"
+import { MoveType, MoveTypeSchema } from "../stat/move-type/index.ts"
+import { AttributeGURPS } from "../stat/attribute/index.ts"
 import { DiceGURPS } from "../dice.ts"
 import { CharacterEncumbrance } from "./fields/character-encumbrance.ts"
 import { equalFold } from "../item/components/index.ts"
@@ -101,15 +101,15 @@ class CharacterDataGURPS extends ActorDataModel.mixin(
 			moveBonuses: [],
 		}
 
-		this.attributes.list = this.settings.attributes.map(
-			e =>
-				new AttributeGURPS(
-					{
-						id: e.id,
-					},
-					{ parent: this },
-				),
-		)
+		// this.attributes = this.settings.attributes.map(
+		// 	e =>
+		// 		new AttributeGURPS(
+		// 			{
+		// 				id: e.id,
+		// 			},
+		// 			{ parent: this },
+		// 		),
+		// )
 
 		this.body.updateRollRanges()
 	}
@@ -138,7 +138,7 @@ class CharacterDataGURPS extends ActorDataModel.mixin(
 				return result
 			}
 			const parts = variableName.split(".", 2)
-			const attr = this.attributes.map.get(parts[0]) ?? null
+			const attr = this.attributes.get(parts[0]) ?? null
 			if (attr === null) {
 				return ""
 			}
@@ -325,7 +325,7 @@ class CharacterDataGURPS extends ActorDataModel.mixin(
 
 	basicLiftForST(st: number): number {
 		st = Math.trunc(st)
-		if (AttributeGURPS.isThresholdOpMet(threshold.Op.HalveST, this.attributes.list)) {
+		if (AttributeGURPS.isThresholdOpMet(threshold.Op.HalveST, this.attributes)) {
 			st /= 2
 			if (st !== Math.trunc(st)) {
 				st = Math.trunc(st) + 1

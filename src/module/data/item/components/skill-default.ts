@@ -5,7 +5,7 @@ import { ActorTemplateType } from "@module/data/actor/types.ts"
 import { Nameable } from "@module/util/index.ts"
 import { ItemTemplateType } from "../types.ts"
 import { createButton, createDummyElement } from "@module/applications/helpers.ts"
-import { getAttributeChoices } from "../../attribute/helpers.ts"
+import { getAttributeChoices } from "../../stat/attribute/helpers.ts"
 import { ItemDataModel } from "../abstract.ts"
 import fields = foundry.data.fields
 import { ItemGURPS2 } from "@module/documents/item.ts"

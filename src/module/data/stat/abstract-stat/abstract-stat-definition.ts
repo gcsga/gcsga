@@ -1,25 +1,24 @@
 import fields = foundry.data.fields
 import { getNewAttributeId } from "@util"
 import { gid } from "@module/data/constants.ts"
-import { SheetSettings } from "../sheet-settings.ts"
 import { ActorGURPS2 } from "@module/documents/actor.ts"
+import { SheetSettings } from "@module/data/sheet-settings.ts"
 
 export const RESERVED_IDS: string[] = [gid.Skill, gid.Parry, gid.Block, gid.Dodge, gid.SizeModifier, gid.Ten]
 
-abstract class AbstractAttributeDef<
-	TSchema extends AbstractAttributeDefSchema = AbstractAttributeDefSchema,
-> extends foundry.abstract.DataModel<SheetSettings, TSchema> {
+abstract class AbstractStatDef<TSchema extends AbstractStatDefSchema = AbstractStatDefSchema> extends foundry.abstract
+	.DataModel<SheetSettings, TSchema> {
 	// declare parent: TActor
 
 	// protected _id: string
-	// static attributeClass: typeof AbstractAttribute = AbstractAttribute
+	// static attributeClass: typeof AbstractStat = AbstractStat
 
 	// constructor(data?: DeepPartial<SourceFromSchema<TSchema>>, options?: DataModelConstructionOptions<TActor>) {
 	// 	super(data, options)
 	// 	this._id = sanitizeId(String(data?.id ?? ""), false, RESERVED_IDS)
 	// }
 
-	static override defineSchema(): AbstractAttributeDefSchema {
+	static override defineSchema(): AbstractStatDefSchema {
 		const fields = foundry.data.fields
 
 		return {
@@ -42,10 +41,10 @@ abstract class AbstractAttributeDef<
 
 	abstract baseValue(resolver: unknown): number
 
-	// abstract generateNewAttribute(): AbstractAttribute
+	// abstract generateNewAttribute(): AbstractStat
 
-	static createInstance<T extends AbstractAttributeDef>(
-		this: new (source: DeepPartial<SourceFromSchema<AbstractAttributeDefSchema>>) => T,
+	static createInstance<T extends AbstractStatDef>(
+		this: new (source: DeepPartial<SourceFromSchema<AbstractStatDefSchema>>) => T,
 		reservedIds: string[],
 	): T {
 		const id = getNewAttributeId(
@@ -57,13 +56,13 @@ abstract class AbstractAttributeDef<
 	}
 }
 
-interface AbstractAttributeDef<TSchema extends AbstractAttributeDefSchema>
+interface AbstractStatDef<TSchema extends AbstractStatDefSchema>
 	extends foundry.abstract.DataModel<SheetSettings, TSchema>,
-		ModelPropsFromSchema<AbstractAttributeDefSchema> {}
+		ModelPropsFromSchema<AbstractStatDefSchema> {}
 
-type AbstractAttributeDefSchema = {
+type AbstractStatDefSchema = {
 	id: fields.StringField<string, string, true, false>
 	base: fields.StringField<string, string, true, false, true>
 }
 
-export { AbstractAttributeDef, type AbstractAttributeDefSchema }
+export { AbstractStatDef, type AbstractStatDefSchema }

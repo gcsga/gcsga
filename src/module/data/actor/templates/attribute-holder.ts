@@ -1,16 +1,30 @@
 import { ActorDataModel } from "@module/data/actor/abstract.ts"
-import fields = foundry.data.fields
 import { threshold } from "@util"
-import { AttributeDef, AttributeGURPS } from "@module/data/attribute/index.ts"
-import { Attributes } from "@module/data/attribute/attributes.ts"
+import { AttributeDef, AttributeGURPS } from "@module/data/stat/attribute/index.ts"
+import { StatsField } from "../fields/stats-field.ts"
+// import { Attributes } from "@module/data/attribute/attributes.ts"
 
 class AttributeHolderTemplate extends ActorDataModel<AttributeHolderTemplateSchema> {
 	static override defineSchema(): AttributeHolderTemplateSchema {
-		const fields = foundry.data.fields
+		// const fields = foundry.data.fields
 		return {
-			attributes: new fields.EmbeddedDataField(Attributes),
+			attributes: new StatsField({ model: AttributeGURPS, required: true, nullable: false }),
+			// attributes: new fields.EmbeddedDataField(Attributes),
 			// attributes: new fields.ArrayField(new fields.SchemaField(AttributeGURPS.defineSchema())),
 		}
+	}
+
+	protected override _initializeSource(
+		data: { settings: { attributes: AttributeDef[] } },
+		options?: DataModelConstructionOptions<this["parent"]>,
+	): this["_source"] {
+		// console.log(data, options)
+		const attributes: Record<string, { id: string }> = {}
+		data.settings.attributes.forEach(e => {
+			attributes[e.id] = { id: e.id }
+		})
+		foundry.utils.mergeObject(data, { attributes })
+		return super._initializeSource(data, options)
 	}
 
 	// get attributeMap(): Map<string, AttributeGURPS> {
@@ -18,13 +32,13 @@ class AttributeHolderTemplate extends ActorDataModel<AttributeHolderTemplateSche
 	// }
 	//
 	resolveAttributeDef(id: string): AttributeDef | null {
-		if (this.attributes.map.has(id)) return this.attributes.map.get(id)!.definition
+		if (this.attributes.has(id)) return this.attributes.get(id)!.definition
 		// console.error(`No Attribute definition found for id "${id}"`)
 		return null
 	}
 
 	resolveAttribute(id: string): AttributeGURPS | null {
-		if (this.attributes.map.has(id)) return this.attributes.map.get(id)!
+		if (this.attributes.has(id)) return this.attributes.get(id)!
 		// console.error(`No Attribute definition found for id "${id}"`)
 		return null
 	}
@@ -38,7 +52,7 @@ class AttributeHolderTemplate extends ActorDataModel<AttributeHolderTemplateSche
 	}
 
 	resolveAttributeCurrent(id: string): number {
-		if (this.attributes.map.has(id)) return this.attributes.map.get(id)!.current
+		if (this.attributes.has(id)) return this.attributes.get(id)!.current
 		// console.error(`No Attribute found for id "${id}"`)
 		return Number.MIN_SAFE_INTEGER
 	}
@@ -53,7 +67,7 @@ class AttributeHolderTemplate extends ActorDataModel<AttributeHolderTemplateSche
 
 	countThresholdOpMet(op: threshold.Op): number {
 		let total = 0
-		for (const attribute of this.attributes.list) {
+		for (const attribute of this.attributes.values()) {
 			const t = attribute.currentThreshold
 			if (t !== null && t.ops.includes(op)) total += 1
 		}
@@ -67,7 +81,8 @@ type AttributeHolderTemplateSchema = {
 	// attributes: fields.ArrayField<
 	// 	fields.SchemaField<AttributeSchema, SourceFromSchema<AttributeSchema>, AttributeGURPS>
 	// >
-	attributes: fields.EmbeddedDataField<Attributes>
+	// attributes: fields.EmbeddedDataField<Attributes>
+	attributes: StatsField<typeof AttributeGURPS, true, false, true>
 	// 	fields.SchemaField<AttributeSchema, SourceFromSchema<AttributeSchema>, AttributeGURPS>
 	// >
 }

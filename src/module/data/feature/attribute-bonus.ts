@@ -1,7 +1,7 @@
 import { gid } from "@data"
 import { feature } from "@util/enum/feature.ts"
 import { stlimit } from "@util/enum/stlimit.ts"
-import { getAttributeChoices } from "../attribute/helpers.ts"
+import { getAttributeChoices } from "../stat/attribute/helpers.ts"
 import { BaseFeature, BaseFeatureSchema } from "./base-feature.ts"
 import fields = foundry.data.fields
 import { createDummyElement } from "@module/applications/helpers.ts"

@@ -1,12 +1,12 @@
+import { AbstractStat, AbstractStatSchema } from "../abstract-stat/index.ts"
 import fields = foundry.data.fields
 import { MoveTypeDef } from "./move-type-definition.ts"
-import { AbstractAttribute, AbstractAttributeSchema } from "../abstract-attribute/index.ts"
-import { ActorTemplateType } from "../actor/types.ts"
-import { SheetSettings } from "../sheet-settings.ts"
-import { MoveBonusType } from "../feature/move-bonus.ts"
-import { ActorDataModel } from "../actor/abstract.ts"
+import { ActorDataModel } from "@module/data/actor/abstract.ts"
+import { SheetSettings } from "@module/data/sheet-settings.ts"
+import { MoveBonusType } from "@module/data/feature/move-bonus.ts"
+import { ActorTemplateType } from "@module/data/actor/types.ts"
 
-class MoveType extends AbstractAttribute<ActorDataModel, MoveTypeSchema> {
+class MoveType extends AbstractStat<ActorDataModel, MoveTypeSchema> {
 	static override defineSchema(): MoveTypeSchema {
 		const fields = foundry.data.fields
 		return {
@@ -53,9 +53,9 @@ class MoveType extends AbstractAttribute<ActorDataModel, MoveTypeSchema> {
 	}
 }
 
-interface MoveType extends AbstractAttribute<ActorDataModel, MoveTypeSchema>, ModelPropsFromSchema<MoveTypeSchema> {}
+interface MoveType extends AbstractStat<ActorDataModel, MoveTypeSchema>, ModelPropsFromSchema<MoveTypeSchema> {}
 
-type MoveTypeSchema = AbstractAttributeSchema & {
+type MoveTypeSchema = AbstractStatSchema & {
 	adj: fields.NumberField<number, number, true, false, true>
 }
 export { MoveType, type MoveTypeSchema }

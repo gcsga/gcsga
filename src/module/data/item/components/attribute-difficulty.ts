@@ -1,7 +1,7 @@
 import { difficulty } from "@util"
 import { ItemDataModel } from "@module/data/item/abstract.ts"
 import { ItemType, gid } from "@module/data/constants.ts"
-import { getAttributeChoices } from "@module/data/attribute/helpers.ts"
+import { getAttributeChoices } from "@module/data/stat/attribute/helpers.ts"
 import { ActorGURPS2 } from "@module/documents/actor.ts"
 import { SheetSettings } from "@module/data/sheet-settings.ts"
 import { ToggleableStringField } from "@module/data/fields/toggleable-string-fields.ts"

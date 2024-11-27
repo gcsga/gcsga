@@ -1,6 +1,6 @@
+import { gid } from "@module/data/constants.ts"
+import { SheetSettings } from "@module/data/sheet-settings.ts"
 import { ActorGURPS2 } from "@module/documents/actor.ts"
-import { SheetSettings } from "../sheet-settings.ts"
-import { gid } from "../constants.ts"
 
 function getAttributeChoices(
 	actor: ActorGURPS2 | null,

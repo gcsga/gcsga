@@ -1,9 +1,9 @@
+import { ActorDataModel } from "@module/data/actor/abstract.ts"
 import fields = foundry.data.fields
+import { AbstractStatDef, AbstractStatDefSchema } from "../abstract-stat/index.ts"
 import { PoolThreshold, PoolThresholdSchema } from "../attribute/index.ts"
-import { AbstractAttributeDef, AbstractAttributeDefSchema } from "../abstract-attribute/index.ts"
-import { ActorDataModel } from "../actor/abstract.ts"
 
-class ResourceTrackerDef extends AbstractAttributeDef<ResourceTrackerDefSchema> {
+class ResourceTrackerDef extends AbstractStatDef<ResourceTrackerDefSchema> {
 	static override defineSchema(): ResourceTrackerDefSchema {
 		const fields = foundry.data.fields
 		return {
@@ -84,10 +84,10 @@ class ResourceTrackerDef extends AbstractAttributeDef<ResourceTrackerDefSchema> 
 }
 
 interface ResourceTrackerDef
-	extends AbstractAttributeDef<ResourceTrackerDefSchema>,
+	extends AbstractStatDef<ResourceTrackerDefSchema>,
 		ModelPropsFromSchema<ResourceTrackerDefSchema> {}
 
-type ResourceTrackerDefSchema = AbstractAttributeDefSchema & {
+type ResourceTrackerDefSchema = AbstractStatDefSchema & {
 	name: fields.StringField<string, string, true, false, true>
 	full_name: fields.StringField<string, string, false, false, true>
 	max: fields.NumberField<number, number, true, false, true>

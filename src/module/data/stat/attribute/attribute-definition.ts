@@ -6,12 +6,12 @@ import { ActorDataModel } from "@module/data/actor/abstract.ts"
 import { ActorTemplateType } from "@module/data/actor/types.ts"
 import { AttributeHolderTemplate } from "@module/data/actor/templates/attribute-holder.ts"
 import { VariableResolver, evaluateToNumber } from "@module/util/index.ts"
-import { AbstractAttributeDef, AbstractAttributeDefSchema } from "../abstract-attribute/index.ts"
-import { type ActorInst } from "../actor/helpers.ts"
+import { AbstractStatDef, AbstractStatDefSchema } from "../abstract-stat/index.ts"
+import { ActorInst } from "@module/data/actor/helpers.ts"
 
 class AttributeDef<
 	TActor extends AttributeHolderTemplate = AttributeHolderTemplate,
-> extends AbstractAttributeDef<AttributeDefSchema> {
+> extends AbstractStatDef<AttributeDefSchema> {
 	// static override attributeClass = AttributeGURPS
 
 	static override defineSchema(): AttributeDefSchema {
@@ -174,11 +174,11 @@ class AttributeDef<
 	// }
 }
 
-interface AttributeDef extends AbstractAttributeDef<AttributeDefSchema>, ModelPropsFromSchema<AttributeDefSchema> {
+interface AttributeDef extends AbstractStatDef<AttributeDefSchema>, ModelPropsFromSchema<AttributeDefSchema> {
 	get actor(): ActorInst<ActorType.Character>
 }
 
-type AttributeDefSchema = AbstractAttributeDefSchema & {
+type AttributeDefSchema = AbstractStatDefSchema & {
 	type: fields.StringField<attribute.Type, attribute.Type, true, false, true>
 	placement: fields.StringField<attribute.Placement, attribute.Placement, false, false, true>
 	name: fields.StringField<string, string, true, false, true>

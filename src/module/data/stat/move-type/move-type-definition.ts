@@ -1,12 +1,9 @@
 import { MoveTypeOverride, MoveTypeOverrideSchema } from "./move-type-override.ts"
 import fields = foundry.data.fields
 import { VariableResolver, evaluateToNumber } from "@module/util/gcs/eval.ts"
-import {
-	AbstractAttributeDef,
-	AbstractAttributeDefSchema,
-} from "../abstract-attribute/abstract-attribute-definition.ts"
+import { AbstractStatDef, AbstractStatDefSchema } from "../abstract-stat/abstract-stat-definition.ts"
 
-class MoveTypeDef extends AbstractAttributeDef<MoveTypeDefSchema> {
+class MoveTypeDef extends AbstractStatDef<MoveTypeDefSchema> {
 	// static override attributeClass = MoveType
 
 	static override defineSchema(): MoveTypeDefSchema {
@@ -56,9 +53,9 @@ class MoveTypeDef extends AbstractAttributeDef<MoveTypeDefSchema> {
 	// }
 }
 
-interface MoveTypeDef extends AbstractAttributeDef<MoveTypeDefSchema>, ModelPropsFromSchema<MoveTypeDefSchema> {}
+interface MoveTypeDef extends AbstractStatDef<MoveTypeDefSchema>, ModelPropsFromSchema<MoveTypeDefSchema> {}
 
-type MoveTypeDefSchema = AbstractAttributeDefSchema & {
+type MoveTypeDefSchema = AbstractStatDefSchema & {
 	name: fields.StringField<string, string, true, false, true>
 	cost_per_point: fields.NumberField<number, number, true, false, true>
 	overrides: fields.ArrayField<

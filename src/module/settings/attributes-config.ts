@@ -1,17 +1,22 @@
 import { SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
 import fields = foundry.data.fields
 import api = foundry.applications.api
-import { AttributeDef, AttributeDefSchema } from "@module/data/attribute/attribute-definition.ts"
 import {
 	DEFAULT_ATTRIBUTE_SETTINGS,
 	DEFAULT_MOVE_TYPE_SETTINGS,
 	DEFAULT_RESOURCE_TRACKER_SETTINGS,
 } from "./defaults/data.ts"
 import { threshold } from "@util"
-import { PoolThreshold } from "@module/data/attribute/pool-threshold.ts"
-import { ResourceTrackerDef, ResourceTrackerDefSchema } from "@module/data/resource-tracker/index.ts"
-import { MoveTypeDef, MoveTypeDefSchema } from "@module/data/move-type/move-type-definition.ts"
-import { MoveTypeOverride } from "@module/data/move-type/move-type-override.ts"
+import {
+	AttributeDef,
+	AttributeDefSchema,
+	MoveTypeDef,
+	MoveTypeDefSchema,
+	MoveTypeOverride,
+	PoolThreshold,
+	ResourceTrackerDef,
+	ResourceTrackerDefSchema,
+} from "@module/data/stat/index.ts"
 
 class AttributeSettings extends foundry.abstract.DataModel<null, AttributeSettingsSchema> {
 	static override defineSchema(): AttributeSettingsSchema {

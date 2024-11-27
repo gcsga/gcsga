@@ -3,7 +3,7 @@ import fields = foundry.data.fields
 import { BaseFeature, BaseFeatureSchema } from "./base-feature.ts"
 import { feature } from "@util"
 import { createButton, createDummyElement } from "@module/applications/helpers.ts"
-import { getAttributeChoices } from "../attribute/helpers.ts"
+import { getAttributeChoices } from "../stat/attribute/helpers.ts"
 
 function getCostReductionChoices() {
 	return Object.freeze(

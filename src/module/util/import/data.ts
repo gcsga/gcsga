@@ -30,7 +30,7 @@ import {
 import { StrictTIDString } from "../tid.ts"
 import { Weight } from "@util/weight.ts"
 import { Length } from "@util/length.ts"
-import { MoveTypeOverrideConditionType } from "@module/data/move-type/move-type-override.ts"
+import { MoveTypeOverrideConditionType } from "@module/data/stat/move-type/move-type-override.ts"
 
 // const GCS_FILE_VERSION = 4
 const GCS_FILE_VERSIONS = [4, 5]

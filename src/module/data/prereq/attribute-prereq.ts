@@ -5,7 +5,7 @@ import { ActorType, gid } from "@data"
 import { NumericComparison, TooltipGURPS } from "@util"
 import { ActorInst } from "../actor/helpers.ts"
 import { NumericCriteriaField } from "../item/fields/numeric-criteria-field.ts"
-import { getAttributeChoices } from "../attribute/helpers.ts"
+import { getAttributeChoices } from "../stat/attribute/helpers.ts"
 import { createDummyElement } from "@module/applications/helpers.ts"
 
 class AttributePrereq extends BasePrereq<AttributePrereqSchema> {

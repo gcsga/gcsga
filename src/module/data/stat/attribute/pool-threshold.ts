@@ -1,6 +1,6 @@
 import fields = foundry.data.fields
 import type { AttributeDef } from "./attribute-definition.ts"
-import { threshold } from "@util"
+import { ErrorGURPS, threshold } from "@util"
 import { VariableResolver, evaluateToNumber } from "@module/util/index.ts"
 import { ResourceTrackerDef } from "../resource-tracker/resource-tracker-definition.ts"
 import { ActorGURPS2 } from "@module/documents/actor.ts"
@@ -38,13 +38,50 @@ class PoolThreshold extends foundry.abstract.DataModel<AttributeDef | ResourceTr
 		}
 	}
 
+	/* -------------------------------------------- */
+
 	get actor(): ActorGURPS2 {
 		return this.parent.actor
 	}
 
+	/* -------------------------------------------- */
+
+	/*
+	 * Returns the index of this threshold within the Attribute definition it is contained in
+	 */
+	get index(): number {
+		const index = this.parent.thresholds?.indexOf(this) ?? null
+		if (index === null) throw ErrorGURPS(`Pool Threshold with state "${this.state} has no index.`)
+		return index
+	}
+
+	/* -------------------------------------------- */
+
+	/*
+	 * Returns the minimum value which falls within this threshold
+	 */
+	get min(): number {
+		const nextThreshold = this.parent.thresholds![this.index - 1] ?? null
+		if (this.index === 0 || nextThreshold === null) return Number.MIN_SAFE_INTEGER
+		return nextThreshold.threshold()
+	}
+
+	/* -------------------------------------------- */
+
+	/*
+	 * Returns the maximum value which falls within this threshold
+	 */
+	get max(): number {
+		return this.threshold()
+	}
+
+	/* -------------------------------------------- */
+
 	threshold(actor: VariableResolver = this.actor.system): number {
 		return evaluateToNumber(this.expression, actor)
 	}
+
+	/* -------------------------------------------- */
 }
 
 interface PoolThreshold

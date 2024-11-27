@@ -2,7 +2,8 @@
 
 ## Bugs
 
-- Add "max" and "min" to thresholds
+- Re-think attribute holder template, account for resource trackers and move types
+- Add "max" and "min" to thresholds \* DONE
 - add progress bar to pool bars.
 - source data retains unused replacement values
 - Changing default hit locations requires reload before taking effecct

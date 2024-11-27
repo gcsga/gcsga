@@ -1,18 +1,14 @@
-import { AttributeHolderTemplate } from "../actor/templates/attribute-holder.ts"
 import fields = foundry.data.fields
-import {
-	AbstractAttribute,
-	AbstractAttributeConstructionOptions,
-	AbstractAttributeSchema,
-} from "../abstract-attribute/abstract-attribute.ts"
-import { ActorTemplateType } from "../actor/types.ts"
 import { Int, attribute, stlimit, threshold } from "@util"
 import { AttributeDef } from "./attribute-definition.ts"
 import { PoolThreshold } from "./pool-threshold.ts"
-import { TokenPool } from "../types.ts"
-import { SheetSettings } from "../sheet-settings.ts"
+import { AttributeHolderTemplate } from "@module/data/actor/templates/attribute-holder.ts"
+import { AbstractStat, AbstractStatConstructionOptions, AbstractStatSchema } from "../abstract-stat/index.ts"
+import { ActorTemplateType } from "@module/data/actor/types.ts"
+import { SheetSettings } from "@module/data/sheet-settings.ts"
+import { TokenPool } from "@module/data/types.ts"
 
-class AttributeGURPS<TActor extends AttributeHolderTemplate = AttributeHolderTemplate> extends AbstractAttribute<
+class AttributeGURPS<TActor extends AttributeHolderTemplate = AttributeHolderTemplate> extends AbstractStat<
 	TActor,
 	AttributeSchema
 > {
@@ -20,7 +16,7 @@ class AttributeGURPS<TActor extends AttributeHolderTemplate = AttributeHolderTem
 
 	constructor(
 		data: DeepPartial<SourceFromSchema<AttributeSchema>>,
-		options?: AbstractAttributeConstructionOptions<TActor>,
+		options?: AbstractStatConstructionOptions<TActor>,
 	) {
 		super(data, options)
 		this.order = options?.order ?? 0
@@ -162,9 +158,8 @@ class AttributeGURPS<TActor extends AttributeHolderTemplate = AttributeHolderTem
 
 		const currentThreshold = this.currentThreshold
 		let percentage = 0
-		if (currentThreshold) {
-			const currentThresholdIndex = this.definition?.thresholds?.indexOf(currentThreshold)
-			const thresholdMin = currentThreshold.threshold(this.actor.system)
+		if (currentThreshold && currentThreshold.min !== Number.MIN_SAFE_INTEGER) {
+			percentage = ((currentThreshold.max - this.current) / (currentThreshold.max - currentThreshold.min)) * 100
 		}
 
 		el.classList.add("meter", "progress")
@@ -183,7 +178,7 @@ class AttributeGURPS<TActor extends AttributeHolderTemplate = AttributeHolderTem
 		}
 	}
 
-	static isThresholdOpMet(op: threshold.Op, attributes: AttributeGURPS[]): boolean {
+	static isThresholdOpMet(op: threshold.Op, attributes: Collection<AttributeGURPS>): boolean {
 		for (const att of attributes) {
 			const t = att.currentThreshold
 			if (t !== null && t.ops.includes(op)) return true
@@ -193,10 +188,10 @@ class AttributeGURPS<TActor extends AttributeHolderTemplate = AttributeHolderTem
 }
 
 interface AttributeGURPS<TActor extends AttributeHolderTemplate>
-	extends AbstractAttribute<TActor, AttributeSchema>,
+	extends AbstractStat<TActor, AttributeSchema>,
 		ModelPropsFromSchema<AttributeSchema> {}
 
-type AttributeSchema = AbstractAttributeSchema & {
+type AttributeSchema = AbstractStatSchema & {
 	adj: fields.NumberField<number, number, true, false, true>
 	damage: fields.NumberField<number, number, true, true, true>
 	applyOps: fields.BooleanField<boolean, boolean, true, true, true>

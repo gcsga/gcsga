@@ -1,9 +1,11 @@
-import { type AttributeDefSchema } from "@module/data/attribute/attribute-definition.ts"
 import { gid, ConditionID } from "@module/data/constants.ts"
 import { type ActorBodySchema } from "@module/data/hit-location.ts"
-import { type MoveTypeDefSchema } from "@module/data/move-type/move-type-definition.ts"
-import { MoveTypeOverrideConditionType } from "@module/data/move-type/move-type-override.ts"
-import { type ResourceTrackerDefSchema } from "@module/data/resource-tracker/index.ts"
+import {
+	AttributeDefSchema,
+	MoveTypeDefSchema,
+	MoveTypeOverrideConditionType,
+	ResourceTrackerDefSchema,
+} from "@module/data/stat/index.ts"
 import { attribute, threshold } from "@util"
 
 const DEFAULT_ATTRIBUTE_SETTINGS: Partial<SourceFromSchema<AttributeDefSchema>>[] = [

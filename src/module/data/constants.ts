@@ -128,6 +128,12 @@ const ItemTypes = [
 	// ItemType.WeaponRanged,
 ]
 
+enum StatType {
+	Attribute = "attribute",
+	ResourceTracker = "resourceTracker",
+	MoveType = "moveType",
+}
+
 enum ActionType {
 	AttackMelee = "attackMelee",
 	AttackRanged = "attackRanged",
@@ -508,6 +514,7 @@ export {
 	SSRT_SETTING,
 	SYSTEM_NAME,
 	gid,
+	StatType,
 }
 
 // export type { EffectTypes, ItemTypes, WeaponType }
