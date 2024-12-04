@@ -1,22 +1,23 @@
 import { AttributeGURPS } from "../../stat/attribute/attribute.ts"
 import fields = foundry.data.fields
 import { MappingField, MappingFieldOptions } from "../../fields/mapping-field.ts"
-import { StatClass } from "@module/data/stat/types.ts"
+import { Stat } from "@module/data/stat/types.ts"
 import { AbstractStat } from "@module/data/stat/abstract-stat/abstract-stat.ts"
+import { ResourceTracker } from "@module/data/stat/index.ts"
 
 type StatsFieldOptions<
-	TModel extends StatClass,
+	TModel extends Stat,
 	TSourceProp extends object,
 	TRequired extends boolean = true,
 	TNullable extends boolean = false,
 	THasInitial extends boolean = true,
 > = MappingFieldOptions<TSourceProp, TRequired, TNullable, THasInitial> & {
-	model: TModel
+	model: TModel["constructor"]
 }
 
 // class Attributes extends foundry.abstract.DataModel<ActorDataModel, AttributesSchema> {
 class StatsField<
-	TModel extends StatClass,
+	TModel extends Stat,
 	TRequired extends boolean = true,
 	TNullable extends boolean = false,
 	THasInitial extends boolean = true,
@@ -27,23 +28,21 @@ class StatsField<
 
 	override initialize(
 		value: unknown,
-		model: TModel,
+		model: ConstructorOf<TModel>,
 		options: fields.ObjectFieldOptions<StatCollection<TModel>, TRequired, TNullable, THasInitial> = {},
 	): StatCollection<TModel> {
 		super.initialize(value, model)
-		const attributes = Object.values(
-			super.initialize(value, model, options) as unknown as Record<string, InstanceType<TModel>>,
-		)
+		const attributes = Object.values(super.initialize(value, model, options) as unknown as Record<string, TModel>)
 		return new StatCollection(model, attributes)
 	}
 }
 
-class StatField<TModel extends StatClass> extends fields.ObjectField<TModel> {
+class StatField<TModel extends Stat> extends fields.ObjectField<TModel> {
 	static override recursive = true
 
-	#model: TModel
+	#model: TModel["constructor"]
 
-	constructor(type: TModel) {
+	constructor(type: TModel["constructor"]) {
 		super()
 		this.#model = type
 	}
@@ -64,7 +63,7 @@ class StatField<TModel extends StatClass> extends fields.ObjectField<TModel> {
 		options?: fields.ObjectFieldOptions<TModel, true, false, true> | undefined,
 	): TModel {
 		super.initialize(value)
-		return new this.#model(value as object, { parent: model, ...options }) as unknown as TModel
+		return new this.#model(value as object, { parent: model, ...options }) as TModel
 	}
 
 	/* -------------------------------------------- */
@@ -74,12 +73,12 @@ class StatField<TModel extends StatClass> extends fields.ObjectField<TModel> {
 	}
 }
 
-class StatCollection<TModel extends StatClass> extends Collection<InstanceType<TModel>> {
-	#model: ConstructorOf<foundry.abstract.DataModel>
+class StatCollection<TModel extends Stat> extends Collection<TModel> {
+	#model: ConstructorOf<TModel>
 
 	/* -------------------------------------------- */
 
-	constructor(model: TModel, entries: InstanceType<TModel>[]) {
+	constructor(model: ConstructorOf<TModel>, entries: TModel[]) {
 		super()
 		this.#model = model
 		for (const entry of entries) {
@@ -96,31 +95,23 @@ class StatCollection<TModel extends StatClass> extends Collection<InstanceType<T
 
 	/* -------------------------------------------- */
 
-	get primary(): Map<string, InstanceType<TModel>> {
-		return new Map(
-			this.entries().filter(([, att]) => {
-				att instanceof AttributeGURPS && att.isPrimary
-			}),
-		)
+	get primary(): Map<string, TModel> {
+		return new Map(this.filter(att => att instanceof AttributeGURPS && att.isPrimary).map(e => [e.id, e]))
 	}
 
 	/* -------------------------------------------- */
 
-	get secondary(): Map<string, InstanceType<TModel>> {
-		return new Map(
-			this.entries().filter(([, att]) => {
-				att instanceof AttributeGURPS && att.isSecondary
-			}),
-		)
+	get secondary(): Map<string, TModel> {
+		return new Map(this.filter(att => att instanceof AttributeGURPS && att.isSecondary).map(e => [e.id, e]))
 	}
 
 	/* -------------------------------------------- */
 
-	get pool(): Map<string, InstanceType<TModel>> {
+	get pool(): Map<string, TModel> {
 		return new Map(
-			this.entries().filter(([, att]) => {
-				att instanceof AttributeGURPS && att.isPool
-			}),
+			this.filter(att => att instanceof ResourceTracker || (att instanceof AttributeGURPS && att.isPool)).map(
+				e => [e.id, e],
+			),
 		)
 	}
 
@@ -132,85 +123,3 @@ class StatCollection<TModel extends StatClass> extends Collection<InstanceType<T
 }
 
 export { StatsField }
-
-// class AttributeField extends fields.ObjectField<AttributeGURPS> {
-// 	static override recursive = true
-//
-// 	/* -------------------------------------------- */
-//
-// 	override _cleanType(value: unknown, options: fields.CleanFieldOptions) {
-// 		if (!(typeof value === "object")) value = {}
-//
-// return AttributeGURPS.cleanData(value as object, { ...options })
-// 	}
-//
-// 	/* -------------------------------------------- */
-//
-//
-// 	override initialize(
-// 		value: unknown,
-// 		model: any,
-// 		options?: fields.ObjectFieldOptions<AttributeGURPS, true, false, true> | undefined,
-// 	): AttributeGURPS {
-// 		super.initialize(value)
-// 		 return new AttributeGURPS(value as object, { parent: model, ...options })
-// 		return foundry.utils.deepClone(value) as AttributeGURPS
-// 	}
-//
-// 	/* -------------------------------------------- */
-//
-// 	migrateSource(_sourceData: object, fieldData: any) {
-// 		const cls = this.getModel(fieldData)
-// 		if (cls) cls.migrateDataSafe(fieldData)
-// 	}
-// }
-
-// private declare _map: Map<string, AttributeGURPS>
-// private declare _set: Record<string, AttributeGURPS>
-
-// static override defineSchema(): AttributesSchema {
-// 	const fields = foundry.data.fields
-// 	return {
-// 		list: new fields.ArrayField(new fields.EmbeddedDataField(AttributeGURPS), {
-// 			required: true,
-// 			nullable: false,
-// 			initial: [],
-// 		}),
-// 	}
-// }
-
-// 	// get map(): Map<string, AttributeGURPS> {
-// 	// 	return (this._map ??= new Map(this.list.map(e => [e.id, e])))
-// 	// }
-//
-// 	get set(): Record<string, AttributeGURPS> {
-// 		return Object.fromEntries(this.list.map(e => [e.id, e]))
-// 	}
-//
-// 	get primary(): Record<string, AttributeGURPS> {
-// 		return Object.fromEntries(this.list.filter(e => e.isPrimary).map(e => [e.id, e]))
-// 	}
-//
-// 	get secondary(): Record<string, AttributeGURPS> {
-// 		return Object.fromEntries(this.list.filter(e => e.isSecondary).map(e => [e.id, e]))
-// 	}
-//
-// 	get pool(): Record<string, AttributeGURPS> {
-// 		return Object.fromEntries(this.list.filter(e => e.isPool).map(e => [e.id, e]))
-// 	}
-// }
-
-// interface Attributes extends ModelPropsFromSchema<AttributesSchema> {}
-//
-// type AttributesSchema = {
-// 	list: fields.ArrayField<
-// 		fields.EmbeddedDataField<AttributeGURPS>,
-// 		SourceFromSchema<AttributeSchema>[],
-// 		AttributeGURPS[],
-// 		true,
-// 		false,
-// 		true
-// 	>
-// }
-//
-// export { Attributes, type AttributesSchema }

@@ -53,7 +53,9 @@ class MoveType extends AbstractStat<ActorDataModel, MoveTypeSchema> {
 	}
 }
 
-interface MoveType extends AbstractStat<ActorDataModel, MoveTypeSchema>, ModelPropsFromSchema<MoveTypeSchema> {}
+interface MoveType extends AbstractStat<ActorDataModel, MoveTypeSchema>, ModelPropsFromSchema<MoveTypeSchema> {
+	constructor: typeof MoveType
+}
 
 type MoveTypeSchema = AbstractStatSchema & {
 	adj: fields.NumberField<number, number, true, false, true>

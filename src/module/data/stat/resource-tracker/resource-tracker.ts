@@ -62,7 +62,9 @@ class ResourceTracker extends AbstractStat<ActorDataModel, ResourceTrackerSchema
 
 interface ResourceTracker
 	extends AbstractStat<ActorDataModel, ResourceTrackerSchema>,
-		ModelPropsFromSchema<ResourceTrackerSchema> {}
+		ModelPropsFromSchema<ResourceTrackerSchema> {
+	constructor: typeof ResourceTracker
+}
 
 type ResourceTrackerSchema = AbstractStatSchema & {
 	damage: fields.NumberField<number, number, true, false, true>

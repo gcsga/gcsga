@@ -80,6 +80,7 @@ declare global {
 		static on(...args: HooksParamsPreUpdateCombat): number
 		static on(...args: HookParamsPreUpdateToken): number
 		static on(...args: HookParamsRenderChatMessage): number
+		static on(...args: HookParamsRender<Hotbar, "Hotbar">): number
 		static on(...args: HookParamsRender<ChatLog, "ChatLog">): number
 		static on(...args: HookParamsRender<ChatPopout, "ChatPopout">): number
 		static on(...args: HookParamsRender<CombatTrackerConfig, "CombatTrackerConfig">): number

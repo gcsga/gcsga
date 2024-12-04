@@ -1,0 +1,11 @@
+#modifier-bucket {
+	width: fit-content;
+	height: fit-content;
+
+	[data-application-part="button"] {
+		background-color: black;
+		color: red;
+		height: 50px;
+		width: 60px;
+	}
+}

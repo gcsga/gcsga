@@ -129,7 +129,7 @@ class CharacterSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ActorShe
 		return tabs
 	}
 
-	override async _prepareContext(_options = {}): Promise<object> {
+	protected override async _prepareContext(_options = {}): Promise<object> {
 		const primaryTabs = Object.fromEntries(
 			Object.entries(this._getTabs()).filter(([_, v]) => v.group === "primary"),
 		)

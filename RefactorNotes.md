@@ -10,6 +10,9 @@
 
 ## Current Tasks
 
+- Modifier Bucket
+  - renderHotbar hook
+  - application template
 - Implement ActionSheet
   - Implement dragdrop
 

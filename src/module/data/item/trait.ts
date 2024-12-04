@@ -38,10 +38,9 @@ class TraitData extends ItemDataModel.mixin(
 	ReplacementTemplate,
 	StudyTemplate,
 ) {
-	// static override _systemType = ItemType.Trait
-
 	static override modifierTypes = new Set([ItemType.TraitModifier, ItemType.TraitModifierContainer])
-	// static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
+
+	/* -------------------------------------------- */
 
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
 		context.detailsParts = [
@@ -57,6 +56,8 @@ class TraitData extends ItemDataModel.mixin(
 			"gurps.embeds-effect",
 		]
 	}
+
+	/* -------------------------------------------- */
 
 	static override defineSchema(): TraitSchema {
 		return this.mergeSchema(super.defineSchema(), {
@@ -122,9 +123,13 @@ class TraitData extends ItemDataModel.mixin(
 		}) as unknown as TraitSchema
 	}
 
+	/* -------------------------------------------- */
+
 	get isLeveled(): boolean {
 		return this.can_level
 	}
+
+	/* -------------------------------------------- */
 
 	override cellData(_options: CellDataOptions = {}): Record<string, CellData> {
 		return {
@@ -144,6 +149,8 @@ class TraitData extends ItemDataModel.mixin(
 		}
 	}
 
+	/* -------------------------------------------- */
+
 	static override _cleanData(
 		source?: DeepPartial<SourceFromSchema<TraitSchema>> & { [key: string]: unknown },
 		_options?: Record<string, unknown>,
@@ -153,6 +160,8 @@ class TraitData extends ItemDataModel.mixin(
 			source.points_per_level = source.can_level ? source.points_per_level || 0 : null
 		}
 	}
+
+	/* -------------------------------------------- */
 
 	get enabled(): boolean {
 		if (this.disabled) return false
@@ -166,6 +175,8 @@ class TraitData extends ItemDataModel.mixin(
 		}
 		return true
 	}
+
+	/* -------------------------------------------- */
 
 	override get allModifiers(): MaybePromise<Collection<ItemInst<ItemType.TraitModifier>>> {
 		if (!this.parent) return new Collection()
@@ -185,6 +196,8 @@ class TraitData extends ItemDataModel.mixin(
 		return allModifiers
 	}
 
+	/* -------------------------------------------- */
+
 	private async _allModifiers(): Promise<Collection<ItemInst<ItemType.TraitModifier>>> {
 		const allModifiers = new Collection<ItemInst<ItemType.TraitModifier>>()
 
@@ -200,11 +213,15 @@ class TraitData extends ItemDataModel.mixin(
 		return allModifiers
 	}
 
+	/* -------------------------------------------- */
+
 	/** Returns the current level of the trait or 0 if it is not leveled */
 	get currentLevel(): number {
 		if (this.enabled && this.can_level) return this.levels ?? 0
 		return 0
 	}
+
+	/* -------------------------------------------- */
 
 	/** Returns trait point cost adjusted for enablement and modifiers */
 	get adjustedPoints(): MaybePromise<number> {
@@ -216,9 +233,13 @@ class TraitData extends ItemDataModel.mixin(
 		)
 	}
 
+	/* -------------------------------------------- */
+
 	async #adjustedPoints(): Promise<number> {
 		return costAdjustedForModifiers(this.parent as ItemInst<ItemType.Trait>, await this.allModifiers)
 	}
+
+	/* -------------------------------------------- */
 
 	override get processedName(): string {
 		const buffer = new StringBuilder()
@@ -228,6 +249,8 @@ class TraitData extends ItemDataModel.mixin(
 		}
 		return buffer.toString()
 	}
+
+	/* -------------------------------------------- */
 
 	// Returns rendered notes from modifiers
 	get modifierNotes(): MaybePromise<string> {
@@ -251,6 +274,8 @@ class TraitData extends ItemDataModel.mixin(
 		return buffer.toString()
 	}
 
+	/* -------------------------------------------- */
+
 	private async _modifierNotes(
 		buffer: StringBuilder,
 		modifiers: Promise<Collection<ItemInst<ItemType.TraitModifier>>>,
@@ -264,6 +289,8 @@ class TraitData extends ItemDataModel.mixin(
 		})
 		return buffer.toString()
 	}
+
+	/* -------------------------------------------- */
 
 	secondaryText(optionChecker: (option: display.Option) => boolean): string {
 		const buffer = new StringBuilder()
@@ -282,6 +309,8 @@ class TraitData extends ItemDataModel.mixin(
 		}
 		return buffer.toString()
 	}
+
+	/* -------------------------------------------- */
 
 	/** Features */
 	override addFeaturesToSet(featureSet: FeatureSet): void {
@@ -309,10 +338,14 @@ class TraitData extends ItemDataModel.mixin(
 		}
 	}
 
+	/* -------------------------------------------- */
+
 	/** Replacements */
 	get userDescWithReplacements(): string {
 		return Nameable.apply(this.userdesc, this.replacements)
 	}
+
+	/* -------------------------------------------- */
 
 	/** Nameables */
 	override fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string> = this.replacements): void {
@@ -325,6 +358,8 @@ class TraitData extends ItemDataModel.mixin(
 		this._fillWithNameableKeysFromFeatures(m, existing)
 		this._fillWithNameableKeysFromEmbeds(m, existing)
 	}
+
+	/* -------------------------------------------- */
 
 	protected async _fillWithNameableKeysFromEmbeds(
 		m: Map<string, string>,

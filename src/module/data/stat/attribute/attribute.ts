@@ -147,28 +147,6 @@ class AttributeGURPS<TActor extends AttributeHolderTemplate = AttributeHolderTem
 		return err !== null
 	}
 
-	get element(): Handlebars.SafeString {
-		return new Handlebars.SafeString(this._toElement().outerHTML)
-	}
-
-	protected _toElement(): HTMLElement {
-		const el = document.createElement("div")
-		// TODO: expand to non-pools
-		if (!this.isPool) return el
-
-		const currentThreshold = this.currentThreshold
-		let percentage = 0
-		if (currentThreshold && currentThreshold.min !== Number.MIN_SAFE_INTEGER) {
-			percentage = ((currentThreshold.max - this.current) / (currentThreshold.max - currentThreshold.min)) * 100
-		}
-
-		el.classList.add("meter", "progress")
-		el.setAttribute("role", "meter")
-		el.style.setProperty("--bar-percentage", `${percentage}%`)
-
-		return el
-	}
-
 	toTokenPool(): TokenPool | null {
 		if (!this.isPool) return null
 		return {
@@ -189,7 +167,9 @@ class AttributeGURPS<TActor extends AttributeHolderTemplate = AttributeHolderTem
 
 interface AttributeGURPS<TActor extends AttributeHolderTemplate>
 	extends AbstractStat<TActor, AttributeSchema>,
-		ModelPropsFromSchema<AttributeSchema> {}
+		ModelPropsFromSchema<AttributeSchema> {
+	constructor: typeof AttributeGURPS
+}
 
 type AttributeSchema = AbstractStatSchema & {
 	adj: fields.NumberField<number, number, true, false, true>
